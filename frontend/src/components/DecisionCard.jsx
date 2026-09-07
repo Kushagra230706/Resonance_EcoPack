@@ -1,10 +1,12 @@
-import React from 'react';
-import { Award, ShieldCheck, DollarSign, Leaf, AlertTriangle, TrendingDown } from 'lucide-react';
+import React, { useState } from 'react';
+import { Award, ShieldCheck, DollarSign, Leaf, AlertTriangle, TrendingDown, Layers, ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function DecisionCard({ data }) {
+  const [showTradeoffs, setShowTradeoffs] = useState(true);
+
   if (!data || !data.recommended) return null;
 
-  const { recommended, baseline, annual_impact, why_this_won } = data;
+  const { recommended, baseline, annual_impact, why_this_won, tradeoffs_breakdown } = data;
 
   return (
     <div className="glass-panel" style={{ padding: '24px', border: '1px solid var(--border-soft)', background: 'linear-gradient(180deg, var(--bg-card-highlight) 0%, var(--bg-card) 100%)', marginBottom: '24px' }}>
@@ -40,7 +42,7 @@ export default function DecisionCard({ data }) {
       </div>
 
       {/* 4 KPI Metrics */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '20px' }}>
         
         <div style={{ background: 'var(--bg-secondary)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-soft)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
@@ -75,6 +77,34 @@ export default function DecisionCard({ data }) {
         </div>
 
       </div>
+
+      {/* 5 Core Trade-Off Intelligence Accordion Panel */}
+      {tradeoffs_breakdown && (
+        <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-soft)', borderRadius: '12px', padding: '16px' }}>
+          <div 
+            onClick={() => setShowTradeoffs(!showTradeoffs)}
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '700', color: 'var(--brand-primary)', fontSize: '0.95rem' }}>
+              <Layers size={18} /> 5 Core Packaging Trade-Off Analysis
+            </div>
+            <button style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+              {showTradeoffs ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+            </button>
+          </div>
+
+          {showTradeoffs && (
+            <div style={{ marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {Object.entries(tradeoffs_breakdown).map(([key, t]) => (
+                <div key={key} style={{ background: '#FFFFFF', border: '1px solid var(--border-soft)', padding: '12px 14px', borderRadius: '8px', fontSize: '0.85rem' }}>
+                  <div style={{ fontWeight: '700', color: 'var(--text-heading)', marginBottom: '4px' }}>{t.title}</div>
+                  <div style={{ color: 'var(--text-body)', lineHeight: '1.4' }}>{t.finding}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
     </div>
   );
