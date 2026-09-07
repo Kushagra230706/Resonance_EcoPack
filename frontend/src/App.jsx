@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
+import PackWiseHero from './components/PackWiseHero';
 import ImageUploadModal from './components/ImageUploadModal';
 import CopilotChat from './components/CopilotChat';
 import DecisionCard from './components/DecisionCard';
@@ -93,8 +94,17 @@ export default function App() {
       {/* Main Content Area */}
       <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 24px' }}>
         
+        {/* Animated PackWise Hero Section */}
+        <PackWiseHero 
+          onStartOptimize={() => {
+            const formElem = document.getElementById('product-input-form');
+            if (formElem) formElem.scrollIntoView({ behavior: 'smooth' });
+          }}
+          onOpenCopilot={() => setIsCopilotOpen(true)}
+        />
+
         {activeTab === 'optimizer' && (
-          <div style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: '24px' }}>
+          <div id="product-input-form" style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: '24px' }}>
             
             {/* Left Form Controls Panel */}
             <div className="glass-panel" style={{ padding: '20px', height: 'fit-content' }}>
