@@ -1,7 +1,7 @@
 import React from 'react';
 import { Leaf, Cpu, Sparkles, ShieldCheck, QrCode, ArrowRight } from 'lucide-react';
 
-export default function Navbar({ activeTab, setActiveTab, onOpenCopilot }) {
+export default function Navbar({ activeTab, setActiveTab, onLogoClick, onOpenCopilot }) {
   return (
     <header style={{
       background: 'rgba(4, 18, 14, 0.85)',
@@ -16,7 +16,7 @@ export default function Navbar({ activeTab, setActiveTab, onOpenCopilot }) {
         
         {/* PackWise Brand Logo */}
         <div 
-          onClick={() => setActiveTab('optimizer')} 
+          onClick={() => onLogoClick ? onLogoClick() : setActiveTab('optimizer')} 
           style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
         >
           <div style={{

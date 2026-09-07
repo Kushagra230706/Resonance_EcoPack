@@ -42,8 +42,17 @@ export default function App() {
     }
   });
 
-  // Optimization Results Data
-  const [results, setResults] = useState(null);
+  const [showHero, setShowHero] = useState(true);
+
+  const handleTabChange = (tabKey) => {
+    setActiveTab(tabKey);
+    setShowHero(false); // Hide hero section when changing sections from navbar
+  };
+
+  const handleLogoClick = () => {
+    setActiveTab('optimizer');
+    setShowHero(true); // Show hero section on home/logo click
+  };
 
   const runOptimization = async (customData = formData) => {
     setLoading(true);
@@ -87,21 +96,24 @@ export default function App() {
       {/* Top Navbar */}
       <Navbar 
         activeTab={activeTab} 
-        setActiveTab={setActiveTab} 
+        setActiveTab={handleTabChange} 
+        onLogoClick={handleLogoClick}
         onOpenCopilot={() => setIsCopilotOpen(true)} 
       />
 
       {/* Main Content Area */}
       <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 24px' }}>
         
-        {/* Animated PackWise Hero Section */}
-        <PackWiseHero 
-          onStartOptimize={() => {
-            const formElem = document.getElementById('product-input-form');
-            if (formElem) formElem.scrollIntoView({ behavior: 'smooth' });
-          }}
-          onOpenCopilot={() => setIsCopilotOpen(true)}
-        />
+        {/* Animated PackWise Hero Section - Only shown on initial landing or logo click */}
+        {showHero && (
+          <PackWiseHero 
+            onStartOptimize={() => {
+              const formElem = document.getElementById('product-input-form');
+              if (formElem) formElem.scrollIntoView({ behavior: 'smooth' });
+            }}
+            onOpenCopilot={() => setIsCopilotOpen(true)}
+          />
+        )}
 
         {activeTab === 'optimizer' && (
           <div id="product-input-form" style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: '24px' }}>

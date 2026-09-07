@@ -216,8 +216,8 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
               <div style={{
                 position: 'absolute',
                 inset: '2px',
-                background: 'radial-gradient(circle, #020907 0%, #000000 100%)',
-                boxShadow: 'inset 0 0 40px #000',
+                background: 'radial-gradient(circle, #0a1f18 0%, #000000 100%)',
+                boxShadow: 'inset 0 0 30px #000',
                 borderRadius: '4px'
               }} />
 
@@ -225,9 +225,9 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
               <div style={{
                 position: 'absolute',
                 inset: 0,
-                background: 'linear-gradient(135deg, #c78d46 0%, #8c5b23 100%)',
-                border: '1.5px solid #dba15c',
-                borderRadius: '4px',
+                background: 'linear-gradient(135deg, #c78846 0%, #8f5c25 100%)',
+                border: '1.5px solid #e5a560',
+                borderRadius: '6px',
                 transform: 'translateZ(90px)',
                 boxShadow: '0 25px 50px rgba(0,0,0,0.6)',
                 display: 'flex',
@@ -239,7 +239,7 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
                   <div style={{ background: 'rgba(0,0,0,0.25)', padding: '4px', borderRadius: '6px' }}>
                     <Leaf size={18} color="#3d2105" />
                   </div>
-                  <span style={{ fontSize: '0.85rem', fontWeight: '900', color: '#3d2105', fontFamily: 'Outfit, sans-serif' }}>PackWise</span>
+                  <span style={{ fontSize: '0.9rem', fontWeight: '900', color: '#3d2105', fontFamily: 'Outfit, sans-serif' }}>PackWise</span>
                 </div>
                 <div style={{ display: 'flex', gap: '8px', opacity: 0.7 }}>
                   <Box size={14} color="#3d2105" />
@@ -251,7 +251,7 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
               {/* Top Front Flap */}
               <motion.div
                 initial={{ rotateX: 0 }}
-                animate={{ rotateX: boxOpened ? -125 : 0 }}
+                animate={{ rotateX: boxOpened ? -120 : 0 }}
                 transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
                 style={{
                   position: 'absolute',
@@ -271,7 +271,7 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
               {/* Top Back Flap */}
               <motion.div
                 initial={{ rotateX: 0 }}
-                animate={{ rotateX: boxOpened ? 125 : 0 }}
+                animate={{ rotateX: boxOpened ? 120 : 0 }}
                 transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
                 style={{
                   position: 'absolute',
@@ -291,7 +291,7 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
               {/* Left Flap */}
               <motion.div
                 initial={{ rotateZ: 0 }}
-                animate={{ rotateZ: boxOpened ? -115 : 0 }}
+                animate={{ rotateZ: boxOpened ? -110 : 0 }}
                 transition={{ duration: 1.0, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
                 style={{
                   position: 'absolute',
@@ -309,7 +309,7 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
               {/* Right Flap */}
               <motion.div
                 initial={{ rotateZ: 0 }}
-                animate={{ rotateZ: boxOpened ? 115 : 0 }}
+                animate={{ rotateZ: boxOpened ? 110 : 0 }}
                 transition={{ duration: 1.0, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
                 style={{
                   position: 'absolute',
@@ -326,15 +326,15 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
 
             </div>
 
-            {/* RISING 3D PACKWISE EMBLEM & SWIRLING LEAF AURA */}
+            {/* RISING PACKWISE LOGO & EMBLEM OUT OF THE BOX */}
             <motion.div
-              initial={{ y: 30, opacity: 0, scale: 0.5 }}
+              initial={{ y: 30, opacity: 0, scale: 0.6 }}
               animate={{
-                y: boxOpened ? -140 : 30,
+                y: boxOpened ? -120 : 30,
                 opacity: boxOpened ? 1 : 0,
-                scale: boxOpened ? 1.05 : 0.5
+                scale: boxOpened ? 1 : 0.6
               }}
-              transition={{ duration: 1.2, delay: 0.3, type: 'spring', stiffness: 100, damping: 15 }}
+              transition={{ duration: 1.1, delay: 0.3, type: 'spring', stiffness: 100, damping: 15 }}
               style={{
                 position: 'absolute',
                 top: 0,
@@ -348,42 +348,42 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
                 pointerEvents: 'none'
               }}
             >
-              {/* Floating Leaf Particles Swirling out of box */}
-              {[...Array(5)].map((_, i) => (
+              {/* Floating Leaf Particles */}
+              {[...Array(4)].map((_, i) => (
                 <motion.div
                   key={i}
                   animate={{
-                    y: [0, -30 - (i * 10)],
-                    x: [(i % 2 === 0 ? -15 : 15), (i % 2 === 0 ? -40 : 40)],
+                    y: [0, -25 - (i * 8)],
+                    x: [(i % 2 === 0 ? -12 : 12), (i % 2 === 0 ? -30 : 30)],
                     opacity: [1, 0],
                     rotate: [0, 180]
                   }}
-                  transition={{ duration: 3, repeat: Infinity, delay: i * 0.4 }}
+                  transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.4 }}
                   style={{ position: 'absolute', color: '#34d399', fontSize: '14px' }}
                 >
                   🍃
                 </motion.div>
               ))}
 
-              {/* Glowing Volumetric Badge */}
+              {/* Clean Volumetric PackWise Emblem */}
               <div style={{
                 background: 'linear-gradient(135deg, rgba(6, 78, 59, 0.95) 0%, rgba(16, 185, 129, 0.95) 100%)',
-                padding: '12px 28px',
-                borderRadius: '18px',
-                boxShadow: '0 0 40px rgba(52, 211, 153, 0.8), inset 0 0 18px rgba(255, 255, 255, 0.5)',
+                padding: '10px 24px',
+                borderRadius: '16px',
+                boxShadow: '0 0 35px rgba(52, 211, 153, 0.7), inset 0 0 15px rgba(255, 255, 255, 0.4)',
                 border: '2px solid #6ee7b7',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '10px'
+                gap: '8px'
               }}>
-                <Cpu size={24} color="#FFFFFF" />
+                <Leaf size={22} color="#FFFFFF" />
                 <span style={{
-                  fontSize: '1.8rem',
+                  fontSize: '1.6rem',
                   fontWeight: '900',
                   color: '#FFFFFF',
-                  letterSpacing: '2px',
+                  letterSpacing: '1.5px',
                   fontFamily: 'Outfit, sans-serif',
-                  textShadow: '0 4px 10px rgba(0,0,0,0.5)'
+                  textShadow: '0 2px 8px rgba(0,0,0,0.5)'
                 }}>
                   PackWise
                 </span>
@@ -520,10 +520,14 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
 
       </div>
 
-      {/* SECONDARY ANIMATION: Sustainable Delivery Semi-Truck & Floating Leaf Exhaust */}
+      {/* SECONDARY ANIMATION: Delivery Semi-Truck Moving Across the Whole Screen Width */}
       <div style={{
         position: 'relative',
-        width: '100%',
+        width: '100vw',
+        left: '50%',
+        right: '50%',
+        marginLeft: '-50vw',
+        marginRight: '-50vw',
         height: '75px',
         marginTop: '28px',
         borderTop: '1px dashed rgba(16, 185, 129, 0.25)',
@@ -541,10 +545,10 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
           background: 'linear-gradient(90deg, transparent 0%, rgba(16, 185, 129, 0.5) 50%, transparent 100%)'
         }} />
 
-        {/* Moving Semi-Truck */}
+        {/* Moving Semi-Truck - Full Screen Traverse */}
         <motion.div
-          animate={{ x: ['-15%', '115%'] }}
-          transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
+          animate={{ x: ['-350px', '100vw'] }}
+          transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
           style={{
             position: 'absolute',
             bottom: '10px',
