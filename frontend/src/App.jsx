@@ -10,6 +10,7 @@ import ThreeDBoxPreview from './components/ThreeDBoxPreview';
 import ExportModal from './components/ExportModal';
 import ClaimsChecker from './components/ClaimsChecker';
 import QRDisposalGuide from './components/QRDisposalGuide';
+import ScoringModelCustomizer from './components/ScoringModelCustomizer';
 import { Camera, Sliders, RefreshCw, Layers, FileText } from 'lucide-react';
 
 export default function App() {
@@ -54,9 +55,57 @@ export default function App() {
     setShowHero(false); // Hide hero section when changing sections from navbar
   };
 
-  const handleLogoClick = () => {
-    setActiveTab('optimizer');
-    setShowHero(true); // Show hero section on home/logo click
+  const handleWeightsChange = (newWeights) => {
+    setFormData(prev => ({
+      ...prev,
+      user_weights: newWeights
+    }));
+    if (results) {
+      setResults(prevResults => recalculateLiveScores(newWeights, prevResults));
+    }
+  };
+
+  const recalculateLiveScores = (newWeights, currentResults) => {
+    if (!currentResults || !currentResults.alternatives) return currentResults;
+
+    const total = (newWeights.sustainability || 0) + (newWeights.protection || 0) + (newWeights.cost || 0) + (newWeights.branding || 0) + (newWeights.circularity || 0) || 1;
+    const ws = (newWeights.sustainability || 0) / total;
+    const wp = (newWeights.protection || 0) / total;
+    const wc = (newWeights.cost || 0) / total;
+    const wb = (newWeights.branding || 0) / total;
+    const wcirc = (newWeights.circularity || 0) / total;
+
+    const updatedAlternatives = currentResults.alternatives.map(alt => {
+      const score_sust = alt.dimension_scores?.sustainability_score ?? Math.max(0, 100 - (alt.co2e_kg * 50));
+      const score_cost = alt.dimension_scores?.cost_score ?? Math.max(0, 100 - (alt.unit_cost_usd * 12));
+      const score_prot = alt.protection_score || 80;
+      const score_brand = alt.branding_score || 80;
+      const score_circ = alt.recyclability_score || 80;
+
+      const weightedSum = (score_sust * ws) + (score_prot * wp) + (score_cost * wc) + (score_brand * wb) + (score_circ * wcirc);
+      const overall = Math.min(100, Math.max(0, Math.round(weightedSum * 10) / 10));
+
+      return {
+        ...alt,
+        overall_score: overall,
+        active_weights: {
+          sustainability: Math.round(ws * 100) / 100,
+          protection: Math.round(wp * 100) / 100,
+          cost: Math.round(wc * 100) / 100,
+          branding: Math.round(wb * 100) / 100,
+          circularity: Math.round(wcirc * 100) / 100
+        }
+      };
+    });
+
+    const sorted = [...updatedAlternatives].sort((a, b) => b.overall_score - a.overall_score);
+    const newRecommended = sorted[0];
+
+    return {
+      ...currentResults,
+      recommended: newRecommended,
+      alternatives: updatedAlternatives
+    };
   };
 
   const runOptimization = async (customData = formData) => {
@@ -511,6 +560,13 @@ export default function App() {
                   <FileText size={16} /> Open Export & RFQ Hub
                 </button>
               </div>
+
+              {/* Multi-Objective Scoring Model & Brand Priorities Customizer */}
+              <ScoringModelCustomizer 
+                weights={formData.user_weights} 
+                onChange={handleWeightsChange} 
+                onRecalculateLive={(w) => results && setResults(r => recalculateLiveScores(w, r))}
+              />
 
               <DecisionCard data={results} />
               

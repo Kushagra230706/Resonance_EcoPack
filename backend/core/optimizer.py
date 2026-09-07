@@ -270,17 +270,46 @@ def optimize_packaging(
             if outer.get("recyclability_score", 0) >= 90:
                 goal_bonus += 20.0
 
+        # Safely extract and normalize user weights across 5 dimensions
+        weights = user_weights if (user_weights and isinstance(user_weights, dict)) else {
+            "sustainability": 0.30,
+            "protection": 0.25,
+            "cost": 0.20,
+            "branding": 0.15,
+            "circularity": 0.10
+        }
+        
+        w_sust_raw = float(weights.get("sustainability", 0.30))
+        w_prot_raw = float(weights.get("protection", 0.25))
+        w_cost_raw = float(weights.get("cost", 0.20))
+        w_brand_raw = float(weights.get("branding", 0.15))
+        w_circ_raw = float(weights.get("circularity", 0.10))
+        
+        total_w = (w_sust_raw + w_prot_raw + w_cost_raw + w_brand_raw + w_circ_raw) or 1.0
+        w_sust = w_sust_raw / total_w
+        w_prot = w_prot_raw / total_w
+        w_cost = w_cost_raw / total_w
+        w_brand = w_brand_raw / total_w
+        w_circ = w_circ_raw / total_w
+
+        dimension_scores = {
+            "sustainability_score": round(score_co2, 1),
+            "protection_score": round(protection_score, 1),
+            "cost_score": round(score_cost, 1),
+            "branding_score": round(branding_score, 1),
+            "circularity_score": round(regional_recyclability, 1)
+        }
+
+        weighted_sum = (
+            (score_co2 * w_sust) +
+            (protection_score * w_prot) +
+            (score_cost * w_cost) +
+            (branding_score * w_brand) +
+            (regional_recyclability * w_circ)
+        )
+
         overall_score = round(
-            max(0, (
-                (score_co2 * user_weights.get("sustainability", 0.30)) +
-                (score_cost * user_weights.get("cost", 0.25)) +
-                (protection_score * user_weights.get("protection", 0.25)) +
-                (branding_score * user_weights.get("branding", 0.10)) +
-                (regional_recyclability * user_weights.get("circularity", 0.10)) +
-                category_bonus +
-                goal_bonus -
-                budget_penalty
-            )),
+            max(0.0, min(100.0, weighted_sum + category_bonus + goal_bonus - budget_penalty)),
             1
         )
         
@@ -317,6 +346,14 @@ def optimize_packaging(
             "protection_score": protection_score,
             "branding_score": branding_score,
             "recyclability_score": regional_recyclability,
+            "dimension_scores": dimension_scores,
+            "active_weights": {
+                "sustainability": round(w_sust, 2),
+                "protection": round(w_prot, 2),
+                "cost": round(w_cost, 2),
+                "branding": round(w_brand, 2),
+                "circularity": round(w_circ, 2)
+            },
             "shipping_efficiency_pct": shipping_efficiency_pct,
             "void_space_pct": void_space_pct,
             "damage_probability_pct": damage_data["damage_probability_pct"],
