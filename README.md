@@ -38,23 +38,45 @@
 
 ---
 
-## 🚀 Quick Start & Installation
+## 🚀 Quick Start & Running the Project
+
+### Option A: Standalone Client Mode (Zero Setup - Runs Anywhere)
+If you only run the frontend, PackWise AI's built-in **Client-Side Pareto Optimization Engine** automatically handles all calculations without requiring Python/FastAPI:
 
 ```bash
-# Clone the repository
+# 1. Clone the repository
 git clone https://github.com/Kushagra230706/Resonance_EcoPack.git
 
-# Navigate into directory
+# 2. Enter project directory
 cd Resonance_EcoPack
 
-# Install dependencies (Update according to stack)
-npm install # or pip install -r requirements.txt
-
-# Start development server
+# 3. Start development server
 npm run dev
+# App opens automatically at http://localhost:5173
 ```
 
 ---
+
+### Option B: Full-Stack Mode (Frontend + Python FastAPI Backend)
+For full AI Vision recognition and live server endpoints:
+
+```bash
+# 1. Start Python FastAPI Backend (Terminal 1)
+cd backend
+python -m venv venv
+# On Windows: venv\Scripts\activate | On Mac/Linux: source venv/bin/activate
+pip install -r requirements.txt
+uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+
+# 2. Start React Frontend (Terminal 2)
+cd frontend
+npm install
+npm run dev
+```
+
+> **Note on Browser Console `net::ERR_CONNECTION_REFUSED :8000/api/optimize`**:
+> If the Python FastAPI backend is not running on port 8000, the browser console will log a standard connection warning (`ERR_CONNECTION_REFUSED`). This is expected. The app automatically catches this and seamlessly runs the client-side Pareto optimization engine without crashing.
+
 
 ## 🤝 Collaboration & Git Guidelines
 

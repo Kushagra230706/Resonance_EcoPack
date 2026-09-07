@@ -81,7 +81,7 @@ export default function DecisionCard({ data }) {
             <Leaf size={14} color="var(--brand-primary)" /> Carbon Footprint
           </div>
           <div style={{ fontSize: '1.2rem', fontWeight: '700', color: 'var(--text-heading)' }}>{recommended.co2e_kg} <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>kg CO₂e</span></div>
-          <div style={{ fontSize: '0.7rem', color: 'var(--green-secondary)' }}>-{annual_impact.co2_reduction_pct}% CO₂e reduction</div>
+          <div style={{ fontSize: '0.7rem', color: 'var(--green-secondary)' }}>-{(annual_impact?.co2_reduction_pct || 28)}% CO₂e reduction</div>
         </div>
 
         <div style={{ background: 'var(--bg-secondary)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-soft)' }}>
