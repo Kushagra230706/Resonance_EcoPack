@@ -1,60 +1,91 @@
 import React from 'react';
-import { Leaf, Cpu, Sparkles, ShieldCheck, QrCode } from 'lucide-react';
+import { Leaf, Cpu, Sparkles, ShieldCheck, QrCode, ArrowRight } from 'lucide-react';
 
 export default function Navbar({ activeTab, setActiveTab, onOpenCopilot }) {
   return (
-    <header className="glass-panel" style={{ borderRadius: 0, borderTop: 'none', borderLeft: 'none', borderRight: 'none', padding: '16px 32px', marginBottom: '24px', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-soft)' }}>
+    <header style={{
+      background: 'rgba(4, 18, 14, 0.85)',
+      backdropFilter: 'blur(16px)',
+      borderBottom: '1px solid rgba(16, 185, 129, 0.2)',
+      padding: '14px 32px',
+      position: 'sticky',
+      top: 0,
+      zIndex: 100
+    }}>
       <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         
-        {/* Brand Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ background: 'var(--brand-primary)', width: '40px', height: '40px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(6, 78, 59, 0.2)' }}>
-            <Leaf size={24} color="#ffffff" />
+        {/* PackWise Brand Logo */}
+        <div 
+          onClick={() => setActiveTab('optimizer')} 
+          style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
+        >
+          <div style={{
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            width: '38px',
+            height: '38px',
+            borderRadius: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 0 15px rgba(16, 185, 129, 0.4)'
+          }}>
+            <Leaf size={22} color="#ffffff" />
           </div>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <h1 style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--text-heading)' }}>
-                Resonance <span style={{ color: 'var(--brand-primary)' }}>EcoPack</span>
-              </h1>
-              <span className="badge-green">Decision Intelligence</span>
-            </div>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Multi-Objective Packaging Optimization & Carbon-Cost Balancing</p>
+            <h1 style={{ fontSize: '1.35rem', fontWeight: '900', color: '#FFFFFF', letterSpacing: '-0.02em', fontFamily: 'Outfit, sans-serif' }}>
+              PackWise
+            </h1>
+            <span style={{ fontSize: '0.65rem', color: '#34d399', fontWeight: '700', letterSpacing: '0.5px' }}>
+              SUSTAINABLE PACKAGING AI
+            </span>
           </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <div style={{ display: 'flex', gap: '8px', background: 'var(--bg-main)', padding: '4px', borderRadius: '12px', border: '1px solid var(--border-soft)' }}>
+        {/* Center Links */}
+        <div style={{ display: 'flex', gap: '24px', fontSize: '0.9rem', color: '#a7f3d0', fontWeight: '500' }}>
           <button 
-            onClick={() => setActiveTab('optimizer')}
-            className={activeTab === 'optimizer' ? 'btn-primary' : 'btn-secondary'}
-            style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+            onClick={() => setActiveTab('optimizer')} 
+            style={{ background: 'none', border: 'none', color: activeTab === 'optimizer' ? '#34d399' : '#a7f3d0', fontWeight: activeTab === 'optimizer' ? '700' : '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
           >
-            <Cpu size={16} /> Packaging Optimizer
+            <Cpu size={15} /> Optimizer
           </button>
           <button 
-            onClick={() => setActiveTab('claims')}
-            className={activeTab === 'claims' ? 'btn-primary' : 'btn-secondary'}
-            style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+            onClick={() => setActiveTab('claims')} 
+            style={{ background: 'none', border: 'none', color: activeTab === 'claims' ? '#34d399' : '#a7f3d0', fontWeight: activeTab === 'claims' ? '700' : '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
           >
-            <ShieldCheck size={16} /> Green Claims Checker
+            <ShieldCheck size={15} /> Green Claims
           </button>
           <button 
-            onClick={() => setActiveTab('disposal')}
-            className={activeTab === 'disposal' ? 'btn-primary' : 'btn-secondary'}
-            style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+            onClick={() => setActiveTab('disposal')} 
+            style={{ background: 'none', border: 'none', color: activeTab === 'disposal' ? '#34d399' : '#a7f3d0', fontWeight: activeTab === 'disposal' ? '700' : '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
           >
-            <QrCode size={16} /> QR Disposal Guide
+            <QrCode size={15} /> QR Disposal
           </button>
         </div>
 
-        {/* Action Buttons */}
-        <div style={{ display: 'flex', gap: '12px' }}>
+        {/* Right CTA Button */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <button 
             onClick={onOpenCopilot} 
-            className="btn-secondary" 
-            style={{ borderColor: 'var(--brand-primary)', background: 'var(--bg-card-highlight)', color: 'var(--brand-primary)' }}
+            style={{ background: 'none', border: 'none', color: '#6ee7b7', fontSize: '0.85rem', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
           >
-            <Sparkles size={16} /> Packaging Copilot
+            <Sparkles size={15} color="#34d399" /> AI Copilot
+          </button>
+          
+          <button 
+            onClick={() => setActiveTab('optimizer')}
+            className="btn-primary" 
+            style={{
+              padding: '8px 20px',
+              fontSize: '0.85rem',
+              borderRadius: '9999px',
+              background: '#34d399',
+              color: '#04120e',
+              fontWeight: '700',
+              boxShadow: '0 0 15px rgba(52, 211, 153, 0.4)'
+            }}
+          >
+            Try PackWise <ArrowRight size={14} />
           </button>
         </div>
 
