@@ -156,6 +156,9 @@ h1, h2, h3, h4, h5, h6 {
   flex-direction: column;
   gap: 6px;
   margin-bottom: 14px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .form-group label {
@@ -165,6 +168,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .form-input, .form-select {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   background: var(--bg-secondary);
   border: 1px solid var(--border-soft);
   color: var(--text-body);

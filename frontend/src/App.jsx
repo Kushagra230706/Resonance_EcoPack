@@ -199,7 +199,7 @@ export default function App() {
                   </select>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', minWidth: 0 }}>
                   <div className="form-group">
                     <label>L (cm)</label>
                     <input type="number" className="form-input" value={formData.length_cm} onChange={e => setFormData({ ...formData, length_cm: parseFloat(e.target.value) || 0 })} />
@@ -214,7 +214,7 @@ export default function App() {
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', minWidth: 0 }}>
                   <div className="form-group">
                     <label>Weight (g)</label>
                     <input type="number" className="form-input" value={formData.weight_g} onChange={e => setFormData({ ...formData, weight_g: parseFloat(e.target.value) || 0 })} />
