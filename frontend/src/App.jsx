@@ -524,7 +524,7 @@ export default function App() {
               <ComparisonDashboard data={results} />
               
               {/* Circular Reuse / Refill Break-Even Calculator */}
-              <ReuseBreakEvenCalculator />
+              <ReuseBreakEvenCalculator data={results} />
             </div>
 
           </div>
