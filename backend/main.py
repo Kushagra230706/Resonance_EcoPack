@@ -49,6 +49,9 @@ class OptimizationRequest(BaseModel):
     product_value_usd: float = 35.0
     shipping_region: str = "GLOBAL"
     shipping_distance_km: float = 500.0
+    shipping_mode: str = "road"
+    branding_preference: str = "standard"
+    budget_limit_usd: float = 5.0
     user_weights: Optional[Dict[str, float]] = None
 
 
@@ -88,6 +91,9 @@ def run_optimization(req: OptimizationRequest):
             product_value_usd=req.product_value_usd,
             shipping_region=req.shipping_region,
             shipping_distance_km=req.shipping_distance_km,
+            shipping_mode=req.shipping_mode,
+            branding_preference=req.branding_preference,
+            budget_limit_usd=req.budget_limit_usd,
             user_weights=req.user_weights
         )
         return results

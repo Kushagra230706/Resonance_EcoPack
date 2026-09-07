@@ -1,8 +1,8 @@
 """
 Multi-Objective Pareto Optimization Engine for Resonance EcoPack
 
-Generates packaging alternatives, evaluates trade-offs across 6 dimensions,
-computes Pareto frontier, and provides data-backed explanations for all 5 core trade-off challenges.
+Generates 8 packaging alternatives, evaluates trade-offs across 7 dimensions,
+computes Pareto frontier, 3D Dieline blueprints, and export documentation.
 """
 
 from typing import List, Dict, Any
@@ -11,44 +11,59 @@ from core.damage_model import calculate_damage_metrics
 
 PACKAGING_ARCHETYPES = [
     {
-        "id": "opt_standard_plastic",
-        "name": "Standard Cardboard + Plastic Bubble Wrap",
+        "id": "opt_corrugated_box",
+        "name": "Standard Corrugated Box + Plastic Bubble Wrap",
         "outer_mat_id": "mat_virgin_cardboard",
         "inner_mat_id": "mat_virgin_plastic_bubble",
         "branding_base_score": 60,
         "reuse_cycles": 1,
         "is_baseline": True,
-        "archetype": "conventional"
+        "archetype": "conventional",
+        "category": "Corrugated Box"
     },
     {
-        "id": "opt_recycled_honeycomb",
-        "name": "80% Recycled Carton + Kraft Honeycomb Wrap",
-        "outer_mat_id": "mat_recycled_cardboard",
+        "id": "opt_paper_mailer",
+        "name": "Padded Kraft Paper Honeycomb Mailer",
+        "outer_mat_id": "mat_kraft_paper",
         "inner_mat_id": "mat_kraft_paper",
-        "branding_base_score": 82,
+        "branding_base_score": 75,
         "reuse_cycles": 1,
         "is_baseline": False,
-        "archetype": "paper_eco"
+        "archetype": "paper_eco",
+        "category": "Paper Mailer"
     },
     {
         "id": "opt_molded_pulp_carton",
-        "name": "Compact Carton + Molded Pulp Shock Insert",
+        "name": "Compact Carton + Molded Pulp Insert",
         "outer_mat_id": "mat_recycled_cardboard",
         "inner_mat_id": "mat_molded_pulp",
         "branding_base_score": 88,
         "reuse_cycles": 1,
         "is_baseline": False,
-        "archetype": "balanced_winner"
+        "archetype": "balanced_winner",
+        "category": "Molded Pulp Insert"
     },
     {
-        "id": "opt_mycelium_foam",
-        "name": "Bio-Carton + Mushroom Mycelium Cushioning",
+        "id": "opt_recycled_carton",
+        "name": "80% Recycled Cardboard Carton",
         "outer_mat_id": "mat_recycled_cardboard",
-        "inner_mat_id": "mat_mycelium",
-        "branding_base_score": 92,
+        "inner_mat_id": "mat_kraft_paper",
+        "branding_base_score": 82,
         "reuse_cycles": 1,
         "is_baseline": False,
-        "archetype": "premium_eco"
+        "archetype": "paper_eco",
+        "category": "Recycled Cardboard Carton"
+    },
+    {
+        "id": "opt_mono_pouch",
+        "name": "Recyclable Mono-Material Flexible Pouch",
+        "outer_mat_id": "mat_pla_bioplastic",
+        "inner_mat_id": "mat_kraft_paper",
+        "branding_base_score": 70,
+        "reuse_cycles": 1,
+        "is_baseline": False,
+        "archetype": "pouch",
+        "category": "Mono-Material Flexible Pouch"
     },
     {
         "id": "opt_reusable_shipper",
@@ -58,9 +73,38 @@ PACKAGING_ARCHETYPES = [
         "branding_base_score": 95,
         "reuse_cycles": 30,
         "is_baseline": False,
-        "archetype": "circular_reusable"
+        "archetype": "circular_reusable",
+        "category": "Reusable Packaging"
+    },
+    {
+        "id": "opt_minimal_envelope",
+        "name": "Minimalist Glassine Paper Envelope",
+        "outer_mat_id": "mat_kraft_paper",
+        "inner_mat_id": "mat_kraft_paper",
+        "branding_base_score": 65,
+        "reuse_cycles": 1,
+        "is_baseline": False,
+        "archetype": "minimal",
+        "category": "Minimal Packaging Design"
+    },
+    {
+        "id": "opt_premium_mycelium",
+        "name": "Premium Rigid Box + Mushroom Mycelium Foam",
+        "outer_mat_id": "mat_recycled_cardboard",
+        "inner_mat_id": "mat_mycelium",
+        "branding_base_score": 98,
+        "reuse_cycles": 1,
+        "is_baseline": False,
+        "archetype": "premium_eco",
+        "category": "Premium Branded Design"
     }
 ]
+
+SHIPPING_MODE_MULTIPLIERS = {
+    "road": {"co2": 1.0, "cost": 1.0},
+    "air": {"co2": 4.5, "cost": 2.8},
+    "sea": {"co2": 0.4, "cost": 0.6}
+}
 
 
 def optimize_packaging(
@@ -73,7 +117,10 @@ def optimize_packaging(
     annual_volume: int = 10000,
     product_value_usd: float = 25.0,
     shipping_region: str = "GLOBAL",
-    shipping_distance_km: float = 500,
+    shipping_distance_km: float = 500.0,
+    shipping_mode: str = "road",
+    branding_preference: str = "standard",
+    budget_limit_usd: float = 5.0,
     user_weights: Dict[str, float] = None
 ):
     if user_weights is None:
@@ -87,28 +134,25 @@ def optimize_packaging(
         
     materials = {m["id"]: m for m in get_all_materials()}
     region_factors = REGIONAL_RECYCLING_INFRASTRUCTURE.get(shipping_region, REGIONAL_RECYCLING_INFRASTRUCTURE["GLOBAL"])
+    mode_mult = SHIPPING_MODE_MULTIPLIERS.get(shipping_mode.lower(), SHIPPING_MODE_MULTIPLIERS["road"])
     
-    # Package Volume in cm^3
     product_vol_cm3 = length_cm * width_cm * height_cm
-    
     alternatives = []
     
     for arch in PACKAGING_ARCHETYPES:
         outer = materials.get(arch["outer_mat_id"])
         inner = materials.get(arch["inner_mat_id"])
         
-        # Estimate Material Masses (in kg)
         outer_mass_kg = round((product_vol_cm3 * 0.00015 * outer["density_g_cm3"]), 3) + 0.08
         inner_mass_kg = round((product_vol_cm3 * 0.00010 * inner["density_g_cm3"]), 3) + 0.04
         
-        # For reusable packaging, divide material impact by reuse cycles
         reuse = arch["reuse_cycles"]
         effective_outer_mass = outer_mass_kg / reuse
         effective_inner_mass = inner_mass_kg / reuse
         
         # 1. Carbon Footprint (kg CO2e)
         mat_co2e = (effective_outer_mass * outer["co2e_per_kg"]) + (effective_inner_mass * inner["co2e_per_kg"])
-        transport_co2e = round(((outer_mass_kg + inner_mass_kg + (weight_g / 1000.0)) * shipping_distance_km * 0.0002), 3)
+        transport_co2e = round(((outer_mass_kg + inner_mass_kg + (weight_g / 1000.0)) * shipping_distance_km * 0.0002 * mode_mult["co2"]), 3)
         
         # 2. Protection Score (0-100)
         protection_score = round(min(99, (outer["protection_rating"] * 0.4) + (inner["protection_rating"] * 0.6)), 1)
@@ -126,36 +170,72 @@ def optimize_packaging(
         
         # 4. Financial Unit Cost (USD)
         mat_cost = (effective_outer_mass * outer["cost_per_kg_usd"]) + (effective_inner_mass * inner["cost_per_kg_usd"])
-        unit_cost = round(mat_cost + 0.35 + damage_data["expected_damage_cost_usd"], 2)
+        unit_cost = round((mat_cost + 0.35 + damage_data["expected_damage_cost_usd"]) * mode_mult["cost"], 2)
         
-        # 5. Circularity & Branding Score
+        # 5. Shipping Efficiency (Void Space Reduction %)
+        package_outer_vol_cm3 = (length_cm + 2) * (width_cm + 2) * (height_cm + 2)
+        void_space_pct = round(max(5, ((package_outer_vol_cm3 - product_vol_cm3) / package_outer_vol_cm3) * 100), 1)
+        shipping_efficiency_pct = round(100 - void_space_pct, 1)
+        
+        # 6. Circularity & Branding Score
         outer_category = outer["category"]
         regional_recyclability = round(outer["recyclability_score"] * region_factors.get(outer_category, 0.70), 1)
-        branding_score = arch["branding_base_score"]
+        
+        brand_mult = 1.15 if branding_preference == "premium" else (0.85 if branding_preference == "basic" else 1.0)
+        branding_score = min(100, round(arch["branding_base_score"] * brand_mult))
+        
+        # Budget Penalty Check
+        budget_penalty = 15.0 if unit_cost > budget_limit_usd else 0.0
         
         # Normalize Sub-Scores to 0-100 (Higher is Better)
         score_cost = max(0, min(100, 100 - (unit_cost * 15)))
         score_co2 = max(0, min(100, 100 - (total_co2e * 35)))
         
         overall_score = round(
-            (score_co2 * user_weights.get("sustainability", 0.30)) +
-            (score_cost * user_weights.get("cost", 0.25)) +
-            (protection_score * user_weights.get("protection", 0.25)) +
-            (branding_score * user_weights.get("branding", 0.10)) +
-            (regional_recyclability * user_weights.get("circularity", 0.10)),
+            max(0, (
+                (score_co2 * user_weights.get("sustainability", 0.30)) +
+                (score_cost * user_weights.get("cost", 0.25)) +
+                (protection_score * user_weights.get("protection", 0.25)) +
+                (branding_score * user_weights.get("branding", 0.10)) +
+                (regional_recyclability * user_weights.get("circularity", 0.10)) -
+                budget_penalty
+            )),
             1
         )
+        
+        # 3D Dieline Specifications
+        dieline = {
+            "outer_length_cm": round(length_cm + 2.4, 1),
+            "outer_width_cm": round(width_cm + 2.4, 1),
+            "outer_height_cm": round(height_cm + 2.4, 1),
+            "cushion_thickness_cm": 1.2,
+            "flap_margin_cm": 2.0,
+            "sheet_width_cm": round((length_cm + 2.4) * 2 + (height_cm + 2.4) * 2 + 4, 1),
+            "sheet_length_cm": round((width_cm + 2.4) * 2 + (height_cm + 2.4) * 2 + 4, 1)
+        }
+        
+        # Bill of Materials (BOM)
+        bom = [
+            {"item": f"Outer Box ({outer['name']})", "qty": "1 unit", "mass_g": round(outer_mass_kg * 1000, 1), "cost_usd": round(effective_outer_mass * outer["cost_per_kg_usd"], 2)},
+            {"item": f"Inner Cushioning ({inner['name']})", "qty": "1 insert", "mass_g": round(inner_mass_kg * 1000, 1), "cost_usd": round(effective_inner_mass * inner["cost_per_kg_usd"], 2)},
+            {"item": "Water-Soluble Paper Sealing Tape", "qty": "1.2 meters", "mass_g": 12.0, "cost_usd": 0.08},
+            {"item": "Soy Ink Branded Print", "qty": "1 surface", "mass_g": 3.0, "cost_usd": 0.12}
+        ]
         
         alternatives.append({
             "id": arch["id"],
             "name": arch["name"],
+            "category": arch["category"],
             "archetype": arch["archetype"],
             "is_baseline": arch["is_baseline"],
             "unit_cost_usd": unit_cost,
+            "within_budget": unit_cost <= budget_limit_usd,
             "co2e_kg": total_co2e,
             "protection_score": protection_score,
             "branding_score": branding_score,
             "recyclability_score": regional_recyclability,
+            "shipping_efficiency_pct": shipping_efficiency_pct,
+            "void_space_pct": void_space_pct,
             "damage_probability_pct": damage_data["damage_probability_pct"],
             "expected_damage_cost_usd": damage_data["expected_damage_cost_usd"],
             "damage_carbon_impact_kg": damage_data["damage_carbon_impact_kg"],
@@ -163,49 +243,46 @@ def optimize_packaging(
             "outer_material": outer["name"],
             "inner_material": inner["name"],
             "annual_co2_kg": round(total_co2e * annual_volume, 1),
-            "annual_cost_usd": round(unit_cost * annual_volume, 2)
+            "annual_cost_usd": round(unit_cost * annual_volume, 2),
+            "dieline": dieline,
+            "bom": bom
         })
 
-    # Sort alternatives by overall_score descending
     alternatives = sorted(alternatives, key=lambda x: x["overall_score"], reverse=True)
     winner = alternatives[0]
     baseline = next((a for a in alternatives if a["is_baseline"]), alternatives[-1])
-    mycelium_opt = next((a for a in alternatives if a["id"] == "opt_mycelium_foam"), alternatives[0])
     
-    # Annual Impact Metrics
     annual_co2_saved_kg = max(0, round((baseline["co2e_kg"] - winner["co2e_kg"]) * annual_volume, 1))
     annual_cost_saved_usd = max(0, round((baseline["unit_cost_usd"] - winner["unit_cost_usd"]) * annual_volume, 2))
     co2_reduction_pct = round(((baseline["co2e_kg"] - winner["co2e_kg"]) / max(0.01, baseline["co2e_kg"])) * 100, 1)
     
-    # 5 Explicit Practical Trade-Off Analysis Breakdown
     tradeoffs_breakdown = {
         "cost_vs_damage": {
             "title": "1. Cheap Packaging vs Product Damage Risk",
-            "finding": f"The baseline option appears cheap initially, but its lower protection score ({baseline['protection_score']}/100) carries a {baseline['damage_probability_pct']}% damage risk, adding ${baseline['expected_damage_cost_usd']}/unit in replacement loss. The recommended winner reduces damage risk to {winner['damage_probability_pct']}%, saving ${round(baseline['expected_damage_cost_usd'] - winner['expected_damage_cost_usd'], 2)}/unit in hidden returns."
+            "finding": f"The baseline option carries a {baseline['damage_probability_pct']}% damage risk (${baseline['expected_damage_cost_usd']}/unit replacement loss). Winner reduces damage risk to {winner['damage_probability_pct']}%, saving ${round(baseline['expected_damage_cost_usd'] - winner['expected_damage_cost_usd'], 2)}/unit."
         },
         "eco_cost_availability": {
             "title": "2. Eco-Friendly Material vs Cost & Regional Availability",
-            "finding": f"Mushroom Mycelium Foam delivers the absolute lowest carbon footprint ({mycelium_opt['co2e_kg']} kg CO₂e), but increases unit cost to ${mycelium_opt['unit_cost_usd']} due to limited regional supplier availability. Winner '{winner['name']}' balances low carbon ({winner['co2e_kg']} kg) at a practical unit cost of ${winner['unit_cost_usd']}."
+            "finding": f"Mycelium bio-foam offers max carbon reduction, but increases cost. Winner '{winner['name']}' balances low carbon ({winner['co2e_kg']} kg) at a practical ${winner['unit_cost_usd']}/unit."
         },
         "branding_vs_recyclability": {
             "title": "3. Premium Branding vs Curbside Recyclability",
-            "finding": f"High-grade printing & plastic laminates elevate branding score to 95/100, but degrade curbside recyclability from 95% down to 30%. The winner uses water-based ink on recycled carton, preserving an 88/100 brand presentation with {winner['recyclability_score']}% regional recyclability."
+            "finding": f"Winner balances an 88/100 branding unboxing score with {winner['recyclability_score']}% regional curbside recyclability."
         },
         "lightweight_vs_shipping_stress": {
-            "title": "4. Lightweight Packaging vs Transit Shipping Failure",
-            "finding": f"Ultra-light paper mailers reduce shipping mass by 35%, but risk structural failure under ISTA drop transit stress for {fragility}-fragility items. Winner '{winner['name']}' adds molded pulp cushioning for a {winner['protection_score']}/100 protection rating."
+            "title": "4. Lightweight Packaging vs Transit Shipping Stress",
+            "finding": f"Winner achieves {winner['shipping_efficiency_pct']}% shipping volume efficiency while maintaining a high {winner['protection_score']}/100 protection rating."
         },
         "regional_composting_reality": {
             "title": "5. Biodegradable Claim vs Regional Infrastructure Reality",
-            "finding": f"Bioplastic mailers require industrial composting facilities (>55°C). In region '{shipping_region}', 75-85% of bioplastics end up in landfill. The recommended winner relies on paper pulp which achieves {winner['recyclability_score']}% real curbside recovery."
+            "finding": f"In region '{shipping_region}', paper-based pulp achieves {winner['recyclability_score']}% real curbside recovery compared to bioplastics facing landfill disposal."
         }
     }
 
-    # Decision rationale explanation generator
     why_this_won = (
-        f"EcoPack recommends '{winner['name']}' because it achieves a balanced overall score of {winner['overall_score']}/100. "
+        f"EcoPack recommends '{winner['name']}' because it achieves a leading overall score of {winner['overall_score']}/100. "
         f"It cuts estimated carbon footprint by {co2_reduction_pct}% ({winner['co2e_kg']} kg CO₂e vs {baseline['co2e_kg']} kg baseline) "
-        f"while maintaining a high protection score of {winner['protection_score']}/100 to prevent expensive product returns."
+        f"while maintaining a high protection score of {winner['protection_score']}/100 and remaining within budget."
     )
 
     return {

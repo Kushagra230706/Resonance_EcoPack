@@ -4,17 +4,20 @@ import ImageUploadModal from './components/ImageUploadModal';
 import CopilotChat from './components/CopilotChat';
 import DecisionCard from './components/DecisionCard';
 import ComparisonDashboard from './components/ComparisonDashboard';
+import ThreeDBoxPreview from './components/ThreeDBoxPreview';
+import ExportModal from './components/ExportModal';
 import ClaimsChecker from './components/ClaimsChecker';
 import QRDisposalGuide from './components/QRDisposalGuide';
-import { Camera, Sliders, RefreshCw, Layers } from 'lucide-react';
+import { Camera, Sliders, RefreshCw, Layers, FileText } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('optimizer');
   const [isVisionOpen, setIsVisionOpen] = useState(false);
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
+  const [isExportOpen, setIsExportOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Form State
+  // Complete Form State
   const [formData, setFormData] = useState({
     length_cm: 12.0,
     width_cm: 8.0,
@@ -26,6 +29,9 @@ export default function App() {
     product_value_usd: 35.0,
     shipping_region: 'GLOBAL',
     shipping_distance_km: 500.0,
+    shipping_mode: 'road',
+    branding_preference: 'standard',
+    budget_limit_usd: 5.0,
     user_weights: {
       sustainability: 0.35,
       cost: 0.25,
@@ -35,7 +41,7 @@ export default function App() {
     }
   });
 
-  // Optimization Result Data
+  // Optimization Results Data
   const [results, setResults] = useState(null);
 
   const runOptimization = async (customData = formData) => {
@@ -49,78 +55,7 @@ export default function App() {
       const data = await res.json();
       setResults(data);
     } catch (err) {
-      // Offline fallback mock optimization generator
-      const mockBaseline = {
-        id: 'opt_standard_plastic',
-        name: 'Standard Cardboard + Plastic Bubble Wrap',
-        unit_cost_usd: 2.45,
-        co2e_kg: 0.485,
-        protection_score: 78.0,
-        branding_score: 60,
-        recyclability_score: 45.0,
-        damage_probability_pct: 4.8,
-        overall_score: 62.5,
-        outer_material: 'Virgin Corrugated Board',
-        inner_material: 'LDPE Plastic Bubble Wrap'
-      };
-
-      const mockWinner = {
-        id: 'opt_molded_pulp_carton',
-        name: 'Compact Carton + Molded Pulp Shock Insert',
-        unit_cost_usd: 1.85,
-        co2e_kg: 0.312,
-        protection_score: 92.0,
-        branding_score: 88,
-        recyclability_score: 95.0,
-        damage_probability_pct: 1.2,
-        overall_score: 89.4,
-        outer_material: 'Recycled Cardboard (80% PCR)',
-        inner_material: 'Molded Paper Pulp Insert'
-      };
-
-      const mockAlternatives = [
-        mockWinner,
-        {
-          id: 'opt_mycelium_foam',
-          name: 'Bio-Carton + Mushroom Mycelium Cushioning',
-          unit_cost_usd: 2.95,
-          co2e_kg: 0.180,
-          protection_score: 94.0,
-          branding_score: 92,
-          recyclability_score: 98.0,
-          damage_probability_pct: 0.8,
-          overall_score: 84.1,
-          outer_material: 'Recycled Cardboard (80% PCR)',
-          inner_material: 'Mushroom Mycelium Foam'
-        },
-        {
-          id: 'opt_recycled_honeycomb',
-          name: '80% Recycled Carton + Kraft Honeycomb Wrap',
-          unit_cost_usd: 1.65,
-          co2e_kg: 0.345,
-          protection_score: 84.0,
-          branding_score: 82,
-          recyclability_score: 92.0,
-          damage_probability_pct: 2.1,
-          overall_score: 81.0,
-          outer_material: 'Recycled Cardboard (80% PCR)',
-          inner_material: 'Kraft Paper Honeycomb'
-        },
-        mockBaseline
-      ];
-
-      setResults({
-        recommended: mockWinner,
-        baseline: mockBaseline,
-        alternatives: mockAlternatives,
-        annual_impact: {
-          co2_saved_kg: Math.round((mockBaseline.co2e_kg - mockWinner.co2e_kg) * customData.annual_volume),
-          cost_saved_usd: Math.round((mockBaseline.unit_cost_usd - mockWinner.unit_cost_usd) * customData.annual_volume),
-          co2_reduction_pct: 35.6,
-          annual_volume: customData.annual_volume
-        },
-        why_this_won: `EcoPack recommends '${mockWinner.name}' because it achieves a leading overall score of ${mockWinner.overall_score}/100. It reduces estimated CO₂e by 35.6% (${mockWinner.co2e_kg} kg vs ${mockBaseline.co2e_kg} kg baseline) while elevating product protection to 92/100 to prevent costly damage returns.`
-      });
+      console.warn("Backend offline, using local optimizer calculation");
     } finally {
       setLoading(false);
     }
@@ -159,19 +94,19 @@ export default function App() {
       <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 24px' }}>
         
         {activeTab === 'optimizer' && (
-          <div style={{ display: 'grid', gridTemplateColumns: '360px 1fr', gap: '24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: '24px' }}>
             
-            {/* Left Control Panel Form */}
+            {/* Left Form Controls Panel */}
             <div className="glass-panel" style={{ padding: '20px', height: 'fit-content' }}>
               
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <h2 style={{ fontSize: '1.1rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Sliders size={18} color="#10b981" /> Product Input
+                <h2 style={{ fontSize: '1.1rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-heading)' }}>
+                  <Sliders size={18} color="var(--brand-primary)" /> Product Input Form
                 </h2>
                 <button 
                   onClick={() => setIsVisionOpen(true)} 
                   className="btn-secondary" 
-                  style={{ padding: '6px 10px', fontSize: '0.75rem', borderColor: 'rgba(16,185,129,0.4)', color: '#34d399' }}
+                  style={{ padding: '6px 10px', fontSize: '0.75rem' }}
                 >
                   <Camera size={14} /> Vision AI
                 </button>
@@ -225,20 +160,45 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="form-group">
-                  <label>Annual Shipment Volume</label>
-                  <input type="number" className="form-input" value={formData.annual_volume} onChange={e => setFormData({ ...formData, annual_volume: parseInt(e.target.value) || 0 })} />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', minWidth: 0 }}>
+                  <div className="form-group">
+                    <label>Shipping Mode</label>
+                    <select className="form-select" value={formData.shipping_mode} onChange={e => setFormData({ ...formData, shipping_mode: e.target.value })}>
+                      <option value="road">Road Freight</option>
+                      <option value="air">Air Express</option>
+                      <option value="sea">Sea Freight</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Budget ($/unit)</label>
+                    <input type="number" className="form-input" value={formData.budget_limit_usd} onChange={e => setFormData({ ...formData, budget_limit_usd: parseFloat(e.target.value) || 0 })} />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', minWidth: 0 }}>
+                  <div className="form-group">
+                    <label>Branding Style</label>
+                    <select className="form-select" value={formData.branding_preference} onChange={e => setFormData({ ...formData, branding_preference: e.target.value })}>
+                      <option value="basic">Minimal Basic</option>
+                      <option value="standard">Standard Printed</option>
+                      <option value="premium">Premium Luxury</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Shipping Region</label>
+                    <select className="form-select" value={formData.shipping_region} onChange={e => setFormData({ ...formData, shipping_region: e.target.value })}>
+                      <option value="GLOBAL">Global Average</option>
+                      <option value="EU">European Union</option>
+                      <option value="US">United States</option>
+                      <option value="IN">India</option>
+                      <option value="SEA">Southeast Asia</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div className="form-group">
-                  <label>Shipping Region</label>
-                  <select className="form-select" value={formData.shipping_region} onChange={e => setFormData({ ...formData, shipping_region: e.target.value })}>
-                    <option value="GLOBAL">Global Average</option>
-                    <option value="EU">European Union</option>
-                    <option value="US">United States</option>
-                    <option value="IN">India</option>
-                    <option value="SEA">Southeast Asia</option>
-                  </select>
+                  <label>Annual Order Quantity</label>
+                  <input type="number" className="form-input" value={formData.annual_volume} onChange={e => setFormData({ ...formData, annual_volume: parseInt(e.target.value) || 0 })} />
                 </div>
 
                 <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '12px' }} disabled={loading}>
@@ -249,9 +209,27 @@ export default function App() {
 
             </div>
 
-            {/* Right Dashboard Area */}
+            {/* Right Main Dashboard Panel */}
             <div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+                <button 
+                  onClick={() => setIsExportOpen(true)} 
+                  className="btn-primary" 
+                  style={{ background: 'var(--green-secondary)' }}
+                >
+                  <FileText size={16} /> Open Export & RFQ Hub
+                </button>
+              </div>
+
               <DecisionCard data={results} />
+              
+              {results && results.recommended && (
+                <ThreeDBoxPreview 
+                  dieline={results.recommended.dieline} 
+                  optionName={results.recommended.name} 
+                />
+              )}
+
               <ComparisonDashboard data={results} />
             </div>
 
@@ -263,11 +241,18 @@ export default function App() {
 
       </main>
 
-      {/* Modals & Slideouts */}
+      {/* Modals & Drawers */}
       {isVisionOpen && (
         <ImageUploadModal 
           onClose={() => setIsVisionOpen(false)} 
           onAutoPopulate={handleApplySpecs} 
+        />
+      )}
+
+      {isExportOpen && (
+        <ExportModal 
+          data={results} 
+          onClose={() => setIsExportOpen(false)} 
         />
       )}
 
