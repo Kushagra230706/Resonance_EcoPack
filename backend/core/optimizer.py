@@ -152,7 +152,7 @@ def optimize_packaging(
         inner_mass_kg = round((product_vol_cm3 * 0.00010 * inner["density_g_cm3"]), 3) + 0.04
         total_mass_kg = round(outer_mass_kg + inner_mass_kg, 3)
         
-        reuse = arch["reuse_cycles"]
+        reuse = arch["reuse_cycles"] if sustainability_goal == "reusable" else (3 if arch["archetype"] == "circular_reusable" else 1)
         effective_outer_mass = outer_mass_kg / reuse
         effective_inner_mass = inner_mass_kg / reuse
         
@@ -228,20 +228,57 @@ def optimize_packaging(
         regional_recyclability = round(outer["recyclability_score"] * region_factors.get(outer_category, 0.70), 1)
         shipping_efficiency_pct = round(100 - void_space_pct, 1)
         
-        # Budget Penalty Check
-        budget_penalty = 15.0 if unit_cost > budget_limit_usd else 0.0
-        
-        # Normalize Sub-Scores to 0-100
-        score_cost = max(0, min(100, 100 - (unit_cost * 15)))
-        score_co2 = max(0, min(100, 100 - (total_co2e * 35)))
-        
+        score_co2 = max(0.0, 100.0 - (total_co2e * 50.0))
+        score_cost = max(0.0, 100.0 - (unit_cost * 12.0))
+        budget_penalty = 30.0 if unit_cost > budget_limit_usd else 0.0
+
+        # Category & Sustainability Goal Synergy Modifiers
+        category_bonus = 0.0
+        if product_type == "apparel":
+            if arch["archetype"] in ["paper_eco", "pouch", "minimal"]:
+                category_bonus += 25.0
+            elif arch["archetype"] in ["conventional", "circular_reusable", "premium_eco"]:
+                category_bonus -= 15.0
+        elif product_type in ["fragile_glass", "electronics"]:
+            if arch["archetype"] in ["balanced_winner", "premium_eco"]:
+                category_bonus += 25.0
+            elif arch["archetype"] in ["minimal", "pouch"]:
+                category_bonus -= 25.0
+            
+        goal_bonus = 0.0
+        if sustainability_goal == "compostable":
+            if outer.get("compostability") in ["home", "industrial"] or inner.get("compostability") in ["home", "industrial"]:
+                goal_bonus += 30.0
+            if outer.get("category") == "plastic" or inner.get("category") == "plastic":
+                goal_bonus -= 30.0
+        elif sustainability_goal == "lowest_carbon":
+            if arch["archetype"] in ["paper_eco", "minimal"]:
+                goal_bonus += 30.0
+            elif arch["archetype"] in ["premium_eco", "conventional"]:
+                goal_bonus -= 15.0
+        elif sustainability_goal == "lowest_plastic":
+            if outer.get("category") != "plastic" and inner.get("category") != "plastic":
+                goal_bonus += 30.0
+            else:
+                goal_bonus -= 35.0
+        elif sustainability_goal == "reusable":
+            if arch["archetype"] == "circular_reusable":
+                goal_bonus += 40.0
+            else:
+                goal_bonus -= 15.0
+        elif sustainability_goal == "recyclable":
+            if outer.get("recyclability_score", 0) >= 90:
+                goal_bonus += 20.0
+
         overall_score = round(
             max(0, (
                 (score_co2 * user_weights.get("sustainability", 0.30)) +
                 (score_cost * user_weights.get("cost", 0.25)) +
                 (protection_score * user_weights.get("protection", 0.25)) +
                 (branding_score * user_weights.get("branding", 0.10)) +
-                (regional_recyclability * user_weights.get("circularity", 0.10)) -
+                (regional_recyclability * user_weights.get("circularity", 0.10)) +
+                category_bonus +
+                goal_bonus -
                 budget_penalty
             )),
             1

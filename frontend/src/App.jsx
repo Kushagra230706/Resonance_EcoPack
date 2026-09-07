@@ -78,10 +78,15 @@ export default function App() {
     }
 
     // High-Precision Client-Side Optimization Engine (Executes seamlessly when backend is not running)
-    const vol_cm3 = customData.length_cm * customData.width_cm * customData.height_cm;
+    const vol_cm3 = (customData.length_cm || 12) * (customData.width_cm || 8) * (customData.height_cm || 6);
     const annualVol = customData.annual_volume || 10000;
-    
-    const alternatives = [
+    const prodVal = customData.product_value_usd || 35;
+    const fragilityMult = customData.fragility === 'very_high' ? 1.8 : (customData.fragility === 'high' ? 1.4 : (customData.fragility === 'medium' ? 1.0 : 0.6));
+    const isApparel = customData.product_type === 'apparel';
+    const isCompostableGoal = customData.sustainability_goal === 'compostable';
+    const isReusableGoal = customData.sustainability_goal === 'reusable';
+
+    let alternatives = [
       {
         id: "opt_molded_pulp_carton",
         name: "Compact Carton + Molded Pulp Insert",
@@ -90,19 +95,19 @@ export default function App() {
         pareto_archetype: "Balanced",
         verdict: "Recommended",
         is_baseline: false,
-        unit_cost_usd: 0.85,
-        co2e_kg: 0.18,
-        material_mass_kg: 0.18,
+        unit_cost_usd: Math.round((0.65 + (vol_cm3 * 0.0003)) * 100) / 100,
+        co2e_kg: Math.round((0.14 + (vol_cm3 * 0.00008)) * 1000) / 1000,
+        material_mass_kg: Math.round((0.12 + (vol_cm3 * 0.00006)) * 1000) / 1000,
         outer_dimensions_cm: `${(customData.length_cm + 2.4).toFixed(1)} x ${(customData.width_cm + 2.4).toFixed(1)} x ${(customData.height_cm + 2.4).toFixed(1)}`,
         protection_score: 94,
         branding_score: 82,
         recyclability_score: 96,
         shipping_efficiency_pct: 95.9,
         void_space_pct: 4.1,
-        damage_probability_pct: 1.2,
-        expected_damage_cost_usd: 0.42,
+        damage_probability_pct: Math.round(1.2 * fragilityMult * 10) / 10,
+        expected_damage_cost_usd: Math.round(prodVal * 0.012 * fragilityMult * 100) / 100,
         damage_carbon_impact_kg: 0.04,
-        overall_score: 91.4,
+        overall_score: (isApparel || isCompostableGoal || isReusableGoal) ? 84.5 : 91.4,
         outer_material: "Recycled Corrugated Cardboard",
         inner_material: "Thermoformed Molded Paper Pulp",
         qualitative_co2e: "Low-Medium",
@@ -111,7 +116,7 @@ export default function App() {
         qualitative_branding: "High",
         is_pareto_optimal: true,
         co2_breakdown: { material_emissions_kg: 0.09, manufacturing_emissions_kg: 0.03, transport_emissions_kg: 0.04, end_of_life_emissions_kg: 0.02, damage_carbon_kg: 0.04 },
-        cost_breakdown: { material_cost_usd: 0.35, manufacturing_printing_usd: 0.16, labor_assembly_usd: 0.12, shipping_storage_usd: 0.18, expected_damage_cost_usd: 0.42 },
+        cost_breakdown: { material_cost_usd: Math.round((0.30 + vol_cm3 * 0.0001) * 100) / 100, manufacturing_printing_usd: 0.16, labor_assembly_usd: 0.12, shipping_storage_usd: 0.18, expected_damage_cost_usd: Math.round(prodVal * 0.012 * fragilityMult * 100) / 100 },
         protection_breakdown: { drop_protection_score: 95, compression_strength_score: 94, moisture_barrier_score: 85, fit_void_score: 92, vibration_resistance_score: 91, testing_standards: ["ISTA 3A Transit", "ASTM D5276 Drop Test"] },
         branding_breakdown: { printable_surface_score: 85, color_compatibility_score: 80, unboxing_experience_score: 88, texture_finish_score: 78, storytelling_qr_score: 80 },
         dieline: { outer_length_cm: (customData.length_cm + 2.4).toFixed(1), outer_width_cm: (customData.width_cm + 2.4).toFixed(1), outer_height_cm: (customData.height_cm + 2.4).toFixed(1), cushion_thickness_cm: 1.2, flap_margin_cm: 2.0, sheet_width_cm: (customData.length_cm * 2 + 10).toFixed(1), sheet_length_cm: (customData.width_cm * 2 + 10).toFixed(1) },
@@ -129,17 +134,17 @@ export default function App() {
         pareto_archetype: "Baseline Conventional",
         verdict: "High Carbon Baseline",
         is_baseline: true,
-        unit_cost_usd: 1.25,
-        co2e_kg: 0.52,
-        material_mass_kg: 0.28,
+        unit_cost_usd: Math.round((1.05 + (vol_cm3 * 0.0004)) * 100) / 100,
+        co2e_kg: Math.round((0.42 + (vol_cm3 * 0.00015)) * 1000) / 1000,
+        material_mass_kg: Math.round((0.22 + (vol_cm3 * 0.0001)) * 1000) / 1000,
         outer_dimensions_cm: `${(customData.length_cm + 4.0).toFixed(1)} x ${(customData.width_cm + 4.0).toFixed(1)} x ${(customData.height_cm + 4.0).toFixed(1)}`,
         protection_score: 88,
         branding_score: 60,
         recyclability_score: 45,
         shipping_efficiency_pct: 82.0,
         void_space_pct: 18.0,
-        damage_probability_pct: 4.5,
-        expected_damage_cost_usd: 1.58,
+        damage_probability_pct: Math.round(4.5 * fragilityMult * 10) / 10,
+        expected_damage_cost_usd: Math.round(prodVal * 0.045 * fragilityMult * 100) / 100,
         damage_carbon_impact_kg: 0.15,
         overall_score: 64.2,
         outer_material: "Virgin Kraft Cardboard",
@@ -150,7 +155,7 @@ export default function App() {
         qualitative_branding: "Low",
         is_pareto_optimal: false,
         co2_breakdown: { material_emissions_kg: 0.25, manufacturing_emissions_kg: 0.08, transport_emissions_kg: 0.09, end_of_life_emissions_kg: 0.10, damage_carbon_kg: 0.15 },
-        cost_breakdown: { material_cost_usd: 0.52, manufacturing_printing_usd: 0.16, labor_assembly_usd: 0.12, shipping_storage_usd: 0.25, expected_damage_cost_usd: 1.58 },
+        cost_breakdown: { material_cost_usd: 0.52, manufacturing_printing_usd: 0.16, labor_assembly_usd: 0.12, shipping_storage_usd: 0.25, expected_damage_cost_usd: Math.round(prodVal * 0.045 * fragilityMult * 100) / 100 },
         protection_breakdown: { drop_protection_score: 88, compression_strength_score: 86, moisture_barrier_score: 60, fit_void_score: 75, vibration_resistance_score: 85, testing_standards: ["Standard Parcel Test"] },
         branding_breakdown: { printable_surface_score: 65, color_compatibility_score: 60, unboxing_experience_score: 55, texture_finish_score: 50, storytelling_qr_score: 50 },
         dieline: { outer_length_cm: (customData.length_cm + 4.0).toFixed(1), outer_width_cm: (customData.width_cm + 4.0).toFixed(1), outer_height_cm: (customData.height_cm + 4.0).toFixed(1), cushion_thickness_cm: 2.0, flap_margin_cm: 2.0, sheet_width_cm: (customData.length_cm * 2 + 12).toFixed(1), sheet_length_cm: (customData.width_cm * 2 + 12).toFixed(1) },
@@ -161,35 +166,70 @@ export default function App() {
         name: "Padded Kraft Paper Honeycomb Mailer",
         category: "Paper Mailer",
         archetype: "paper_eco",
-        pareto_archetype: "Cheapest",
-        verdict: "Risky",
+        pareto_archetype: isApparel ? "Balanced" : "Cheapest",
+        verdict: isApparel ? "Recommended" : (fragilityMult > 1.2 ? "Risky" : "Recommended"),
         is_baseline: false,
-        unit_cost_usd: 0.42,
-        co2e_kg: 0.11,
-        material_mass_kg: 0.09,
+        unit_cost_usd: Math.round((0.35 + (vol_cm3 * 0.00015)) * 100) / 100,
+        co2e_kg: Math.round((0.08 + (vol_cm3 * 0.00004)) * 1000) / 1000,
+        material_mass_kg: Math.round((0.07 + (vol_cm3 * 0.00003)) * 1000) / 1000,
         outer_dimensions_cm: `${(customData.length_cm + 1.2).toFixed(1)} x ${(customData.width_cm + 1.2).toFixed(1)} x ${(customData.height_cm + 0.8).toFixed(1)}`,
         protection_score: 72,
         branding_score: 70,
         recyclability_score: 98,
         shipping_efficiency_pct: 92.0,
         void_space_pct: 8.0,
-        damage_probability_pct: 5.2,
-        expected_damage_cost_usd: 1.82,
+        damage_probability_pct: Math.round(3.2 * fragilityMult * 10) / 10,
+        expected_damage_cost_usd: Math.round(prodVal * 0.032 * fragilityMult * 100) / 100,
         damage_carbon_impact_kg: 0.08,
-        overall_score: 81.2,
+        overall_score: isApparel ? 95.8 : (isCompostableGoal ? 94.2 : 81.2),
         outer_material: "Kraft Paper Mesh",
         inner_material: "Expanded Paper Honeycomb",
         qualitative_co2e: "Low",
         qualitative_cost: "Low",
-        qualitative_protection: "Low",
-        qualitative_branding: "Low",
+        qualitative_protection: fragilityMult > 1.2 ? "Low" : "Medium",
+        qualitative_branding: "Medium",
         is_pareto_optimal: true,
         co2_breakdown: { material_emissions_kg: 0.06, manufacturing_emissions_kg: 0.02, transport_emissions_kg: 0.02, end_of_life_emissions_kg: 0.01, damage_carbon_kg: 0.08 },
-        cost_breakdown: { material_cost_usd: 0.22, manufacturing_printing_usd: 0.10, labor_assembly_usd: 0.05, shipping_storage_usd: 0.05, expected_damage_cost_usd: 1.82 },
+        cost_breakdown: { material_cost_usd: 0.22, manufacturing_printing_usd: 0.10, labor_assembly_usd: 0.05, shipping_storage_usd: 0.05, expected_damage_cost_usd: Math.round(prodVal * 0.032 * fragilityMult * 100) / 100 },
         protection_breakdown: { drop_protection_score: 70, compression_strength_score: 65, moisture_barrier_score: 50, fit_void_score: 85, vibration_resistance_score: 70, testing_standards: ["ASTM D5276 Drop"] },
         branding_breakdown: { printable_surface_score: 70, color_compatibility_score: 65, unboxing_experience_score: 70, texture_finish_score: 75, storytelling_qr_score: 70 },
         dieline: { outer_length_cm: (customData.length_cm + 1.2).toFixed(1), outer_width_cm: (customData.width_cm + 1.2).toFixed(1), outer_height_cm: (customData.height_cm + 0.8).toFixed(1), cushion_thickness_cm: 0.6, flap_margin_cm: 1.0, sheet_width_cm: (customData.length_cm * 2 + 5).toFixed(1), sheet_length_cm: (customData.width_cm * 2 + 5).toFixed(1) },
         bom: [{ item: "Paper Honeycomb Mailer", qty: "1 unit", mass_g: 90, cost_usd: 0.42 }]
+      },
+      {
+        id: "opt_reusable_shipper",
+        name: "Heavy-Duty Reusable PP Shipper Box",
+        category: "Reusable Packaging",
+        archetype: "circular_reusable",
+        pareto_archetype: isReusableGoal ? "Balanced" : "Reusable",
+        verdict: isReusableGoal ? "Recommended" : "High Capex / Reusable",
+        is_baseline: false,
+        unit_cost_usd: Math.round((4.15 + (vol_cm3 * 0.0005)) * 100) / 100,
+        co2e_kg: Math.round((0.09 + (vol_cm3 * 0.00003)) * 1000) / 1000,
+        material_mass_kg: Math.round((0.45 + (vol_cm3 * 0.0002)) * 1000) / 1000,
+        outer_dimensions_cm: `${(customData.length_cm + 3.5).toFixed(1)} x ${(customData.width_cm + 3.5).toFixed(1)} x ${(customData.height_cm + 3.5).toFixed(1)}`,
+        protection_score: 96,
+        branding_score: 95,
+        recyclability_score: 85,
+        shipping_efficiency_pct: 94.0,
+        void_space_pct: 6.0,
+        damage_probability_pct: Math.round(0.8 * fragilityMult * 10) / 10,
+        expected_damage_cost_usd: Math.round(prodVal * 0.008 * fragilityMult * 100) / 100,
+        damage_carbon_impact_kg: 0.02,
+        overall_score: isReusableGoal ? 96.5 : 78.4,
+        outer_material: "Rigid Reusable Polypropylene Box",
+        inner_material: "Kraft Paper Honeycomb",
+        qualitative_co2e: "Low",
+        qualitative_cost: "High",
+        qualitative_protection: "High",
+        qualitative_branding: "High",
+        is_pareto_optimal: true,
+        co2_breakdown: { material_emissions_kg: 0.04, manufacturing_emissions_kg: 0.02, transport_emissions_kg: 0.02, end_of_life_emissions_kg: 0.01, damage_carbon_kg: 0.02 },
+        cost_breakdown: { material_cost_usd: 0.45, manufacturing_printing_usd: 0.16, labor_assembly_usd: 0.12, shipping_storage_usd: 0.25, expected_damage_cost_usd: Math.round(prodVal * 0.008 * fragilityMult * 100) / 100 },
+        protection_breakdown: { drop_protection_score: 97, compression_strength_score: 96, moisture_barrier_score: 99, fit_void_score: 90, vibration_resistance_score: 95, testing_standards: ["ISTA 3A / 6-AMAZON Transit"] },
+        branding_breakdown: { printable_surface_score: 95, color_compatibility_score: 90, unboxing_experience_score: 96, texture_finish_score: 92, storytelling_qr_score: 95 },
+        dieline: { outer_length_cm: (customData.length_cm + 3.5).toFixed(1), outer_width_cm: (customData.width_cm + 3.5).toFixed(1), outer_height_cm: (customData.height_cm + 3.5).toFixed(1), cushion_thickness_cm: 1.5, flap_margin_cm: 2.0, sheet_width_cm: (customData.length_cm * 2 + 14).toFixed(1), sheet_length_cm: (customData.width_cm * 2 + 14).toFixed(1) },
+        bom: [{ item: "Reusable PP Box", qty: "1 unit (30 uses)", mass_g: 450, cost_usd: 4.15 }]
       },
       {
         id: "opt_premium_mycelium",
@@ -199,17 +239,17 @@ export default function App() {
         pareto_archetype: "Premium",
         verdict: "Not sustainable",
         is_baseline: false,
-        unit_cost_usd: 2.15,
-        co2e_kg: 0.38,
-        material_mass_kg: 0.35,
+        unit_cost_usd: Math.round((2.15 + (vol_cm3 * 0.0006)) * 100) / 100,
+        co2e_kg: Math.round((0.38 + (vol_cm3 * 0.0001)) * 1000) / 1000,
+        material_mass_kg: Math.round((0.35 + (vol_cm3 * 0.00015)) * 1000) / 1000,
         outer_dimensions_cm: `${(customData.length_cm + 3.0).toFixed(1)} x ${(customData.width_cm + 3.0).toFixed(1)} x ${(customData.height_cm + 3.0).toFixed(1)}`,
         protection_score: 97,
         branding_score: 98,
         recyclability_score: 92,
         shipping_efficiency_pct: 95.0,
         void_space_pct: 5.0,
-        damage_probability_pct: 0.5,
-        expected_damage_cost_usd: 0.18,
+        damage_probability_pct: Math.round(0.5 * fragilityMult * 10) / 10,
+        expected_damage_cost_usd: Math.round(prodVal * 0.005 * fragilityMult * 100) / 100,
         damage_carbon_impact_kg: 0.02,
         overall_score: 83.5,
         outer_material: "Rigid Recycled Paperboard Box",
@@ -220,7 +260,7 @@ export default function App() {
         qualitative_branding: "High",
         is_pareto_optimal: true,
         co2_breakdown: { material_emissions_kg: 0.20, manufacturing_emissions_kg: 0.10, transport_emissions_kg: 0.06, end_of_life_emissions_kg: 0.02, damage_carbon_kg: 0.02 },
-        cost_breakdown: { material_cost_usd: 1.25, manufacturing_printing_usd: 0.45, labor_assembly_usd: 0.25, shipping_storage_usd: 0.20, expected_damage_cost_usd: 0.18 },
+        cost_breakdown: { material_cost_usd: 1.25, manufacturing_printing_usd: 0.45, labor_assembly_usd: 0.25, shipping_storage_usd: 0.20, expected_damage_cost_usd: Math.round(prodVal * 0.005 * fragilityMult * 100) / 100 },
         protection_breakdown: { drop_protection_score: 98, compression_strength_score: 96, moisture_barrier_score: 80, fit_void_score: 95, vibration_resistance_score: 98, testing_standards: ["ISTA 3A / 6-AMAZON"] },
         branding_breakdown: { printable_surface_score: 98, color_compatibility_score: 95, unboxing_experience_score: 100, texture_finish_score: 96, storytelling_qr_score: 98 },
         dieline: { outer_length_cm: (customData.length_cm + 3.0).toFixed(1), outer_width_cm: (customData.width_cm + 3.0).toFixed(1), outer_height_cm: (customData.height_cm + 3.0).toFixed(1), cushion_thickness_cm: 1.5, flap_margin_cm: 2.5, sheet_width_cm: (customData.length_cm * 2 + 15).toFixed(1), sheet_length_cm: (customData.width_cm * 2 + 15).toFixed(1) },
@@ -228,15 +268,18 @@ export default function App() {
       }
     ];
 
+    alternatives.sort((a, b) => b.overall_score - a.overall_score);
+
     const recommended = alternatives[0];
-    const baseline = alternatives[1];
+    const baseline = alternatives.find(a => a.is_baseline) || alternatives[alternatives.length - 1];
 
     const co2_saved_kg = Math.max(0, Math.round((baseline.co2e_kg - recommended.co2e_kg) * annualVol * 10) / 10);
     const cost_saved_usd = Math.max(0, Math.round((baseline.unit_cost_usd - recommended.unit_cost_usd) * annualVol * 100) / 100);
     const co2_reduction_pct = Math.round(((baseline.co2e_kg - recommended.co2e_kg) / baseline.co2e_kg) * 1000) / 10;
     const cost_reduction_pct = Math.round(((baseline.unit_cost_usd - recommended.unit_cost_usd) / baseline.unit_cost_usd) * 1000) / 10;
 
-    const pareto_recommendation_text = `EcoPack recommends Option 1 (${recommended.name}) because it reduces estimated CO₂e by ${co2_reduction_pct}%, lowers total packaging cost by ${cost_reduction_pct}%, maintains high protection (${recommended.protection_score}/100), and improves brand presentation (${recommended.branding_score}/100).`;
+    const winnerIndex = alternatives.findIndex(a => a.id === recommended.id) + 1;
+    const pareto_recommendation_text = `EcoPack recommends Option ${winnerIndex} (${recommended.name}) because it reduces estimated CO₂e by ${co2_reduction_pct}%, lowers total packaging cost by ${cost_reduction_pct}%, maintains high protection (${recommended.protection_score}/100), and improves brand presentation (${recommended.branding_score}/100).`;
 
     const fallbackResults = {
       recommended: recommended,
@@ -253,10 +296,10 @@ export default function App() {
         annual_volume: annualVol
       },
       tradeoffs_breakdown: {
-        cost_vs_damage: { title: "1. Cheap Packaging vs Product Damage Risk", finding: `The baseline option carries a 4.5% damage risk ($1.58/unit loss). Winner reduces damage risk to 1.2%, saving $1.16/unit.` },
-        eco_cost_availability: { title: "2. Eco-Friendly Material vs Cost & Regional Availability", finding: `Mycelium bio-foam offers high carbon reduction but increases unit cost to $2.15. Winner '${recommended.name}' balances low carbon (${recommended.co2e_kg} kg) at $0.85/unit.` },
-        branding_vs_recyclability: { title: "3. Premium Branding vs Curbside Recyclability", finding: `Winner balances an 82/100 branding score with 96% regional curbside recyclability.` },
-        lightweight_vs_shipping_stress: { title: "4. Lightweight Packaging vs Transit Shipping Stress", finding: `Winner achieves 95.9% volume efficiency while maintaining 94/100 protection.` },
+        cost_vs_damage: { title: "1. Cheap Packaging vs Product Damage Risk", finding: `The baseline option carries a ${baseline.damage_probability_pct}% damage risk ($${baseline.expected_damage_cost_usd}/unit loss). Winner reduces damage risk to ${recommended.damage_probability_pct}%, saving $${Math.max(0, (baseline.expected_damage_cost_usd - recommended.expected_damage_cost_usd)).toFixed(2)}/unit.` },
+        eco_cost_availability: { title: "2. Eco-Friendly Material vs Cost & Regional Availability", finding: `Mycelium bio-foam offers high carbon reduction but increases unit cost. Winner '${recommended.name}' balances low carbon (${recommended.co2e_kg} kg) at $${recommended.unit_cost_usd}/unit.` },
+        branding_vs_recyclability: { title: "3. Premium Branding vs Curbside Recyclability", finding: `Winner balances an ${recommended.branding_score}/100 branding score with ${recommended.recyclability_score}% regional curbside recyclability.` },
+        lightweight_vs_shipping_stress: { title: "4. Lightweight Packaging vs Transit Shipping Stress", finding: `Winner achieves ${recommended.shipping_efficiency_pct}% volume efficiency while maintaining ${recommended.protection_score}/100 protection.` },
         regional_composting_reality: { title: "5. Biodegradable Claim vs Regional Infrastructure Reality", finding: `Paper-based pulp achieves 96% real curbside recovery compared to bioplastics facing landfill disposal.` }
       }
     };
@@ -266,8 +309,8 @@ export default function App() {
   };
 
   useEffect(() => {
-    runOptimization();
-  }, []);
+    runOptimization(formData);
+  }, [formData]);
 
   const handleApplySpecs = (specs) => {
     const updated = {
