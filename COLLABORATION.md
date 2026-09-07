@@ -86,6 +86,37 @@ To avoid overlapping work and merge conflicts, tasks are separated by responsibi
 
 ---
 
+## 💻 Localhost Setup for Teammates (Ayush, Divyam, Abhay)
+
+To run the full-stack app on your own laptop:
+
+### Step 1: Get the Code
+```bash
+git clone https://github.com/Kushagra230706/Resonance_EcoPack.git
+cd Resonance_EcoPack
+git checkout dev
+git pull origin dev
+```
+
+### Step 2: Start Backend Server (Terminal 1)
+```bash
+cd backend
+python -m pip install -r requirements.txt
+python -m uvicorn main:app --host 127.0.0.1 --port 8000
+```
+
+### Step 3: Start Frontend Server (Terminal 2)
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Step 4: Open App
+Open **`http://localhost:5173/`** in your browser!
+
+---
+
 ## 🛠️ Useful Command Cheatsheet
 
 ```bash
