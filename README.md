@@ -29,12 +29,12 @@
 
 ## 👥 Team & Roles
 
-| Name | Role | Responsibilities |
-| :--- | :--- | :--- |
-| **Member 1** | Team Lead & Frontend | UI Design, Pitch Deck & Presentation |
-| **Member 2** | Frontend Engineer | Interactive Dashboards & Component Logic |
-| **Member 3** | Backend Engineer | API Routes, Database & Server Logic |
-| **Member 4** | AI / Eco Analyst | Sustainability Algorithms & Data Modeling |
+| Name | Role | Responsibilities | Branch |
+| :--- | :--- | :--- | :--- |
+| **Kushagra** | Team Lead & UI/UX | Architecture, Landing Page & Pitch Deck | `kushagra/*` |
+| **Ayush** | Backend Engineer | API Routes, Database & Integrations | `ayush/*` |
+| **Divyam** | Frontend Engineer | Interactive Dashboards & UI State | `divyam/*` |
+| **Abhay** | Eco / AI Specialist | Carbon Calculation & Sustainability Model | `abhay/*` |
 
 ---
 

@@ -8,12 +8,12 @@ Welcome Team! This guide outlines our workflow, division of tasks, and Git strat
 
 To avoid overlapping work and merge conflicts, tasks are separated by responsibility:
 
-| Member | Focus Area | Core Responsibilities |
-| :--- | :--- | :--- |
-| **Member 1 (Lead / Pitch / Frontend)** | UI/UX & Pitch | Frontend Interface, Landing Page, Demo Deck, UI polish, Final Presentation |
-| **Member 2 (Frontend / Web Developer)** | Web Application Logic | Component architecture, state management, form inputs, dynamic dashboards |
-| **Member 3 (Backend / API Developer)** | Backend & DB / Services | API endpoints, DB schema, authentication/business logic, integrations |
-| **Member 4 (Data / AI / Eco Logic)** | AI / Algorithm / Eco Engine | Sustainability calculation metrics, ML models, carbon footprint estimations, datasets |
+| Member | Focus Area | Core Responsibilities | Branch Convention |
+| :--- | :--- | :--- | :--- |
+| **Kushagra** | Lead & UI/UX | Project architecture, landing page, pitch deck, video demo | `kushagra/<feature>` |
+| **Ayush** | Backend & APIs | Server routes, database models, REST endpoints, integrations | `ayush/<feature>` |
+| **Divyam** | Frontend Apps | Interactive components, dashboard state, API integration | `divyam/<feature>` |
+| **Abhay** | AI / Eco Algorithm | Sustainability formulas, carbon metrics, ML models / data | `abhay/<feature>` |
 
 ---
 
@@ -24,10 +24,11 @@ To avoid overlapping work and merge conflicts, tasks are separated by responsibi
 ### Branch Naming Conventions
 - `main` — Production-ready, stable demo code.
 - `dev` — Staging branch where feature branches merge before test runs.
-- `feature/<short-desc>` — Feature branches for specific tasks.
-  - Example: `feature/landing-hero`
-  - Example: `feature/eco-calc-api`
-  - Example: `feature/auth-backend`
+- **Personal Feature Branches**: Include your name in the branch!
+  - Example for Ayush: `ayush/backend-api`
+  - Example for Divyam: `divyam/dashboard-ui`
+  - Example for Abhay: `abhay/eco-calculator`
+  - Example for Kushagra: `kushagra/landing-hero`
 
 ### Step-by-Step Feature Workflow
 
