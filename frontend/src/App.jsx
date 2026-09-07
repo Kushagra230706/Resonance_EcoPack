@@ -25,6 +25,8 @@ export default function App() {
     height_cm: 6.0,
     weight_g: 250.0,
     fragility: 'high',
+    moisture_sensitivity: 'medium',
+    temperature_sensitivity: 'standard',
     product_type: 'fragile_glass',
     annual_volume: 10000,
     product_value_usd: 35.0,
@@ -33,6 +35,7 @@ export default function App() {
     shipping_mode: 'road',
     branding_preference: 'standard',
     budget_limit_usd: 5.0,
+    sustainability_goal: 'balanced',
     user_weights: {
       sustainability: 0.35,
       cost: 0.25,
@@ -233,11 +236,42 @@ export default function App() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', minWidth: 0 }}>
                   <div className="form-group">
+                    <label>Moisture Sensitivity</label>
+                    <select className="form-select" value={formData.moisture_sensitivity} onChange={e => setFormData({ ...formData, moisture_sensitivity: e.target.value })}>
+                      <option value="low">Low (Dry product)</option>
+                      <option value="medium">Medium (Standard)</option>
+                      <option value="high">High (Hydrophobic barrier needed)</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Temp Sensitivity</label>
+                    <select className="form-select" value={formData.temperature_sensitivity} onChange={e => setFormData({ ...formData, temperature_sensitivity: e.target.value })}>
+                      <option value="standard">Standard Ambient</option>
+                      <option value="temperature_controlled">Controlled Insulated</option>
+                      <option value="refrigerated">Refrigerated Cold-chain</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>Sustainability Priority Goal</label>
+                  <select className="form-select" value={formData.sustainability_goal} onChange={e => setFormData({ ...formData, sustainability_goal: e.target.value })}>
+                    <option value="balanced">Balanced Trade-off (Recommended)</option>
+                    <option value="lowest_carbon">Lowest Carbon Emissions (Min CO₂e)</option>
+                    <option value="lowest_plastic">Zero Single-Use Plastic</option>
+                    <option value="recyclable">100% Curbside Recyclable</option>
+                    <option value="compostable">Home / Industrial Compostable</option>
+                    <option value="reusable">Reusable Returnable Shipper</option>
+                  </select>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', minWidth: 0 }}>
+                  <div className="form-group">
                     <label>Shipping Mode</label>
                     <select className="form-select" value={formData.shipping_mode} onChange={e => setFormData({ ...formData, shipping_mode: e.target.value })}>
-                      <option value="road">Road Freight</option>
-                      <option value="air">Air Express</option>
-                      <option value="sea">Sea Freight</option>
+                      <option value="road">Road Courier Freight</option>
+                      <option value="air">Air Express Cargo</option>
+                      <option value="sea">Ocean Sea Freight</option>
                     </select>
                   </div>
                   <div className="form-group">

@@ -44,6 +44,8 @@ class OptimizationRequest(BaseModel):
     height_cm: float = 6.0
     weight_g: float = 250.0
     fragility: str = "high"
+    moisture_sensitivity: str = "medium"
+    temperature_sensitivity: str = "standard"
     product_type: str = "fragile_glass"
     annual_volume: int = 10000
     product_value_usd: float = 35.0
@@ -52,6 +54,7 @@ class OptimizationRequest(BaseModel):
     shipping_mode: str = "road"
     branding_preference: str = "standard"
     budget_limit_usd: float = 5.0
+    sustainability_goal: str = "balanced"
     user_weights: Optional[Dict[str, float]] = None
 
 
@@ -87,6 +90,8 @@ def run_optimization(req: OptimizationRequest):
             weight_g=req.weight_g,
             fragility=req.fragility,
             product_type=req.product_type,
+            moisture_sensitivity=req.moisture_sensitivity,
+            temperature_sensitivity=req.temperature_sensitivity,
             annual_volume=req.annual_volume,
             product_value_usd=req.product_value_usd,
             shipping_region=req.shipping_region,
@@ -94,6 +99,7 @@ def run_optimization(req: OptimizationRequest):
             shipping_mode=req.shipping_mode,
             branding_preference=req.branding_preference,
             budget_limit_usd=req.budget_limit_usd,
+            sustainability_goal=req.sustainability_goal,
             user_weights=req.user_weights
         )
         return results

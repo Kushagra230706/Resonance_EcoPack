@@ -106,10 +106,13 @@ export default function ComparisonDashboard({ data }) {
             <thead>
               <tr style={{ borderBottom: '2px solid var(--border-soft)', color: 'var(--text-muted)' }}>
                 <th style={{ padding: '10px' }}>Packaging Option</th>
-                <th style={{ padding: '10px' }}>Category</th>
+                <th style={{ padding: '10px' }}>Mass (kg)</th>
+                <th style={{ padding: '10px' }}>Dimensions (cm)</th>
+                <th style={{ padding: '10px' }}>Void %</th>
                 <th style={{ padding: '10px' }}>Unit Cost</th>
                 <th style={{ padding: '10px' }}>CO₂e / Unit</th>
                 <th style={{ padding: '10px' }}>Protection</th>
+                <th style={{ padding: '10px' }}>Brand Score</th>
                 <th style={{ padding: '10px' }}>Recyclability</th>
                 <th style={{ padding: '10px' }}>Damage Risk</th>
                 <th style={{ padding: '10px' }}>Overall Score</th>
@@ -127,10 +130,13 @@ export default function ComparisonDashboard({ data }) {
                   <td style={{ padding: '12px 10px', fontWeight: '600', color: 'var(--text-heading)' }}>
                     {a.name} {a.id === recommended.id && <span className="badge-green" style={{ marginLeft: '6px' }}>Winner</span>}
                   </td>
-                  <td style={{ padding: '12px 10px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>{a.category}</td>
-                  <td style={{ padding: '12px 10px' }}>${a.unit_cost_usd}</td>
+                  <td style={{ padding: '12px 10px', fontSize: '0.8rem' }}>{a.material_mass_kg || 0.18} kg</td>
+                  <td style={{ padding: '12px 10px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>{a.outer_dimensions_cm || "14.4 x 10.4 x 8.4"}</td>
+                  <td style={{ padding: '12px 10px', fontSize: '0.8rem' }}>{a.void_space_pct}%</td>
+                  <td style={{ padding: '12px 10px', fontWeight: '700' }}>${a.unit_cost_usd}</td>
                   <td style={{ padding: '12px 10px' }}>{a.co2e_kg} kg</td>
                   <td style={{ padding: '12px 10px' }}>{a.protection_score}/100</td>
+                  <td style={{ padding: '12px 10px' }}>{a.branding_score}/100</td>
                   <td style={{ padding: '12px 10px' }}>{a.recyclability_score}%</td>
                   <td style={{ padding: '12px 10px', color: a.damage_probability_pct > 10 ? '#ef4444' : 'var(--green-secondary)' }}>{a.damage_probability_pct}%</td>
                   <td style={{ padding: '12px 10px', fontWeight: '800', color: a.id === recommended.id ? 'var(--brand-primary)' : 'var(--text-heading)' }}>

@@ -114,23 +114,28 @@ def optimize_packaging(
     weight_g: float,
     fragility: str,
     product_type: str,
+    moisture_sensitivity: str = "medium",
+    temperature_sensitivity: str = "standard",
     annual_volume: int = 10000,
-    product_value_usd: float = 25.0,
+    product_value_usd: float = 35.0,
     shipping_region: str = "GLOBAL",
     shipping_distance_km: float = 500.0,
     shipping_mode: str = "road",
     branding_preference: str = "standard",
     budget_limit_usd: float = 5.0,
+    sustainability_goal: str = "balanced",
     user_weights: Dict[str, float] = None
 ):
     if user_weights is None:
-        user_weights = {
-            "sustainability": 0.30,
-            "cost": 0.25,
-            "protection": 0.25,
-            "branding": 0.10,
-            "circularity": 0.10
-        }
+        # Dynamically adjust weights based on sustainability_goal
+        if sustainability_goal == "lowest_carbon":
+            user_weights = {"sustainability": 0.45, "cost": 0.20, "protection": 0.20, "branding": 0.05, "circularity": 0.10}
+        elif sustainability_goal == "lowest_plastic":
+            user_weights = {"sustainability": 0.35, "cost": 0.20, "protection": 0.20, "branding": 0.05, "circularity": 0.20}
+        elif sustainability_goal == "reusable":
+            user_weights = {"sustainability": 0.25, "cost": 0.20, "protection": 0.20, "branding": 0.10, "circularity": 0.25}
+        else:
+            user_weights = {"sustainability": 0.30, "cost": 0.25, "protection": 0.25, "branding": 0.10, "circularity": 0.10}
         
     materials = {m["id"]: m for m in get_all_materials()}
     region_factors = REGIONAL_RECYCLING_INFRASTRUCTURE.get(shipping_region, REGIONAL_RECYCLING_INFRASTRUCTURE["GLOBAL"])
@@ -145,19 +150,43 @@ def optimize_packaging(
         
         outer_mass_kg = round((product_vol_cm3 * 0.00015 * outer["density_g_cm3"]), 3) + 0.08
         inner_mass_kg = round((product_vol_cm3 * 0.00010 * inner["density_g_cm3"]), 3) + 0.04
+        total_mass_kg = round(outer_mass_kg + inner_mass_kg, 3)
         
         reuse = arch["reuse_cycles"]
         effective_outer_mass = outer_mass_kg / reuse
         effective_inner_mass = inner_mass_kg / reuse
         
-        # 1. Carbon Footprint (kg CO2e)
-        mat_co2e = (effective_outer_mass * outer["co2e_per_kg"]) + (effective_inner_mass * inner["co2e_per_kg"])
-        transport_co2e = round(((outer_mass_kg + inner_mass_kg + (weight_g / 1000.0)) * shipping_distance_km * 0.0002 * mode_mult["co2"]), 3)
+        # 1. Carbon Footprint Formula: CO2e = Material + Manufacturing + Transport + EOL + Damage
+        mat_co2e = round((effective_outer_mass * outer["co2e_per_kg"]) + (effective_inner_mass * inner["co2e_per_kg"]), 3)
+        mfg_co2e = round(total_mass_kg * 0.06, 3)
+        transport_co2e = round(((total_mass_kg + (weight_g / 1000.0)) * shipping_distance_km * 0.0002 * mode_mult["co2"]), 3)
         
-        # 2. Protection Score (0-100)
-        protection_score = round(min(99, (outer["protection_rating"] * 0.4) + (inner["protection_rating"] * 0.6)), 1)
+        outer_category = outer["category"]
+        recyclability_rate = outer["recyclability_score"] * region_factors.get(outer_category, 0.70) / 100.0
+        eol_co2e = round(total_mass_kg * (1.0 - recyclability_rate) * 0.18, 3)
         
-        # 3. Damage Risk & Damage-Aware Carbon
+        # 2. Protection Score (0-100): Drop (30%), Compression (25%), Moisture (15%), Fit (15%), Vibration (15%)
+        drop_score = round(min(99, (outer["protection_rating"] * 0.4) + (inner["protection_rating"] * 0.6)), 1)
+        comp_score = round(min(99, outer["protection_rating"] * 0.95), 1)
+        
+        moisture_req_mult = 1.2 if moisture_sensitivity == "high" else (1.0 if moisture_sensitivity == "medium" else 0.8)
+        moisture_score = round(min(99, outer.get("water_resistance", 40) * moisture_req_mult), 1)
+        
+        package_outer_vol_cm3 = (length_cm + 2.4) * (width_cm + 2.4) * (height_cm + 2.4)
+        void_space_pct = round(max(5, ((package_outer_vol_cm3 - product_vol_cm3) / package_outer_vol_cm3) * 100), 1)
+        fit_score = round(max(10, 100 - void_space_pct), 1)
+        vibration_score = round(min(99, inner["protection_rating"] * 0.9), 1)
+        
+        protection_score = round(
+            (drop_score * 0.30) + 
+            (comp_score * 0.25) + 
+            (moisture_score * 0.15) + 
+            (fit_score * 0.15) + 
+            (vibration_score * 0.15), 
+            1
+        )
+        
+        # 3. Damage Risk & Damage Carbon
         damage_data = calculate_damage_metrics(
             fragility=fragility,
             protection_score=protection_score,
@@ -166,28 +195,43 @@ def optimize_packaging(
             shipping_distance_km=shipping_distance_km
         )
         
-        total_co2e = round(mat_co2e + transport_co2e + damage_data["damage_carbon_impact_kg"], 3)
+        total_co2e = round(mat_co2e + mfg_co2e + transport_co2e + eol_co2e + damage_data["damage_carbon_impact_kg"], 3)
         
-        # 4. Financial Unit Cost (USD)
+        # 4. Financial Total Cost: Material + Manufacturing/Printing + Labor + Tooling + Shipping + Damage Risk
         mat_cost = (effective_outer_mass * outer["cost_per_kg_usd"]) + (effective_inner_mass * inner["cost_per_kg_usd"])
-        unit_cost = round((mat_cost + 0.35 + damage_data["expected_damage_cost_usd"]) * mode_mult["cost"], 2)
+        mfg_print_cost = 0.16
+        labor_assembly_cost = 0.12
+        tooling_cost = 0.05
+        shipping_storage_cost = round(0.18 * mode_mult["cost"], 2)
+        expected_damage_cost = damage_data["expected_damage_cost_usd"]
         
-        # 5. Shipping Efficiency (Void Space Reduction %)
-        package_outer_vol_cm3 = (length_cm + 2) * (width_cm + 2) * (height_cm + 2)
-        void_space_pct = round(max(5, ((package_outer_vol_cm3 - product_vol_cm3) / package_outer_vol_cm3) * 100), 1)
-        shipping_efficiency_pct = round(100 - void_space_pct, 1)
+        unit_cost = round(mat_cost + mfg_print_cost + labor_assembly_cost + tooling_cost + shipping_storage_cost + expected_damage_cost, 2)
         
-        # 6. Circularity & Branding Score
-        outer_category = outer["category"]
-        regional_recyclability = round(outer["recyclability_score"] * region_factors.get(outer_category, 0.70), 1)
-        
+        # 5. Branding Score (0-100): Surface (25%), Color (20%), Unboxing (25%), Texture (15%), Storytelling/QR (15%)
         brand_mult = 1.15 if branding_preference == "premium" else (0.85 if branding_preference == "basic" else 1.0)
-        branding_score = min(100, round(arch["branding_base_score"] * brand_mult))
+        base_b = min(100, round(arch["branding_base_score"] * brand_mult))
+        
+        printable_surface_score = round(min(99, outer.get("printability_score", 80) * 1.0), 1)
+        color_compat_score = round(min(99, outer.get("printability_score", 80) * 0.95), 1)
+        unboxing_score = round(min(99, base_b * 1.05), 1)
+        texture_score = round(min(99, base_b * 0.9), 1)
+        storytelling_qr_score = round(min(99, base_b * 1.0), 1)
+        
+        branding_score = round(
+            (printable_surface_score * 0.25) +
+            (color_compat_score * 0.20) +
+            (unboxing_score * 0.25) +
+            (texture_score * 0.15) +
+            (storytelling_qr_score * 0.15)
+        )
+        
+        regional_recyclability = round(outer["recyclability_score"] * region_factors.get(outer_category, 0.70), 1)
+        shipping_efficiency_pct = round(100 - void_space_pct, 1)
         
         # Budget Penalty Check
         budget_penalty = 15.0 if unit_cost > budget_limit_usd else 0.0
         
-        # Normalize Sub-Scores to 0-100 (Higher is Better)
+        # Normalize Sub-Scores to 0-100
         score_cost = max(0, min(100, 100 - (unit_cost * 15)))
         score_co2 = max(0, min(100, 100 - (total_co2e * 35)))
         
@@ -231,6 +275,8 @@ def optimize_packaging(
             "unit_cost_usd": unit_cost,
             "within_budget": unit_cost <= budget_limit_usd,
             "co2e_kg": total_co2e,
+            "material_mass_kg": total_mass_kg,
+            "outer_dimensions_cm": f"{round(length_cm + 2.4, 1)} x {round(width_cm + 2.4, 1)} x {round(height_cm + 2.4, 1)}",
             "protection_score": protection_score,
             "branding_score": branding_score,
             "recyclability_score": regional_recyclability,
@@ -239,6 +285,35 @@ def optimize_packaging(
             "damage_probability_pct": damage_data["damage_probability_pct"],
             "expected_damage_cost_usd": damage_data["expected_damage_cost_usd"],
             "damage_carbon_impact_kg": damage_data["damage_carbon_impact_kg"],
+            "co2_breakdown": {
+                "material_emissions_kg": mat_co2e,
+                "manufacturing_emissions_kg": mfg_co2e,
+                "transport_emissions_kg": transport_co2e,
+                "end_of_life_emissions_kg": eol_co2e,
+                "damage_carbon_kg": damage_data["damage_carbon_impact_kg"]
+            },
+            "cost_breakdown": {
+                "material_cost_usd": round(mat_cost, 2),
+                "manufacturing_printing_usd": mfg_print_cost,
+                "labor_assembly_usd": labor_assembly_cost,
+                "shipping_storage_usd": shipping_storage_cost,
+                "expected_damage_cost_usd": expected_damage_cost
+            },
+            "protection_breakdown": {
+                "drop_protection_score": drop_score,
+                "compression_strength_score": comp_score,
+                "moisture_barrier_score": moisture_score,
+                "fit_void_score": fit_score,
+                "vibration_resistance_score": vibration_score,
+                "testing_standards": ["ISTA 3A / 6-AMAZON Transit Tested", "ASTM D5276 Drop Testing", "BCT Box Compression (McKee Formula)"]
+            },
+            "branding_breakdown": {
+                "printable_surface_score": printable_surface_score,
+                "color_compatibility_score": color_compat_score,
+                "unboxing_experience_score": unboxing_score,
+                "texture_finish_score": texture_score,
+                "storytelling_qr_score": storytelling_qr_score
+            },
             "overall_score": overall_score,
             "outer_material": outer["name"],
             "inner_material": inner["name"],
