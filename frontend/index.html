@@ -4,7 +4,57 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title>PackWise AI — Next-Gen Sustainable Packaging Intelligence</title>
+    
+    <!-- Tailwind CSS & Fonts -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "pale-yellow": "#FFF9E6",
+              "warm-cream": "#FFFDF4",
+              "brand-primary": "#064E3B",
+              "brand-heading": "#053B2C",
+              "brand-secondary": "#166534",
+              "brand-light": "#EAF5E5",
+              "brand-border": "#CFE3C7",
+              "body-dark": "#17352C",
+              "body-muted": "#64756D",
+              "warning-gold": "#D89B24"
+            },
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+              display: ['"Space Grotesk"', 'Outfit', 'sans-serif'],
+              mono: ['"JetBrains Mono"', 'monospace']
+            },
+            animation: {
+              'pulse-slow': 'pulse 3.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'float-slow': 'float 5.5s ease-in-out infinite',
+              'float-delayed': 'float 6.5s ease-in-out 1.8s infinite',
+              'drive-semi': 'driveSemi 16s linear infinite'
+            },
+            keyframes: {
+              float: {
+                '0%, 100%': { transform: 'translateY(0px)' },
+                '50%': { transform: 'translateY(-10px)' },
+              },
+              driveSemi: {
+                '0%': { transform: 'translateX(-350px)' },
+                '100%': { transform: 'translateX(115vw)' }
+              }
+            }
+          }
+        }
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
