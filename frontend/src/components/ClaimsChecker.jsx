@@ -49,18 +49,29 @@ export default function ClaimsChecker() {
           </div>
         </div>
 
-        <form onSubmit={handleValidate} style={{ display: 'flex', gap: '12px' }}>
-          <input
-            type="text"
-            className="form-input"
-            value={claimText}
-            onChange={e => setClaimText(e.target.value)}
-            placeholder="Type claim e.g. 100% biodegradable, Zero Waste..."
-            style={{ flex: 1, padding: '12px 16px', fontSize: '0.95rem' }}
-          />
-          <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Validating...' : 'Check Compliance'}
-          </button>
+        <form onSubmit={handleValidate} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <input
+              type="text"
+              className="form-input"
+              value={claimText}
+              onChange={e => setClaimText(e.target.value)}
+              placeholder="Type claim e.g. 100% biodegradable, Zero Waste..."
+              style={{ flex: 1, padding: '12px 16px', fontSize: '0.95rem' }}
+            />
+            <button type="submit" className="btn-primary" disabled={loading}>
+              {loading ? 'Validating...' : 'Check Compliance'}
+            </button>
+          </div>
+
+          {/* Quick Preset Buttons */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+            <span>Quick Test Examples:</span>
+            <button type="button" onClick={() => setClaimText('100% biodegradable')} className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.72rem' }}>"100% biodegradable"</button>
+            <button type="button" onClick={() => setClaimText('Zero Waste')} className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.72rem' }}>"Zero Waste"</button>
+            <button type="button" onClick={() => setClaimText('100% eco-friendly')} className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.72rem' }}>"100% eco-friendly"</button>
+            <button type="button" onClick={() => setClaimText('100% recyclable')} className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.72rem' }}>"100% recyclable"</button>
+          </div>
         </form>
       </div>
 

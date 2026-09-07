@@ -5,6 +5,7 @@ import ImageUploadModal from './components/ImageUploadModal';
 import CopilotChat from './components/CopilotChat';
 import DecisionCard from './components/DecisionCard';
 import ComparisonDashboard from './components/ComparisonDashboard';
+import ReuseBreakEvenCalculator from './components/ReuseBreakEvenCalculator';
 import ThreeDBoxPreview from './components/ThreeDBoxPreview';
 import ExportModal from './components/ExportModal';
 import ClaimsChecker from './components/ClaimsChecker';
@@ -438,6 +439,7 @@ export default function App() {
                       <option value="US">United States</option>
                       <option value="IN">India</option>
                       <option value="SEA">Southeast Asia</option>
+                      <option value="ME">Middle East</option>
                     </select>
                   </div>
                 </div>
@@ -477,6 +479,9 @@ export default function App() {
               )}
 
               <ComparisonDashboard data={results} />
+              
+              {/* Circular Reuse / Refill Break-Even Calculator */}
+              <ReuseBreakEvenCalculator />
             </div>
 
           </div>

@@ -132,6 +132,7 @@ REGIONAL_RECYCLING_INFRASTRUCTURE = {
     "EU": {"paper": 0.95, "plastic": 0.40, "bioplastic": 0.35, "organic": 0.85, "reusable": 0.80},
     "IN": {"paper": 0.80, "plastic": 0.25, "bioplastic": 0.05, "organic": 0.50, "reusable": 0.75},
     "SEA": {"paper": 0.75, "plastic": 0.20, "bioplastic": 0.05, "organic": 0.40, "reusable": 0.65},
+    "ME": {"paper": 0.70, "plastic": 0.15, "bioplastic": 0.05, "organic": 0.35, "reusable": 0.50},
     "GLOBAL": {"paper": 0.85, "plastic": 0.25, "bioplastic": 0.15, "organic": 0.60, "reusable": 0.70}
 }
 
