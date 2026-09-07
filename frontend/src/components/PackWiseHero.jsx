@@ -565,17 +565,36 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
 
       </div>
 
-      {/* BOTTOM TRANSIT SECTION - Bounded Lane */}
-      <div className="relative w-full z-20 border-t border-brand-border bg-warm-cream/95 overflow-hidden py-2 rounded-xl shadow-inner mt-3" style={{ height: '60px' }}>
+      {/* BOTTOM TRANSIT SECTION - Bounded Moving Semi-Trailer */}
+      <div className="relative w-full z-20 border-t border-brand-border bg-warm-cream/95 overflow-hidden py-2 rounded-xl shadow-inner mt-2">
+        
+        {/* Highway Road Grid Line */}
         <div className="relative w-full h-10 overflow-hidden flex items-center">
           <div className="absolute inset-x-0 bottom-2 h-[2px] bg-gradient-to-r from-transparent via-brand-border to-transparent"></div>
           <div className="absolute inset-x-0 bottom-2 h-px border-b border-dashed border-brand-secondary/40"></div>
 
-          {/* Moving Semi Truck */}
+          {/* Moving Semi Truck with Leaf Wake */}
           <div className="absolute left-0 bottom-1 animate-drive-semi flex items-end pointer-events-none select-none">
             <div className="relative flex items-end">
               
-              <svg className="w-[260px] h-[48px] drop-shadow-sm" fill="none" viewBox="0 0 355 70" xmlns="http://www.w3.org/2000/svg">
+              {/* Fluttering leaf wake trailing behind truck */}
+              <div className="absolute -left-16 bottom-1 w-28 h-12 pointer-events-none overflow-visible">
+                <svg className="swirl-leaf-1 absolute left-12 top-3 w-4 h-4 text-brand-primary drop-shadow-sm" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20C19 20 22 3 22 3c-1 2-8 2-11 5z"></path>
+                </svg>
+                <svg className="swirl-leaf-2 absolute left-8 top-0 w-3.5 h-3.5 text-brand-secondary" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.5 2 2 6.5 2 12c0 4.5 3 8.3 7.2 9.5L10 19c-3-1-5.1-3.7-5.1-7 0-4 3.2-7.2 7.1-7.2 3.3 0 6.2 2.2 7.1 5.3l2.2-.6C20.1 5.1 16.4 2 12 2z"></path>
+                </svg>
+                <svg className="swirl-leaf-3 absolute left-4 top-4 w-3.5 h-3.5 text-[#10b981]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20C19 20 22 3 22 3c-1 2-8 2-11 5z"></path>
+                </svg>
+                <svg className="swirl-leaf-4 absolute left-10 -top-2 w-3 h-3 text-[#34d399]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M21 3C10 3 4 9 4 15c0 3.3 2.7 6 6 6 6 0 12-6 12-17 0-.3-.3-.7-.7-.7l-.3.7z"></path>
+                </svg>
+              </div>
+
+              {/* Streamlined Bullet-Train Semi-Trailer */}
+              <svg className="w-[280px] h-[52px] drop-shadow-sm" fill="none" viewBox="0 0 355 70" xmlns="http://www.w3.org/2000/svg">
                 <rect fill="#FFFFFF" height="42" rx="5" stroke="#CFE3C7" strokeWidth="1.5" width="220" x="8" y="10"></rect>
                 <line stroke="#EAF5E5" strokeWidth="1" x1="18" x2="18" y1="10" y2="52"></line>
                 <line stroke="#EAF5E5" strokeWidth="1" x1="80" x2="80" y1="10" y2="52"></line>
@@ -585,7 +604,7 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
                 <rect fill="#EAF5E5" height="24" rx="4" stroke="#CFE3C7" strokeWidth="1" width="180" x="22" y="18"></rect>
                 <path d="M34 26 C38 23 44 24 45 28 C45 32 39 35 34 35 C34 32 33 28 34 26 Z" fill="#166534"></path>
                 <text fill="#053B2C" fontFamily="'Outfit', sans-serif" fontSize="11" fontWeight="bold" letterSpacing="0.08em" x="49" y="34">PACKWISE</text>
-                <text fill="#166534" fontFamily="monospace" fontSize="8.5" fontWeight="bold" letterSpacing="0.1em" x="122" y="34">ECO-FREIGHT</text>
+                <text fill="#166534" fontFamily="monospace" fontSize="8.5" fontWeight="bold" letterSpacing="0.1em" x="122" y="34">FSC-MIX-FSC ✓</text>
                 <rect fill="#064E3B" height="14" rx="2" width="14" x="182" y="23"></rect>
                 <path d="M185 30 L188 33 L193 27" stroke="#FFFFFF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"></path>
                 
@@ -614,6 +633,23 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
             </div>
           </div>
         </div>
+
+        {/* Fleet Status Caption */}
+        <div className="max-w-7xl mx-auto px-2 flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono text-body-muted gap-2 pt-1 border-t border-brand-border/40">
+          <div className="flex items-center gap-2">
+            <span className="inline-block w-2 h-2 rounded-full bg-brand-primary animate-ping"></span>
+            <span className="text-brand-heading font-bold">Zero-Emission Closed-Loop Semi Freight Network</span>
+            <span className="text-brand-border">•</span>
+            <span>Long-Haul Connected Fleet Active</span>
+          </div>
+          <div className="flex items-center gap-4 text-[11px] font-semibold">
+            <span className="text-brand-primary flex items-center gap-1">
+              🌿 0g Net CO₂/ton-km
+            </span>
+            <span className="text-body-muted">Dynamic Aerodynamic Routing Active</span>
+          </div>
+        </div>
+
       </div>
 
     </div>
