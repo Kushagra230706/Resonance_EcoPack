@@ -34,17 +34,17 @@ export default function ComparisonDashboard({ data }) {
         
         {/* Cost vs Carbon Scatter Plot */}
         <div className="glass-panel" style={{ padding: '20px' }}>
-          <h3 style={{ fontSize: '1rem', fontWeight: '700', marginBottom: '4px', color: '#ffffff' }}>Cost vs Carbon Pareto Frontier</h3>
-          <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginBottom: '16px' }}>Bottom-Left position represents the optimal Pareto trade-off</p>
+          <h3 style={{ fontSize: '1rem', fontWeight: '700', marginBottom: '4px', color: 'var(--text-heading)' }}>Cost vs Carbon Pareto Frontier</h3>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '16px' }}>Bottom-Left position represents the optimal Pareto trade-off</p>
           
           <div style={{ width: '100%', height: '260px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <ScatterChart margin={{ top: 10, right: 20, bottom: 20, left: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-                <XAxis type="number" dataKey="x" name="Unit Cost" unit="$" stroke="#9ca3af" fontSize={12} label={{ value: 'Unit Cost ($)', position: 'bottom', fill: '#9ca3af', fontSize: 12 }} />
-                <YAxis type="number" dataKey="y" name="Carbon Footprint" unit="kg" stroke="#9ca3af" fontSize={12} label={{ value: 'CO2e (kg)', angle: -90, position: 'insideLeft', fill: '#9ca3af', fontSize: 12 }} />
-                <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ background: '#0e1626', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#fff', fontSize: '12px' }} />
-                <Scatter name="Packaging Alternatives" data={scatterData} fill="#10b981" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-soft)" />
+                <XAxis type="number" dataKey="x" name="Unit Cost" unit="$" stroke="var(--text-muted)" fontSize={12} label={{ value: 'Unit Cost ($)', position: 'bottom', fill: 'var(--text-muted)', fontSize: 12 }} />
+                <YAxis type="number" dataKey="y" name="Carbon Footprint" unit="kg" stroke="var(--text-muted)" fontSize={12} label={{ value: 'CO2e (kg)', angle: -90, position: 'insideLeft', fill: 'var(--text-muted)', fontSize: 12 }} />
+                <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ background: '#FFFFFF', border: '1px solid var(--border-soft)', borderRadius: '8px', color: 'var(--text-heading)', fontSize: '12px' }} />
+                <Scatter name="Packaging Alternatives" data={scatterData} fill="#064E3B" />
               </ScatterChart>
             </ResponsiveContainer>
           </div>
@@ -52,17 +52,17 @@ export default function ComparisonDashboard({ data }) {
 
         {/* Radar Trade-off Comparison */}
         <div className="glass-panel" style={{ padding: '20px' }}>
-          <h3 style={{ fontSize: '1rem', fontWeight: '700', marginBottom: '4px', color: '#ffffff' }}>Multi-Dimensional Trade-off Profile</h3>
-          <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginBottom: '16px' }}>Recommended Winner (Green) vs Conventional Baseline (Purple)</p>
+          <h3 style={{ fontSize: '1rem', fontWeight: '700', marginBottom: '4px', color: 'var(--text-heading)' }}>Multi-Dimensional Trade-off Profile</h3>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '16px' }}>Recommended Winner (Green) vs Conventional Baseline (Amber)</p>
           
           <div style={{ width: '100%', height: '260px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
-                <PolarGrid stroke="rgba(255,255,255,0.1)" />
-                <PolarAngleAxis dataKey="metric" stroke="#9ca3af" fontSize={11} />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="rgba(255,255,255,0.2)" fontSize={10} />
-                <Radar name="Recommended Winner" dataKey="Winner" stroke="#10b981" fill="#10b981" fillOpacity={0.4} />
-                <Radar name="Conventional Baseline" dataKey="Baseline" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.2} />
+                <PolarGrid stroke="var(--border-soft)" />
+                <PolarAngleAxis dataKey="metric" stroke="var(--text-heading)" fontSize={11} />
+                <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="var(--border-soft)" fontSize={10} />
+                <Radar name="Recommended Winner" dataKey="Winner" stroke="#064E3B" fill="#064E3B" fillOpacity={0.4} />
+                <Radar name="Conventional Baseline" dataKey="Baseline" stroke="#D89B24" fill="#D89B24" fillOpacity={0.2} />
               </RadarChart>
             </ResponsiveContainer>
           </div>
@@ -72,12 +72,12 @@ export default function ComparisonDashboard({ data }) {
 
       {/* Alternatives Comparison Table */}
       <div className="glass-panel" style={{ padding: '20px' }}>
-        <h3 style={{ fontSize: '1.1rem', fontWeight: '700', marginBottom: '16px' }}>Generated Packaging Alternatives Matrix</h3>
+        <h3 style={{ fontSize: '1.1rem', fontWeight: '700', marginBottom: '16px', color: 'var(--text-heading)' }}>Generated Packaging Alternatives Matrix</h3>
         
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', textAlign: 'left' }}>
             <thead>
-              <tr style={{ borderBottom: '1px solid var(--border-color)', color: '#9ca3af' }}>
+              <tr style={{ borderBottom: '2px solid var(--border-soft)', color: 'var(--text-muted)' }}>
                 <th style={{ padding: '10px' }}>Packaging Option</th>
                 <th style={{ padding: '10px' }}>Unit Cost</th>
                 <th style={{ padding: '10px' }}>CO₂e / Unit</th>
@@ -92,19 +92,19 @@ export default function ComparisonDashboard({ data }) {
                 <tr 
                   key={a.id} 
                   style={{ 
-                    borderBottom: '1px solid rgba(255,255,255,0.05)',
-                    background: a.id === recommended.id ? 'rgba(16, 185, 129, 0.08)' : 'transparent'
+                    borderBottom: '1px solid var(--border-soft)',
+                    background: a.id === recommended.id ? 'var(--bg-card-highlight)' : 'transparent'
                   }}
                 >
-                  <td style={{ padding: '12px 10px', fontWeight: '600' }}>
+                  <td style={{ padding: '12px 10px', fontWeight: '600', color: 'var(--text-heading)' }}>
                     {a.name} {a.id === recommended.id && <span className="badge-green" style={{ marginLeft: '6px' }}>Winner</span>}
                   </td>
                   <td style={{ padding: '12px 10px' }}>${a.unit_cost_usd}</td>
                   <td style={{ padding: '12px 10px' }}>{a.co2e_kg} kg</td>
                   <td style={{ padding: '12px 10px' }}>{a.protection_score}/100</td>
                   <td style={{ padding: '12px 10px' }}>{a.recyclability_score}%</td>
-                  <td style={{ padding: '12px 10px', color: a.damage_probability_pct > 10 ? '#ef4444' : '#34d399' }}>{a.damage_probability_pct}%</td>
-                  <td style={{ padding: '12px 10px', fontWeight: '800', color: a.id === recommended.id ? '#34d399' : '#fff' }}>
+                  <td style={{ padding: '12px 10px', color: a.damage_probability_pct > 10 ? '#ef4444' : 'var(--green-secondary)' }}>{a.damage_probability_pct}%</td>
+                  <td style={{ padding: '12px 10px', fontWeight: '800', color: a.id === recommended.id ? 'var(--brand-primary)' : 'var(--text-heading)' }}>
                     {a.overall_score}
                   </td>
                 </tr>

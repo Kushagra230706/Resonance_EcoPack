@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, AlertTriangle, CheckCircle2, ArrowRight } from 'lucide-react';
+import { ShieldCheck, CheckCircle2 } from 'lucide-react';
 
 export default function ClaimsChecker() {
   const [claimText, setClaimText] = useState('100% biodegradable and eco-friendly');
@@ -42,10 +42,10 @@ export default function ClaimsChecker() {
       
       <div className="glass-panel" style={{ padding: '28px', marginBottom: '24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-          <ShieldCheck size={28} color="#10b981" />
+          <ShieldCheck size={28} color="var(--brand-primary)" />
           <div>
-            <h2 style={{ fontSize: '1.3rem', fontWeight: '800' }}>Green Claims Validator & Anti-Greenwashing Checker</h2>
-            <p style={{ fontSize: '0.85rem', color: '#9ca3af' }}>Validate marketing text before printing to comply with FTC Green Guides & EU Directives</p>
+            <h2 style={{ fontSize: '1.3rem', fontWeight: '800', color: 'var(--text-heading)' }}>Green Claims Validator & Anti-Greenwashing Checker</h2>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Validate marketing text before printing to comply with FTC Green Guides & EU Directives</p>
           </div>
         </div>
 
@@ -65,26 +65,26 @@ export default function ClaimsChecker() {
       </div>
 
       {result && (
-        <div className="glass-panel" style={{ padding: '24px', borderLeft: `4px solid ${result.risk_level === 'HIGH' ? '#ef4444' : '#10b981'}` }}>
+        <div className="glass-panel" style={{ padding: '24px', borderLeft: `4px solid ${result.risk_level === 'HIGH' ? 'var(--warning-color)' : 'var(--brand-primary)'}` }}>
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: '700' }}>Compliance Result for: "{result.input_claim}"</h3>
-            <span className={result.risk_level === 'HIGH' ? 'badge-amber' : 'badge-green'} style={{ background: result.risk_level === 'HIGH' ? 'rgba(239, 68, 68, 0.15)' : '', color: result.risk_level === 'HIGH' ? '#f87171' : '' }}>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--text-heading)' }}>Compliance Result for: "{result.input_claim}"</h3>
+            <span className={result.risk_level === 'HIGH' ? 'badge-amber' : 'badge-green'}>
               Risk Level: {result.risk_level}
             </span>
           </div>
 
-          <div style={{ background: 'rgba(0,0,0,0.3)', padding: '14px', borderRadius: '8px', fontSize: '0.9rem', marginBottom: '20px' }}>
-            <p style={{ color: result.risk_level === 'HIGH' ? '#fca5a5' : '#6ee7b7', fontWeight: '600' }}>{result.verdict_summary}</p>
-            <p style={{ fontSize: '0.85rem', color: '#9ca3af', marginTop: '6px' }}>{result.greenwashing_warning}</p>
+          <div style={{ background: 'var(--bg-secondary)', padding: '14px', borderRadius: '8px', fontSize: '0.9rem', marginBottom: '20px', border: '1px solid var(--border-soft)' }}>
+            <p style={{ color: result.risk_level === 'HIGH' ? '#92400E' : 'var(--brand-primary)', fontWeight: '600' }}>{result.verdict_summary}</p>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '6px' }}>{result.greenwashing_warning}</p>
           </div>
 
-          <h4 style={{ fontSize: '0.95rem', fontWeight: '700', marginBottom: '10px', color: '#ffffff' }}>✅ Compliant & Verifiable Alternatives to Print:</h4>
+          <h4 style={{ fontSize: '0.95rem', fontWeight: '700', marginBottom: '10px', color: 'var(--text-heading)' }}>✅ Compliant & Verifiable Alternatives to Print:</h4>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {result.suggested_alternatives.map((alt, i) => (
-              <div key={i} style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '12px 16px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem' }}>
-                <CheckCircle2 size={16} color="#34d399" /> {alt}
+              <div key={i} style={{ background: 'var(--bg-card-highlight)', border: '1px solid var(--border-soft)', padding: '12px 16px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', color: 'var(--text-body)' }}>
+                <CheckCircle2 size={16} color="var(--brand-primary)" /> {alt}
               </div>
             ))}
           </div>

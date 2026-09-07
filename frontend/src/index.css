@@ -1,22 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 :root {
-  --bg-dark: #090d16;
-  --bg-card: rgba(18, 26, 43, 0.75);
-  --bg-card-hover: rgba(26, 38, 64, 0.85);
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-glow: rgba(16, 185, 129, 0.3);
-
-  --accent-green: #10b981;
-  --accent-green-glow: #059669;
-  --accent-cyan: #06b6d4;
-  --accent-amber: #f59e0b;
-  --accent-purple: #8b5cf6;
-  --accent-red: #ef4444;
-
-  --text-main: #f3f4f6;
-  --text-muted: #9ca3af;
-  --text-dim: #6b7280;
+  /* User-Defined Eco Color System */
+  --bg-main: #FFF9E6;             /* Pale Yellow */
+  --bg-secondary: #FFFDF4;        /* Warm Cream */
+  --bg-card: #FFFFFF;             /* White Cards */
+  --bg-card-highlight: #EAF5E5;   /* Light Green Highlights */
+  --border-soft: #CFE3C7;         /* Soft Green Borders */
+  
+  --brand-primary: #064E3B;       /* Dark Green */
+  --text-heading: #053B2C;        /* Deep Green */
+  --green-secondary: #166534;     /* Medium Green */
+  --text-body: #17352C;           /* Dark Text */
+  --text-muted: #64756D;          /* Muted Text */
+  --warning-color: #D89B24;        /* Verification Warning */
 
   --radius-sm: 8px;
   --radius-md: 14px;
@@ -34,13 +31,13 @@
 }
 
 body {
-  background-color: var(--bg-dark);
+  background-color: var(--bg-main);
   background-image: 
-    radial-gradient(at 15% 15%, rgba(16, 185, 129, 0.12) 0px, transparent 50%),
-    radial-gradient(at 85% 20%, rgba(6, 182, 212, 0.10) 0px, transparent 50%),
-    radial-gradient(at 50% 80%, rgba(139, 92, 246, 0.08) 0px, transparent 50%);
+    radial-gradient(at 10% 10%, rgba(234, 245, 229, 0.8) 0px, transparent 50%),
+    radial-gradient(at 90% 20%, rgba(207, 227, 199, 0.5) 0px, transparent 50%),
+    radial-gradient(at 50% 90%, rgba(255, 253, 244, 1.0) 0px, transparent 50%);
   background-attachment: fixed;
-  color: var(--text-main);
+  color: var(--text-body);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
@@ -49,6 +46,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
+  color: var(--text-heading);
   letter-spacing: -0.02em;
 }
 
@@ -57,59 +55,58 @@ h1, h2, h3, h4, h5, h6 {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(9, 13, 22, 0.9);
+  background: var(--bg-main);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--border-soft);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-green);
+  background: var(--green-secondary);
 }
 
-/* Glassmorphic Container */
+/* Card Panel System */
 .glass-panel {
   background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius-md);
-  box-shadow: 0 12px 32px 0 rgba(0, 0, 0, 0.37);
+  box-shadow: 0 10px 25px -5px rgba(6, 78, 59, 0.06), 0 8px 10px -6px rgba(6, 78, 59, 0.04);
   transition: all 0.25s ease-in-out;
 }
 
 .glass-panel:hover {
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: var(--green-secondary);
+  box-shadow: 0 14px 30px -5px rgba(6, 78, 59, 0.10);
 }
 
-/* Glow Badges */
+/* Badges */
 .badge-green {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: var(--bg-card-highlight);
+  color: var(--brand-primary);
+  border: 1px solid var(--border-soft);
   padding: 4px 12px;
   border-radius: var(--radius-full);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
 .badge-amber {
-  background: rgba(245, 158, 11, 0.15);
-  color: #fbbf24;
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: #FEF3C7;
+  color: #92400E;
+  border: 1px solid var(--warning-color);
   padding: 4px 12px;
   border-radius: var(--radius-full);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* Buttons */
 .btn-primary {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: #ffffff;
+  background: var(--brand-primary);
+  color: #FFFFFF;
   border: none;
   padding: 10px 20px;
   border-radius: var(--radius-sm);
@@ -117,7 +114,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
-  box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.39);
+  box-shadow: 0 4px 12px rgba(6, 78, 59, 0.25);
   transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
@@ -126,18 +123,19 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-primary:hover {
+  background: var(--text-heading);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px 0 rgba(16, 185, 129, 0.55);
+  box-shadow: 0 6px 16px rgba(6, 78, 59, 0.35);
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--text-main);
-  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--brand-primary);
+  border: 1px solid var(--border-soft);
   padding: 10px 20px;
   border-radius: var(--radius-sm);
   font-family: var(--font-heading);
-  font-weight: 500;
+  font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -148,8 +146,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: var(--bg-card-highlight);
+  border-color: var(--green-secondary);
 }
 
 /* Inputs & Form Controls */
@@ -163,13 +161,13 @@ h1, h2, h3, h4, h5, h6 {
 .form-group label {
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-heading);
 }
 
 .form-input, .form-select {
-  background: rgba(10, 15, 26, 0.8);
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-soft);
+  color: var(--text-body);
   padding: 10px 14px;
   border-radius: var(--radius-sm);
   font-family: var(--font-body);
@@ -179,6 +177,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .form-input:focus, .form-select:focus {
-  border-color: var(--accent-green);
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px rgba(6, 78, 59, 0.12);
+  background: #FFFFFF;
 }

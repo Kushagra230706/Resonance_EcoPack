@@ -56,32 +56,33 @@ export default function CopilotChat({ isOpen, onClose, onApplyExtractedSpecs }) 
   };
 
   return (
-    <div style={{ position: 'fixed', right: '20px', bottom: '20px', width: '400px', height: '560px', zIndex: 999, display: 'flex', flexDirection: 'column' }} className="glass-panel">
+    <div style={{ position: 'fixed', right: '20px', bottom: '20px', width: '400px', height: '560px', zIndex: 999, display: 'flex', flexDirection: 'column', background: '#FFFFFF' }} className="glass-panel">
       
       {/* Header */}
-      <div style={{ padding: '16px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(139, 92, 246, 0.1)' }}>
+      <div style={{ padding: '16px', borderBottom: '1px solid var(--border-soft)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-card-highlight)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Sparkles size={20} color="#c084fc" />
-          <h3 style={{ fontSize: '1rem', fontWeight: '700', color: '#c084fc' }}>Packaging Copilot</h3>
+          <Sparkles size={20} color="var(--brand-primary)" />
+          <h3 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--brand-primary)' }}>Packaging Copilot</h3>
         </div>
-        <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#9ca3af', fontSize: '1.2rem', cursor: 'pointer' }}>✕</button>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '1.2rem', cursor: 'pointer' }}>✕</button>
       </div>
 
       {/* Chat Messages Body */}
-      <div style={{ flex: 1, padding: '16px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <div style={{ flex: 1, padding: '16px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', background: 'var(--bg-secondary)' }}>
         {messages.map((m, idx) => (
           <div key={idx} style={{ display: 'flex', gap: '8px', flexDirection: m.sender === 'user' ? 'row-reverse' : 'row' }}>
-            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: m.sender === 'user' ? '#10b981' : '#8b5cf6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: m.sender === 'user' ? 'var(--brand-primary)' : 'var(--green-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               {m.sender === 'user' ? <User size={14} color="#fff" /> : <Bot size={14} color="#fff" />}
             </div>
             <div style={{
-              background: m.sender === 'user' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-              border: `1px solid ${m.sender === 'user' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`,
+              background: m.sender === 'user' ? 'var(--bg-card-highlight)' : '#FFFFFF',
+              border: `1px solid var(--border-soft)`,
               padding: '10px 14px',
               borderRadius: '12px',
               maxWidth: '80%',
               fontSize: '0.85rem',
-              lineHeight: '1.4'
+              lineHeight: '1.4',
+              color: 'var(--text-body)'
             }}>
               <p>{m.text}</p>
               {m.extractedSpecs && (
@@ -96,11 +97,11 @@ export default function CopilotChat({ isOpen, onClose, onApplyExtractedSpecs }) 
             </div>
           </div>
         ))}
-        {loading && <div style={{ fontSize: '0.8rem', color: '#9ca3af', fontStyle: 'italic' }}>Copilot is thinking...</div>}
+        {loading && <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>Copilot is thinking...</div>}
       </div>
 
       {/* Chat Input */}
-      <form onSubmit={handleSend} style={{ padding: '12px', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '8px' }}>
+      <form onSubmit={handleSend} style={{ padding: '12px', borderTop: '1px solid var(--border-soft)', display: 'flex', gap: '8px', background: '#FFFFFF' }}>
         <input
           type="text"
           value={input}

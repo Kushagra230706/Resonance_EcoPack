@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UploadCloud, CheckCircle, AlertCircle, Camera, RefreshCw } from 'lucide-react';
+import { UploadCloud, CheckCircle, Camera, RefreshCw } from 'lucide-react';
 
 export default function ImageUploadModal({ onAutoPopulate, onClose }) {
   const [dragActive, setDragActive] = useState(false);
@@ -23,7 +23,6 @@ export default function ImageUploadModal({ onAutoPopulate, onClose }) {
       const data = await res.json();
       setDetectedData(data.detected_specs);
     } catch (err) {
-      // Heuristic fallback if local server isn't running yet
       setDetectedData({
         product_type: 'fragile_glass',
         fragility: 'high',
@@ -39,15 +38,15 @@ export default function ImageUploadModal({ onAutoPopulate, onClose }) {
   };
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-      <div className="glass-panel" style={{ width: '100%', maxWidth: '540px', padding: '28px', background: '#0e1626' }}>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(5, 59, 44, 0.4)', backdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+      <div className="glass-panel" style={{ width: '100%', maxWidth: '540px', padding: '28px', background: '#FFFFFF' }}>
         
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Camera size={22} color="#10b981" />
-            <h3 style={{ fontSize: '1.2rem', fontWeight: '700' }}>AI Product Recognition</h3>
+            <Camera size={22} color="var(--brand-primary)" />
+            <h3 style={{ fontSize: '1.2rem', fontWeight: '700', color: 'var(--text-heading)' }}>AI Product Recognition</h3>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#9ca3af', fontSize: '1.2rem', cursor: 'pointer' }}>✕</button>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '1.2rem', cursor: 'pointer' }}>✕</button>
         </div>
 
         {!detectedData ? (
@@ -55,7 +54,7 @@ export default function ImageUploadModal({ onAutoPopulate, onClose }) {
             onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
             onDragLeave={() => setDragActive(false)}
             style={{
-              border: `2px dashed ${dragActive ? '#10b981' : 'rgba(255,255,255,0.15)'}`,
+              border: `2px dashed ${dragActive ? 'var(--brand-primary)' : 'var(--border-soft)'}`,
               borderRadius: '12px',
               padding: '40px 20px',
               display: 'flex',
@@ -63,25 +62,25 @@ export default function ImageUploadModal({ onAutoPopulate, onClose }) {
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              background: dragActive ? 'rgba(16, 185, 129, 0.05)' : 'rgba(0,0,0,0.2)',
+              background: dragActive ? 'var(--bg-card-highlight)' : 'var(--bg-secondary)',
               transition: 'all 0.2s ease'
             }}
           >
             <input type="file" onChange={handleSimulatedUpload} accept="image/*" style={{ display: 'none' }} />
-            <UploadCloud size={48} color={dragActive ? '#10b981' : '#6b7280'} style={{ marginBottom: '12px' }} />
-            <p style={{ fontWeight: '600', marginBottom: '4px' }}>
+            <UploadCloud size={48} color={dragActive ? 'var(--brand-primary)' : 'var(--text-muted)'} style={{ marginBottom: '12px' }} />
+            <p style={{ fontWeight: '600', marginBottom: '4px', color: 'var(--text-heading)' }}>
               {loading ? 'Analyzing product specs with Vision AI...' : 'Upload product photo'}
             </p>
-            <p style={{ fontSize: '0.8rem', color: '#9ca3af' }}>Drag & drop or click to detect category, dimensions & fragility</p>
-            {loading && <RefreshCw className="animate-spin" size={24} color="#10b981" style={{ marginTop: '16px' }} />}
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Drag & drop or click to detect category, dimensions & fragility</p>
+            {loading && <RefreshCw className="animate-spin" size={24} color="var(--brand-primary)" style={{ marginTop: '16px' }} />}
           </label>
         ) : (
           <div>
-            <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '10px', padding: '16px', marginBottom: '20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', color: '#34d399', fontWeight: '700' }}>
+            <div style={{ background: 'var(--bg-card-highlight)', border: '1px solid var(--border-soft)', borderRadius: '10px', padding: '16px', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', color: 'var(--brand-primary)', fontWeight: '700' }}>
                 <CheckCircle size={18} /> Product Auto-Detected (94% Confidence)
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '0.85rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '0.85rem', color: 'var(--text-body)' }}>
                 <div><strong>Category:</strong> {detectedData.product_type}</div>
                 <div><strong>Fragility:</strong> {detectedData.fragility}</div>
                 <div><strong>Dimensions:</strong> {detectedData.length_cm} × {detectedData.width_cm} × {detectedData.height_cm} cm</div>

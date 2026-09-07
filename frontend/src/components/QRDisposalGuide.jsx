@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { QrCode, Recycle, Download, Share2 } from 'lucide-react';
+import { QrCode, Recycle, Download } from 'lucide-react';
 
 export default function QRDisposalGuide() {
   const [material, setMaterial] = useState('Recycled Corrugated Box + Molded Pulp');
@@ -17,10 +17,10 @@ export default function QRDisposalGuide() {
         {/* Form Inputs */}
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-            <QrCode size={26} color="#10b981" />
-            <h2 style={{ fontSize: '1.3rem', fontWeight: '800' }}>Consumer QR Disposal Generator</h2>
+            <QrCode size={26} color="var(--brand-primary)" />
+            <h2 style={{ fontSize: '1.3rem', fontWeight: '800', color: 'var(--text-heading)' }}>Consumer QR Disposal Generator</h2>
           </div>
-          <p style={{ fontSize: '0.85rem', color: '#9ca3af', marginBottom: '20px' }}>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
             Print this QR code on your product box to guide consumers on how to recycle/compost each packaging component based on their region.
           </p>
 
@@ -45,11 +45,11 @@ export default function QRDisposalGuide() {
           </div>
 
           {/* Consumer Guidance Summary */}
-          <div style={{ background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '14px', borderRadius: '10px', marginTop: '20px' }}>
-            <div style={{ fontWeight: '700', fontSize: '0.85rem', color: '#34d399', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ background: 'var(--bg-card-highlight)', border: '1px solid var(--border-soft)', padding: '14px', borderRadius: '10px', marginTop: '20px' }}>
+            <div style={{ fontWeight: '700', fontSize: '0.85rem', color: 'var(--brand-primary)', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Recycle size={16} /> Encoded Consumer Instructions:
             </div>
-            <ul style={{ fontSize: '0.8rem', color: '#d1d5db', paddingLeft: '20px', lineHeight: '1.6' }}>
+            <ul style={{ fontSize: '0.8rem', color: 'var(--text-body)', paddingLeft: '20px', lineHeight: '1.6' }}>
               <li><strong>Outer Box:</strong> 100% Recyclable. Flatten box & place in paper recycling bin.</li>
               <li><strong>Molded Pulp Insert:</strong> Home compostable in 45 days or paper bin.</li>
               <li><strong>Paper Tape:</strong> No need to peel off; 100% water-soluble adhesive.</li>
@@ -58,11 +58,11 @@ export default function QRDisposalGuide() {
         </div>
 
         {/* Generated QR Code Preview */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', borderRadius: '14px', padding: '24px' }}>
-          <div style={{ background: '#ffffff', padding: '16px', borderRadius: '12px', boxShadow: '0 8px 24px rgba(0,0,0,0.5)', marginBottom: '16px' }}>
-            <QRCodeSVG value={disposalUrl} size={180} level="H" />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-secondary)', border: '1px solid var(--border-soft)', borderRadius: '14px', padding: '24px' }}>
+          <div style={{ background: '#ffffff', padding: '16px', borderRadius: '12px', boxShadow: '0 4px 14px rgba(6, 78, 59, 0.1)', marginBottom: '16px', border: '1px solid var(--border-soft)' }}>
+            <QRCodeSVG value={disposalUrl} size={180} level="H" fgColor="#064E3B" />
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#9ca3af', textAlign: 'center', marginBottom: '16px' }}>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center', marginBottom: '16px' }}>
             Scan with smartphone camera to view local disposal guide
           </div>
           <div style={{ display: 'flex', gap: '8px', width: '100%' }}>

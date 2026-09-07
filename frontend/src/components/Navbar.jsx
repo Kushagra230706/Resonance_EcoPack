@@ -3,18 +3,18 @@ import { Leaf, Cpu, Sparkles, ShieldCheck, QrCode } from 'lucide-react';
 
 export default function Navbar({ activeTab, setActiveTab, onOpenCopilot }) {
   return (
-    <header className="glass-panel" style={{ borderRadius: 0, borderTop: 'none', borderLeft: 'none', borderRight: 'none', padding: '16px 32px', marginBottom: '24px' }}>
+    <header className="glass-panel" style={{ borderRadius: 0, borderTop: 'none', borderLeft: 'none', borderRight: 'none', padding: '16px 32px', marginBottom: '24px', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-soft)' }}>
       <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         
         {/* Brand Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ background: 'linear-gradient(135deg, #10b981 0%, #06b6d4 100%)', width: '40px', height: '40px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 15px rgba(16, 185, 129, 0.4)' }}>
+          <div style={{ background: 'var(--brand-primary)', width: '40px', height: '40px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(6, 78, 59, 0.2)' }}>
             <Leaf size={24} color="#ffffff" />
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <h1 style={{ fontSize: '1.4rem', fontWeight: '800', background: 'linear-gradient(90deg, #ffffff 0%, #9ca3af 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                Resonance <span style={{ color: '#10b981', WebkitTextFillColor: '#10b981' }}>EcoPack</span>
+              <h1 style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--text-heading)' }}>
+                Resonance <span style={{ color: 'var(--brand-primary)' }}>EcoPack</span>
               </h1>
               <span className="badge-green">Decision Intelligence</span>
             </div>
@@ -23,7 +23,7 @@ export default function Navbar({ activeTab, setActiveTab, onOpenCopilot }) {
         </div>
 
         {/* Navigation Tabs */}
-        <div style={{ display: 'flex', gap: '8px', background: 'rgba(0,0,0,0.3)', padding: '4px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+        <div style={{ display: 'flex', gap: '8px', background: 'var(--bg-main)', padding: '4px', borderRadius: '12px', border: '1px solid var(--border-soft)' }}>
           <button 
             onClick={() => setActiveTab('optimizer')}
             className={activeTab === 'optimizer' ? 'btn-primary' : 'btn-secondary'}
@@ -52,7 +52,7 @@ export default function Navbar({ activeTab, setActiveTab, onOpenCopilot }) {
           <button 
             onClick={onOpenCopilot} 
             className="btn-secondary" 
-            style={{ borderColor: 'rgba(139, 92, 246, 0.4)', background: 'rgba(139, 92, 246, 0.1)', color: '#c084fc' }}
+            style={{ borderColor: 'var(--brand-primary)', background: 'var(--bg-card-highlight)', color: 'var(--brand-primary)' }}
           >
             <Sparkles size={16} /> Packaging Copilot
           </button>
