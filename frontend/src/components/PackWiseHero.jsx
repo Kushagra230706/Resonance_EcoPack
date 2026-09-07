@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Check, ArrowRight, ShieldCheck, Leaf, Box, Cpu, DollarSign, Star, TrendingUp } from 'lucide-react';
+import { Sparkles, Check, ArrowRight, ShieldCheck, Leaf, Box, Cpu, DollarSign, Star, TrendingDown } from 'lucide-react';
 
 export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
   const [boxOpened, setBoxOpened] = useState(false);
