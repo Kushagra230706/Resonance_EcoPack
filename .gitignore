@@ -21,6 +21,11 @@ __pycache__/
 *.swp
 *.swo
 
+# Database files
+*.db
+*.sqlite3
+ecopack.dbt/
+
 # Build & Output
 dist/
 build/
