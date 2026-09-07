@@ -2,6 +2,7 @@
 FastAPI Server for Resonance EcoPack — Decision-Intelligence Packaging Platform
 """
 
+import os
 from fastapi import FastAPI, UploadFile, File, Body, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -10,6 +11,13 @@ from typing import Dict, Any, Optional, List
 from core.material_db import get_all_materials
 from core.optimizer import optimize_packaging
 from core.claim_validator import validate_green_claim
+
+# Load dotenv if available
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 app = FastAPI(
     title="Resonance EcoPack API",
