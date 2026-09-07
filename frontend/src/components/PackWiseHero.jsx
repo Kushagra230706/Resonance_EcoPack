@@ -63,16 +63,16 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
         canvas.height = 1024;
         const ctx = canvas.getContext('2d');
 
-        ctx.fillStyle = '#C89B6D';
+        ctx.fillStyle = '#8F5C2B';
         ctx.fillRect(0, 0, 1024, 1024);
 
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.035)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
         for (let y = 0; y < 1024; y += 8) {
           ctx.fillRect(0, y, 1024, 3);
         }
 
         for (let i = 0; i < 9000; i++) {
-          ctx.fillStyle = Math.random() > 0.45 ? 'rgba(60, 35, 15, 0.05)' : 'rgba(255, 250, 235, 0.08)';
+          ctx.fillStyle = Math.random() > 0.45 ? 'rgba(40, 20, 5, 0.07)' : 'rgba(235, 215, 185, 0.06)';
           const rw = Math.random() * 5 + 1;
           const rh = Math.random() * 2 + 1;
           ctx.fillRect(Math.random() * 1024, Math.random() * 1024, rw, rh);
@@ -128,13 +128,13 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
       });
 
       const kraftInterior = new THREE.MeshStandardMaterial({
-        color: 0x9f7448,
+        color: 0x6e431e,
         roughness: 0.94,
         metalness: 0.0
       });
 
       const flapEdgeLineMaterial = new THREE.LineBasicMaterial({
-        color: 0x3b2314,
+        color: 0x2b170a,
         linewidth: 2
       });
 
@@ -416,7 +416,6 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
       
       {/* Background Grid Pattern */}
       <div className="absolute inset-0 tech-grid-light pointer-events-none opacity-60"></div>
-      <div className="absolute inset-0 glow-warm pointer-events-none"></div>
 
       {/* Main 2-Column Hero Grid */}
       <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
@@ -512,9 +511,6 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
 
         {/* RIGHT COLUMN: Compact 3D Canvas Viewport + Overlay Cards */}
         <div className="lg:col-span-6 relative w-full h-[400px] flex items-center justify-center overflow-hidden">
-          
-          {/* Ambient Glow */}
-          <div className="absolute w-[300px] h-[220px] rounded-full bg-gradient-to-tr from-[#CFE3C7]/60 to-[#EAF5E5]/80 blur-2xl pointer-events-none"></div>
 
           {/* Product Badge */}
           <div className="absolute top-1 z-30 flex items-center gap-2 px-3 py-1 rounded-full bg-warm-cream/95 border border-brand-border shadow-sm backdrop-blur text-[10px] font-mono text-brand-heading font-bold uppercase">
@@ -565,20 +561,20 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
 
       </div>
 
-      {/* BOTTOM TRANSIT SECTION - Bounded Moving Semi-Trailer */}
-      <div className="relative w-full z-20 border-t border-brand-border bg-warm-cream/95 overflow-hidden py-2 rounded-xl shadow-inner mt-2">
+      {/* BOTTOM TRANSIT SECTION - Fully Visible Moving Semi-Trailer */}
+      <div className="relative w-full z-20 border-t border-brand-border bg-warm-cream/95 overflow-hidden py-3 rounded-xl shadow-inner mt-2">
         
-        {/* Highway Road Grid Line */}
-        <div className="relative w-full h-10 overflow-hidden flex items-center">
-          <div className="absolute inset-x-0 bottom-2 h-[2px] bg-gradient-to-r from-transparent via-brand-border to-transparent"></div>
-          <div className="absolute inset-x-0 bottom-2 h-px border-b border-dashed border-brand-secondary/40"></div>
+        {/* Highway Road Container with expanded height so trailer is 100% visible vertically */}
+        <div className="relative w-full h-[95px] overflow-hidden flex items-center">
+          <div className="absolute inset-x-0 bottom-4 h-[2px] bg-gradient-to-r from-transparent via-brand-border to-transparent"></div>
+          <div className="absolute inset-x-0 bottom-4 h-px border-b border-dashed border-brand-secondary/40"></div>
 
-          {/* Moving Semi Truck with Leaf Wake */}
-          <div className="absolute left-0 bottom-1 animate-drive-semi flex items-end pointer-events-none select-none">
+          {/* Moving Semi Truck */}
+          <div className="absolute left-0 bottom-2 animate-drive-semi flex items-end pointer-events-none select-none">
             <div className="relative flex items-end">
               
               {/* Fluttering leaf wake trailing behind truck */}
-              <div className="absolute -left-16 bottom-1 w-28 h-12 pointer-events-none overflow-visible">
+              <div className="absolute -left-16 bottom-2 w-28 h-12 pointer-events-none overflow-visible">
                 <svg className="swirl-leaf-1 absolute left-12 top-3 w-4 h-4 text-brand-primary drop-shadow-sm" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20C19 20 22 3 22 3c-1 2-8 2-11 5z"></path>
                 </svg>
@@ -593,40 +589,101 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
                 </svg>
               </div>
 
-              {/* Streamlined Bullet-Train Semi-Trailer */}
-              <svg className="w-[280px] h-[52px] drop-shadow-sm" fill="none" viewBox="0 0 355 70" xmlns="http://www.w3.org/2000/svg">
-                <rect fill="#FFFFFF" height="42" rx="5" stroke="#CFE3C7" strokeWidth="1.5" width="220" x="8" y="10"></rect>
-                <line stroke="#EAF5E5" strokeWidth="1" x1="18" x2="18" y1="10" y2="52"></line>
-                <line stroke="#EAF5E5" strokeWidth="1" x1="80" x2="80" y1="10" y2="52"></line>
-                <line stroke="#EAF5E5" strokeWidth="1" x1="140" x2="140" y1="10" y2="52"></line>
-                <line stroke="#EAF5E5" strokeWidth="1" x1="200" x2="200" y1="10" y2="52"></line>
+              {/* Realistic Commercial Freight Semi-Trailer matching Image 2 */}
+              <svg className="w-[410px] h-[82px] drop-shadow-md overflow-visible" fill="none" viewBox="0 0 420 85" xmlns="http://www.w3.org/2000/svg">
+                {/* 1. TRAILER BODY (Left side of assembly) */}
+                {/* Main White Semi-Trailer Box */}
+                <rect fill="#FFFFFF" height="48" rx="2" stroke="#B0BEC5" strokeWidth="1.5" width="280" x="5" y="10"></rect>
                 
-                <rect fill="#EAF5E5" height="24" rx="4" stroke="#CFE3C7" strokeWidth="1" width="180" x="22" y="18"></rect>
-                <path d="M34 26 C38 23 44 24 45 28 C45 32 39 35 34 35 C34 32 33 28 34 26 Z" fill="#166534"></path>
-                <text fill="#053B2C" fontFamily="'Outfit', sans-serif" fontSize="11" fontWeight="bold" letterSpacing="0.08em" x="49" y="34">PACKWISE</text>
-                <text fill="#166534" fontFamily="monospace" fontSize="8.5" fontWeight="bold" letterSpacing="0.1em" x="122" y="34">FSC-MIX-FSC ✓</text>
-                <rect fill="#064E3B" height="14" rx="2" width="14" x="182" y="23"></rect>
-                <path d="M185 30 L188 33 L193 27" stroke="#FFFFFF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"></path>
-                
-                <path d="M12 48 H216 V53 H12 Z" fill="#EAF5E5" stroke="#CFE3C7" strokeWidth="0.8"></path>
-                
-                <rect fill="#053B2C" height="8" rx="1" width="12" x="226" y="40"></rect>
-                <path d="M234 45 H252 V53 H234 Z" fill="#053B2C"></path>
-                <path d="M234 14 C256 12 284 14 306 23 C326 31 345 42 349 48 C352 52 348 55 340 55 H234 Z" fill="#064E3B" stroke="#053B2C" strokeWidth="1.5"></path>
-                <path d="M234 14 C254 13 280 15 302 23 C276 18 250 17 234 18 Z" fill="#166534" opacity="0.85"></path>
-                
-                <path d="M276 22 C295 24 316 32 334 43 C335 45 333 46 327 46 H276 C273 38 273 28 276 22 Z" fill="#EAF5E5" stroke="#CFE3C7" strokeWidth="1"></path>
-                <path d="M336 50 C349 50 351 53 346 56 H316 C322 53 328 50 336 50 Z" fill="#053B2C"></path>
-                <path d="M334 47 C342 49 347 51 344 53 C338 52 334 50 334 47 Z" fill="#D89B24"></path>
-                
+                {/* Trailer Vertical Panel Lines & Metal Trim */}
+                <line stroke="#ECEFF1" strokeWidth="1" x1="50" x2="50" y1="10" y2="58"></line>
+                <line stroke="#ECEFF1" strokeWidth="1" x1="110" x2="110" y1="10" y2="58"></line>
+                <line stroke="#ECEFF1" strokeWidth="1" x1="170" x2="170" y1="10" y2="58"></line>
+                <line stroke="#ECEFF1" strokeWidth="1" x1="230" x2="230" y1="10" y2="58"></line>
+                <line stroke="#B0BEC5" strokeWidth="1.2" x1="5" x2="285" y1="10" y2="10"></line>
+                <line stroke="#90A4AE" strokeWidth="2" x1="5" x2="285" y1="58" y2="58"></line>
+
+                {/* Bold Centered Brand Logo (Image 2 style: PACKWISE) */}
+                <text fill="#053B2C" fontFamily="sans-serif" fontSize="24" fontWeight="900" letterSpacing="0.06em" x="72" y="43">PACKWISE</text>
+
+                {/* Under-Trailer Skirt / Storage Box */}
+                <rect fill="#455A64" height="10" rx="1" width="100" x="110" y="58"></rect>
+                <circle cx="120" cy="63" fill="#FFB300" r="1.5"></circle>
+                <circle cx="200" cy="63" fill="#FFB300" r="1.5"></circle>
+
+                {/* Landing Gear Support Legs (Under front of trailer) */}
+                <path d="M240 58 V68 H246 V58 Z" fill="#37474F"></path>
+                <path d="M248 58 V68 H254 V58 Z" fill="#37474F"></path>
+
+                {/* Rear Trailer Axle Guard & Mud Flaps */}
+                <path d="M22 58 H90 V64 H22 Z" fill="#37474F"></path>
+                <rect fill="#212121" height="12" width="6" x="16" y="62"></rect>
+
+                {/* Trailer Rear Dual Wheel Axles */}
                 <g>
-                  <circle cx="38" cy="54" fill="#053B2C" r="8"></circle>
-                  <circle cx="62" cy="54" fill="#053B2C" r="8"></circle>
-                  <circle cx="86" cy="54" fill="#053B2C" r="8"></circle>
+                  {/* Wheel 1 */}
+                  <circle cx="38" cy="68" fill="#1C2833" r="10"></circle>
+                  <circle cx="38" cy="68" fill="#546E7A" r="5"></circle>
+                  <circle cx="38" cy="68" fill="#00A896" r="2"></circle>
+                  
+                  {/* Wheel 2 */}
+                  <circle cx="62" cy="68" fill="#1C2833" r="10"></circle>
+                  <circle cx="62" cy="68" fill="#546E7A" r="5"></circle>
+                  <circle cx="62" cy="68" fill="#00A896" r="2"></circle>
                 </g>
+
+                {/* 2. HITCH CONNECTOR */}
+                <rect fill="#263238" height="6" width="14" x="282" y="52"></rect>
+
+                {/* 3. TRACTOR CAB (Right side of assembly, facing forward/right - Image 2 style) */}
+                {/* Lower Chassis Base */}
+                <path d="M288 56 H405 V66 H288 Z" fill="#37474F"></path>
+                <rect fill="#78909C" height="8" rx="1" width="30" x="295" y="58"></rect> {/* Side Fuel Tank */}
+
+                {/* Main White Semi Cab Body */}
+                {/* Wind deflector roof + Cab front slope */}
+                <path d="M288 22 C295 12 315 11 328 11 H375 C385 11 392 18 396 28 L404 46 C406 50 406 58 406 58 H288 V22 Z" fill="#FFFFFF" stroke="#B0BEC5" strokeWidth="1.5"></path>
+                
+                {/* Roof Fairing / Deflector Accent Line */}
+                <path d="M292 23 C305 15 325 14 365 14 L388 28" stroke="#CFD8DC" strokeWidth="1.5"></path>
+
+                {/* Dark Tinted Front Windshield & Side Window */}
+                <path d="M348 20 H372 C378 20 384 25 387 32 L394 44 H348 V20 Z" fill="#263238" stroke="#455A64" strokeWidth="1"></path>
+                <path d="M352 23 H370 L383 41 H352 V23 Z" fill="#37474F"></path> {/* Inner window pane */}
+                <line stroke="#80DEEA" opacity="0.6" strokeWidth="1.5" x1="365" x2="380" y1="23" y2="40"></line> {/* Glass reflection */}
+
+                {/* Side Door Cutline & Mirror */}
+                <path d="M325 22 V56 H346 V22 Z" fill="#F5F5F5" stroke="#D1D5DB" strokeWidth="1"></path> {/* Door panel */}
+                <rect fill="#1C2833" height="12" rx="1" width="4" x="350" y="28"></rect> {/* Side Rearview Mirror */}
+
+                {/* Front Grille & Bumper (Facing right) */}
+                <path d="M396 46 H407 V58 H396 Z" fill="#ECEFF1" stroke="#B0BEC5" strokeWidth="1"></path>
+                <line stroke="#90A4AE" strokeWidth="1.2" x1="398" x2="406" y1="49" y2="49"></line>
+                <line stroke="#90A4AE" strokeWidth="1.2" x1="398" x2="406" y1="52" y2="52"></line>
+                <line stroke="#90A4AE" strokeWidth="1.2" x1="398" x2="406" y1="55" y2="55"></line>
+
+                {/* Front Headlight (Amber/Yellow LED accent) */}
+                <polygon fill="#FFC107" stroke="#FFA000" strokeWidth="0.8" points="403,50 407,50 406,54 402,54"></polygon>
+
+                {/* Aerodynamic Side Steps */}
+                <rect fill="#90A4AE" height="4" rx="1" width="35" x="350" y="58"></rect>
+
+                {/* Tractor Wheels */}
                 <g>
-                  <circle cx="254" cy="54" fill="#053B2C" r="8"></circle>
-                  <circle cx="310" cy="54" fill="#053B2C" r="8"></circle>
+                  {/* Rear Tractor Axle Wheel 1 */}
+                  <circle cx="310" cy="68" fill="#1C2833" r="10"></circle>
+                  <circle cx="310" cy="68" fill="#546E7A" r="5"></circle>
+                  <circle cx="310" cy="68" fill="#00A896" r="2"></circle>
+
+                  {/* Rear Tractor Axle Wheel 2 */}
+                  <circle cx="334" cy="68" fill="#1C2833" r="10"></circle>
+                  <circle cx="334" cy="68" fill="#546E7A" r="5"></circle>
+                  <circle cx="334" cy="68" fill="#00A896" r="2"></circle>
+
+                  {/* Front Steering Wheel */}
+                  <circle cx="382" cy="68" fill="#1C2833" r="10"></circle>
+                  <circle cx="382" cy="68" fill="#78909C" r="5"></circle>
+                  <circle cx="382" cy="68" fill="#00A896" r="2"></circle>
                 </g>
               </svg>
 
