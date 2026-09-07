@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Check, ArrowRight, ShieldCheck, Leaf, Box, Cpu, Truck, Wind } from 'lucide-react';
+import { Sparkles, Check, ArrowRight, ShieldCheck, Leaf, Box, Cpu } from 'lucide-react';
 
 export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
   const [boxOpened, setBoxOpened] = useState(false);
@@ -8,7 +8,7 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setBoxOpened(true);
-    }, 800);
+    }, 700);
     return () => clearTimeout(timer);
   }, []);
 
@@ -175,140 +175,167 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
           </motion.div>
         </div>
 
-        {/* RIGHT COLUMN: Realistic 3D Cardboard Box Opening Sequence */}
-        <div style={{ position: 'relative', height: '440px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {/* RIGHT COLUMN: REALISTIC 3D CARDBOARD BOX PERSPECTIVE */}
+        <div style={{ position: 'relative', height: '460px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           
-          {/* Ambient Glowing Portal */}
+          {/* Ambient Radial Portal */}
           <div style={{
             position: 'absolute',
-            width: '320px',
-            height: '320px',
+            width: '340px',
+            height: '340px',
             borderRadius: '50%',
             background: 'radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, transparent 70%)',
-            boxShadow: '0 0 50px rgba(16, 185, 129, 0.3)',
+            boxShadow: '0 0 50px rgba(16, 185, 129, 0.35)',
             animation: 'pulse 4s ease-in-out infinite'
           }} />
 
-          {/* REALISTIC 3D BOX CONTAINER */}
+          {/* 3D ISOMETRIC CUBE CONTAINER */}
           <div style={{
             position: 'relative',
             width: '260px',
-            height: '200px',
+            height: '180px',
             perspective: '1200px',
-            marginTop: '60px'
+            marginTop: '70px'
           }}>
             
-            {/* Box Body Container */}
             <div style={{
               width: '100%',
               height: '100%',
               position: 'relative',
               transformStyle: 'preserve-3d',
-              transform: 'rotateX(22deg) rotateY(-18deg) rotateZ(2deg)'
+              transform: 'rotateX(28deg) rotateY(-25deg)',
+              transformOrigin: 'center center'
             }}>
               
-              {/* Inner Cavity Shadow */}
+              {/* Inner Cavity Depth Shadow */}
               <div style={{
                 position: 'absolute',
-                inset: '4px',
-                background: 'radial-gradient(circle, #050d09 0%, #000000 100%)',
-                boxShadow: 'inset 0 0 30px #000',
-                borderRadius: '4px'
+                inset: '2px',
+                background: '#040b07',
+                boxShadow: 'inset 0 0 40px #000',
+                borderRadius: '2px'
               }} />
 
               {/* Front Face */}
               <div style={{
                 position: 'absolute',
-                inset: 0,
-                background: 'linear-gradient(135deg, #d49b59 0%, #9e6c31 100%)',
-                border: '1.5px solid #e3b074',
-                borderRadius: '4px',
-                transform: 'translateZ(100px)',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.6)'
+                width: '100%',
+                height: '100%',
+                background: 'linear-gradient(135deg, #c78f4b 0%, #8c5b23 100%)',
+                border: '1.5px solid #dba15c',
+                boxShadow: '0 25px 50px rgba(0,0,0,0.7)',
+                transform: 'translateZ(90px)',
+                display: 'flex',
+                alignItems: 'flex-end',
+                padding: '16px'
               }}>
-                <div style={{ position: 'absolute', bottom: '12px', left: '16px', display: 'flex', gap: '8px', opacity: 0.7 }}>
-                  <Leaf size={16} color="#4a2c07" />
-                  <Box size={16} color="#4a2c07" />
-                  <ShieldCheck size={16} color="#4a2c07" />
+                <div style={{ display: 'flex', gap: '8px', opacity: 0.8 }}>
+                  <Leaf size={16} color="#3d2105" />
+                  <Box size={16} color="#3d2105" />
+                  <ShieldCheck size={16} color="#3d2105" />
                 </div>
-                <div style={{ position: 'absolute', top: '16px', right: '16px', fontSize: '0.65rem', color: '#4a2c07', fontWeight: '800', letterSpacing: '1px' }}>
+                <div style={{ position: 'absolute', top: '14px', right: '14px', fontSize: '0.65rem', color: '#3d2105', fontWeight: '800', letterSpacing: '1px' }}>
                   RECYCLABLE 100%
                 </div>
               </div>
 
-              {/* REALISTIC 4-FLAP UNBOXING ANIMATIONS */}
+              {/* Right Side Face */}
+              <div style={{
+                position: 'absolute',
+                width: '180px',
+                height: '100%',
+                background: 'linear-gradient(135deg, #a37237 0%, #6e4616 100%)',
+                border: '1.5px solid #c48b48',
+                right: 0,
+                transformOrigin: 'right center',
+                transform: 'rotateY(90deg) translateZ(0px)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#3d2105',
+                fontWeight: '800',
+                fontSize: '0.75rem',
+                letterSpacing: '1px'
+              }}>
+                FRAGILE 📦
+              </div>
+
+              {/* REALISTIC 4 TOP FOLDING FLAPS */}
               
-              {/* Top Front Flap */}
+              {/* Front Flap (Folds Forward Downward) */}
               <motion.div
                 initial={{ rotateX: 0 }}
-                animate={{ rotateX: boxOpened ? -135 : 0 }}
+                animate={{ rotateX: boxOpened ? -110 : 0 }}
                 transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
                 style={{
                   position: 'absolute',
                   top: 0,
                   left: 0,
                   right: 0,
-                  height: '50%',
-                  background: 'linear-gradient(180deg, #e3b074 0%, #b87d3b 100%)',
+                  height: '90px',
+                  background: 'linear-gradient(180deg, #d99f5e 0%, #aa7336 100%)',
                   transformOrigin: 'top center',
-                  border: '1px solid #f0c48d',
-                  borderRadius: '3px 3px 0 0',
+                  transform: 'translateZ(90px)',
+                  border: '1px solid #ecc08b',
+                  borderRadius: '2px 2px 0 0',
+                  boxShadow: '0 10px 20px rgba(0,0,0,0.3)',
                   zIndex: 10
-                }}
-              >
-                <div style={{ position: 'absolute', bottom: '2px', left: 0, right: 0, height: '4px', background: 'rgba(0,0,0,0.15)' }} />
-              </motion.div>
-
-              {/* Top Back Flap */}
-              <motion.div
-                initial={{ rotateX: 0 }}
-                animate={{ rotateX: boxOpened ? 135 : 0 }}
-                transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-                style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  height: '50%',
-                  background: 'linear-gradient(0deg, #c48b48 0%, #8c5923 100%)',
-                  transformOrigin: 'bottom center',
-                  border: '1px solid #d99f5e',
-                  borderRadius: '0 0 3px 3px',
-                  zIndex: 9
                 }}
               />
 
-              {/* Left Flap */}
+              {/* Back Flap (Folds Backward) */}
               <motion.div
-                initial={{ rotateZ: 0 }}
-                animate={{ rotateZ: boxOpened ? -120 : 0 }}
+                initial={{ rotateX: 0 }}
+                animate={{ rotateX: boxOpened ? 110 : 0 }}
+                transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '90px',
+                  background: 'linear-gradient(0deg, #b87d3b 0%, #7d4d1d 100%)',
+                  transformOrigin: 'top center',
+                  transform: 'translateZ(-90px)',
+                  border: '1px solid #c48b48',
+                  borderRadius: '2px 2px 0 0',
+                  zIndex: 5
+                }}
+              />
+
+              {/* Left Side Flap (Folds Left) */}
+              <motion.div
+                initial={{ rotateY: 0 }}
+                animate={{ rotateY: boxOpened ? 110 : 0 }}
                 transition={{ duration: 1.0, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
                 style={{
                   position: 'absolute',
                   top: 0,
                   bottom: 0,
                   left: 0,
-                  width: '50%',
-                  background: 'linear-gradient(90deg, #b87d3b 0%, #8c5923 100%)',
+                  width: '90px',
+                  background: 'linear-gradient(-90deg, #c48b48 0%, #8c5923 100%)',
                   transformOrigin: 'left center',
+                  transform: 'translateZ(0px)',
                   border: '1px solid #d99f5e',
                   zIndex: 8
                 }}
               />
 
-              {/* Right Flap */}
+              {/* Right Side Flap (Folds Right) */}
               <motion.div
-                initial={{ rotateZ: 0 }}
-                animate={{ rotateZ: boxOpened ? 120 : 0 }}
+                initial={{ rotateY: 0 }}
+                animate={{ rotateY: boxOpened ? -110 : 0 }}
                 transition={{ duration: 1.0, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
                 style={{
                   position: 'absolute',
                   top: 0,
                   bottom: 0,
                   right: 0,
-                  width: '50%',
-                  background: 'linear-gradient(-90deg, #b87d3b 0%, #8c5923 100%)',
+                  width: '90px',
+                  background: 'linear-gradient(90deg, #c48b48 0%, #8c5923 100%)',
                   transformOrigin: 'right center',
+                  transform: 'translateZ(0px)',
                   border: '1px solid #d99f5e',
                   zIndex: 8
                 }}
@@ -318,13 +345,13 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
 
             {/* RISING 3D PACKWISE EMBLEM FLOATING OUT OF BOX */}
             <motion.div
-              initial={{ y: 30, opacity: 0, scale: 0.5 }}
+              initial={{ y: 40, opacity: 0, scale: 0.5 }}
               animate={{
-                y: boxOpened ? -150 : 30,
+                y: boxOpened ? -160 : 40,
                 opacity: boxOpened ? 1 : 0,
                 scale: boxOpened ? 1.05 : 0.5
               }}
-              transition={{ duration: 1.3, delay: 0.3, type: 'spring', stiffness: 100, damping: 15 }}
+              transition={{ duration: 1.2, delay: 0.3, type: 'spring', stiffness: 100, damping: 15 }}
               style={{
                 position: 'absolute',
                 top: 0,
@@ -475,18 +502,18 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
 
       </div>
 
-      {/* ENHANCED HIGH-DEFINITION LOGISTICS TRUCK WITH FLUTTERING LEAF EXHAUST STREAM */}
+      {/* ENHANCED LOGISTICS TRUCK WITH 2 MORE WHEELS (6 WHEELS TOTAL) & LEAF EXHAUST STREAM */}
       <div style={{
         position: 'relative',
         width: '100%',
-        height: '75px',
+        height: '80px',
         marginTop: '36px',
         borderTop: '1px dashed rgba(16, 185, 129, 0.25)',
         paddingTop: '12px',
         overflow: 'hidden'
       }}>
         
-        {/* Road Marker */}
+        {/* Road Marker Line */}
         <div style={{
           position: 'absolute',
           bottom: '8px',
@@ -509,7 +536,7 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
           }}
         >
           
-          {/* Continuous Fluttering Green Leaf Exhaust Stream */}
+          {/* Continuous Leaf Exhaust Stream */}
           <div style={{ position: 'relative', width: '120px', height: '40px', marginRight: '-5px' }}>
             {[...Array(8)].map((_, i) => (
               <motion.div
@@ -542,7 +569,7 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
             ))}
           </div>
 
-          {/* HD Metallic Truck Chassis & Cab */}
+          {/* HD Metallic Truck Chassis & Cargo Trailer */}
           <div style={{ display: 'flex', alignItems: 'flex-end', filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.6))' }}>
             
             {/* Cargo Container */}
@@ -550,27 +577,29 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
               background: 'linear-gradient(135deg, #053B2C 0%, #064E3B 100%)',
               border: '1.5px solid #34d399',
               borderRadius: '8px 4px 4px 8px',
-              padding: '8px 16px',
+              padding: '10px 18px',
               color: '#FFFFFF',
               display: 'flex',
               alignItems: 'center',
-              gap: '10px',
+              gap: '12px',
               position: 'relative'
             }}>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontSize: '0.85rem', fontWeight: '900', letterSpacing: '1.5px', color: '#FFFFFF', fontFamily: 'Outfit, sans-serif' }}>
+                <span style={{ fontSize: '0.9rem', fontWeight: '900', letterSpacing: '1.5px', color: '#FFFFFF', fontFamily: 'Outfit, sans-serif' }}>
                   PackWise
                 </span>
                 <span style={{ fontSize: '0.6rem', color: '#6ee7b7', fontWeight: '700', letterSpacing: '0.5px' }}>
                   SUSTAINABLE LOGISTICS
                 </span>
               </div>
-              <Leaf size={18} color="#34d399" />
+              <Leaf size={20} color="#34d399" />
               
-              {/* Rear Dual Wheels */}
-              <div style={{ position: 'absolute', bottom: '-10px', left: '16px', display: 'flex', gap: '6px' }}>
-                <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }} style={{ width: '16px', height: '16px', borderRadius: '50%', background: '#111', border: '3px stroke #34d399', borderStyle: 'dashed' }} />
-                <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }} style={{ width: '16px', height: '16px', borderRadius: '50%', background: '#111', border: '3px stroke #34d399', borderStyle: 'dashed' }} />
+              {/* REAR 4 WHEELS (2 DUAL-AXLE SETS UNDER TRAILER) */}
+              <div style={{ position: 'absolute', bottom: '-11px', left: '12px', display: 'flex', gap: '4px' }}>
+                <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }} style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#111', border: '3px stroke #34d399', borderStyle: 'dashed' }} />
+                <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }} style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#111', border: '3px stroke #34d399', borderStyle: 'dashed' }} />
+                <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }} style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#111', border: '3px stroke #34d399', borderStyle: 'dashed' }} />
+                <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }} style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#111', border: '3px stroke #34d399', borderStyle: 'dashed' }} />
               </div>
             </div>
 
@@ -579,8 +608,8 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
               background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
               border: '1.5px solid #6ee7b7',
               borderRadius: '0 10px 6px 0',
-              width: '36px',
-              height: '38px',
+              width: '42px',
+              height: '42px',
               position: 'relative',
               display: 'flex',
               flexDirection: 'column',
@@ -588,14 +617,15 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
               padding: '4px'
             }}>
               {/* Windshield Window */}
-              <div style={{ background: '#0284c7', borderRadius: '0 6px 2px 0', width: '22px', height: '14px', border: '1px solid #7dd3fc' }} />
+              <div style={{ background: '#0284c7', borderRadius: '0 6px 2px 0', width: '26px', height: '16px', border: '1px solid #7dd3fc' }} />
               
               {/* Headlight LED Glow */}
-              <div style={{ position: 'absolute', right: '-4px', bottom: '8px', width: '6px', height: '8px', background: '#fef08a', borderRadius: '2px', boxShadow: '0 0 10px #fef08a' }} />
+              <div style={{ position: 'absolute', right: '-4px', bottom: '8px', width: '6px', height: '10px', background: '#fef08a', borderRadius: '2px', boxShadow: '0 0 12px #fef08a' }} />
               
-              {/* Front Wheel */}
-              <div style={{ position: 'absolute', bottom: '-10px', right: '6px' }}>
-                <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }} style={{ width: '16px', height: '16px', borderRadius: '50%', background: '#111', border: '3px stroke #34d399', borderStyle: 'dashed' }} />
+              {/* CAB 2 WHEELS (FRONT AXLE) */}
+              <div style={{ position: 'absolute', bottom: '-11px', right: '4px', display: 'flex', gap: '3px' }}>
+                <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }} style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#111', border: '3px stroke #34d399', borderStyle: 'dashed' }} />
+                <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }} style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#111', border: '3px stroke #34d399', borderStyle: 'dashed' }} />
               </div>
             </div>
 
