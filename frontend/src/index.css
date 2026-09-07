@@ -187,3 +187,83 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 0 0 3px rgba(6, 78, 59, 0.12);
   background: #FFFFFF;
 }
+
+/* Interactive White Cards */
+.white-card {
+  background: #FFFFFF;
+  border: 1px solid #CFE3C7;
+  box-shadow: 0 16px 36px -12px rgba(5, 59, 44, 0.08), 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+.white-card-interactive {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.white-card-interactive:hover {
+  transform: translateY(-4px);
+  border-color: #166534;
+  box-shadow: 0 22px 42px -10px rgba(6, 78, 59, 0.16), 0 4px 10px rgba(0, 0, 0, 0.04);
+}
+
+/* Organic Eco Paper Texture Grid */
+.tech-grid-light {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(207, 227, 199, 0.55) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(207, 227, 199, 0.55) 1px, transparent 1px);
+}
+
+.glow-warm {
+  background: radial-gradient(circle at 65% 35%, rgba(234, 245, 229, 0.85) 0%, rgba(255, 249, 230, 0.4) 50%, transparent 75%);
+}
+
+/* Enhanced Organic Leaf Swirl Animations */
+@keyframes flutterLeafA {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.4) rotate(0deg); }
+  18% { opacity: 0.95; }
+  50% { transform: translate(-42px, -24px) scale(1.05) rotate(140deg); }
+  80% { opacity: 0.85; }
+  100% { opacity: 0; transform: translate(-105px, -46px) scale(0.7) rotate(320deg); }
+}
+
+@keyframes flutterLeafB {
+  0% { opacity: 0; transform: translate(0, 4px) scale(0.35) rotate(-20deg); }
+  22% { opacity: 0.9; }
+  55% { transform: translate(-52px, -36px) scale(1.15) rotate(190deg); }
+  85% { opacity: 0.75; }
+  100% { opacity: 0; transform: translate(-125px, -58px) scale(0.65) rotate(390deg); }
+}
+
+@keyframes flutterLeafC {
+  0% { opacity: 0; transform: translate(0, -2px) scale(0.5) rotate(30deg); }
+  25% { opacity: 0.95; }
+  60% { transform: translate(-64px, -14px) scale(1.1) rotate(220deg); }
+  100% { opacity: 0; transform: translate(-140px, -30px) scale(0.75) rotate(460deg); }
+}
+
+@keyframes flutterLeafD {
+  0% { opacity: 0; transform: translate(0, 2px) scale(0.4) rotate(-45deg); }
+  20% { opacity: 0.9; }
+  50% { transform: translate(-38px, -40px) scale(0.95) rotate(110deg); }
+  100% { opacity: 0; transform: translate(-95px, -70px) scale(0.55) rotate(270deg); }
+}
+
+@keyframes flutterLeafE {
+  0% { opacity: 0; transform: translate(4px, 0) scale(0.45) rotate(10deg); }
+  25% { opacity: 0.85; }
+  65% { transform: translate(-78px, -20px) scale(1.2) rotate(250deg); }
+  100% { opacity: 0; transform: translate(-155px, -40px) scale(0.7) rotate(490deg); }
+}
+
+@keyframes driveSemi {
+  0% { transform: translateX(-350px); }
+  100% { transform: translateX(115vw); }
+}
+
+.swirl-leaf-1 { animation: flutterLeafA 2.1s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite; }
+.swirl-leaf-2 { animation: flutterLeafB 2.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.35s infinite; }
+.swirl-leaf-3 { animation: flutterLeafC 2.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.7s infinite; }
+.swirl-leaf-4 { animation: flutterLeafD 2.0s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1.05s infinite; }
+.swirl-leaf-5 { animation: flutterLeafE 2.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1.4s infinite; }
+.swirl-leaf-6 { animation: flutterLeafB 2.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1.75s infinite; }
+.animate-drive-semi { animation: driveSemi 16s linear infinite; }
