@@ -1,5 +1,56 @@
 import React, { useState } from 'react';
-import { Palette, Feather, MessageSquare, Check, Sparkles, Copy } from 'lucide-react';
+import { Palette, Feather, MessageSquare, Check, Sparkles, Copy, RefreshCw } from 'lucide-react';
+
+const RANDOM_PALETTES = [
+  [
+    { name: "Kraft Ochre", hex: "#D7C4A5", role: "Base Material" },
+    { name: "Forest Emerald", hex: "#1B4332", role: "Primary Typography" },
+    { name: "Warm Muted Gold", hex: "#D4AF37", role: "Accent Foil/Print" },
+    { name: "Charcoal Ink", hex: "#212529", role: "Typography & Micro-copy" }
+  ],
+  [
+    { name: "Earthy Terracotta", hex: "#D97757", role: "Primary Branding" },
+    { name: "Deep Clay Red", hex: "#8C3A27", role: "Accent Contrast" },
+    { name: "Warm Sandstone", hex: "#F4EBD9", role: "Base Box Material" },
+    { name: "Matte Espresso", hex: "#2D221E", role: "Typography & QR" }
+  ],
+  [
+    { name: "Nordic Pine", hex: "#2D5A27", role: "Primary Branding" },
+    { name: "Sage Leaf", hex: "#88A096", role: "Secondary Accent" },
+    { name: "Soft Linen", hex: "#F3F4ED", role: "Base Cardboard" },
+    { name: "Deep Spruce", "hex": "#132A13", role: "Typography" }
+  ],
+  [
+    { name: "Ocean Algae Teal", hex: "#0284C7", role: "Primary Branding" },
+    { name: "Bio Seaweed Green", hex: "#059669", role: "Eco Accent" },
+    { name: "Pearl Foam", hex: "#F0F9FF", role: "Base Material" },
+    { name: "Deep Marine", hex: "#0C4A6E", role: "Typography & QR" }
+  ],
+  [
+    { name: "Sunset Copper", hex: "#C86D51", role: "Accent Foil" },
+    { name: "Deep Rosewood", hex: "#6B2D39", role: "Primary Branding" },
+    { name: "Desert Sand", hex: "#F7F0EA", role: "Base Box Material" },
+    { name: "Midnight Bark", hex: "#1F1A1C", role: "Typography" }
+  ],
+  [
+    { name: "Cyber Emerald", hex: "#10B981", role: "Primary Accent" },
+    { name: "Dark Forest", hex: "#064E3B", role: "Primary Branding" },
+    { name: "Mint Cream", hex: "#ECFDF5", role: "Base Cardboard" },
+    { name: "Charcoal Slate", hex: "#111827", role: "Typography" }
+  ],
+  [
+    { name: "Luxury Bronze", hex: "#B45309", role: "Accent Stamp" },
+    { name: "Warm Muted Cream", hex: "#FEF3C7", role: "Base Box Material" },
+    { name: "Deep Walnut", hex: "#451A03", role: "Primary Branding" },
+    { name: "Obsidian Black", hex: "#09090B", role: "Typography & QR" }
+  ],
+  [
+    { name: "Plum Lavender", hex: "#7E22CE", role: "Accent Color" },
+    { name: "Deep Orchid", hex: "#581C87", role: "Primary Branding" },
+    { name: "Pale Blossom", hex: "#FAF5FF", role: "Base Material" },
+    { name: "Midnight Violet", hex: "#2E1065", role: "Typography" }
+  ]
+];
 
 export default function BrandStyleGenerator() {
   const [brandName, setBrandName] = useState('EcoLumina');
@@ -32,6 +83,14 @@ export default function BrandStyleGenerator() {
       unboxing_experience: "Seamless lid lift revealing a precision-molded paper cushion insert"
     }
   });
+
+  const handleShufflePalette = () => {
+    const randomPal = RANDOM_PALETTES[Math.floor(Math.random() * RANDOM_PALETTES.length)];
+    setStyleGuide(prev => ({
+      ...prev,
+      color_palette: randomPal
+    }));
+  };
 
   const handleGenerate = async (e) => {
     e.preventDefault();
@@ -211,9 +270,18 @@ export default function BrandStyleGenerator() {
 
           {/* 3. Color Palette Card */}
           <div className="glass-panel" style={{ padding: '24px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-              <Palette size={22} color="var(--brand-primary)" />
-              <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: 'var(--text-heading)' }}>Brand Color Palette</h3>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Palette size={22} color="var(--brand-primary)" />
+                <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: 'var(--text-heading)' }}>Brand Color Palette</h3>
+              </div>
+              <button 
+                onClick={handleShufflePalette} 
+                className="btn-secondary" 
+                style={{ padding: '6px 14px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', background: 'var(--bg-card-highlight)', border: '1px solid var(--border-soft)' }}
+              >
+                <RefreshCw size={14} color="var(--brand-primary)" /> Shuffle Palette
+              </button>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px' }}>

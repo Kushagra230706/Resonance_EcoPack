@@ -475,7 +475,7 @@ def generate_brand_style(req: BrandStyleRequest):
     Generates:
     - Packaging Copy (Tagline, exterior quote, inner flap message, unboxing copy)
     - Sustainability Message (FTC/EU compliant green statement)
-    - Color Palette (Hex codes, color names, design roles)
+    - Color Palette (Hex codes, color names, design roles - Randomly Selected)
     - Minimalist/Premium Visual Direction (Typography, material finish, unboxing experience)
     """
     bname = req.brand_name.strip() or "EcoLumina"
@@ -483,11 +483,67 @@ def generate_brand_style(req: BrandStyleRequest):
     sfocus = req.sustainability_focus.strip() or "100% Plastic-Free & Curbside Recyclable"
     vdir = req.visual_direction.strip() or "Minimalist & Premium"
 
+    import random
+
+    COLOR_PALETTES_POOL = [
+        [
+            {"name": "Kraft Ochre", "hex": "#D7C4A5", "role": "Base Material"},
+            {"name": "Forest Emerald", "hex": "#1B4332", "role": "Primary Typography"},
+            {"name": "Warm Muted Gold", "hex": "#D4AF37", "role": "Accent Foil/Print"},
+            {"name": "Charcoal Ink", "hex": "#212529", "role": "Typography & QR"}
+        ],
+        [
+            {"name": "Earthy Terracotta", "hex": "#D97757", "role": "Primary Branding"},
+            {"name": "Deep Clay Red", "hex": "#8C3A27", "role": "Accent Contrast"},
+            {"name": "Warm Sandstone", "hex": "#F4EBD9", "role": "Base Box Material"},
+            {"name": "Matte Espresso", "hex": "#2D221E", "role": "Typography & QR"}
+        ],
+        [
+            {"name": "Nordic Pine", "hex": "#2D5A27", "role": "Primary Branding"},
+            {"name": "Sage Leaf", "hex": "#88A096", "role": "Secondary Accent"},
+            {"name": "Soft Linen", "hex": "#F3F4ED", "role": "Base Cardboard"},
+            {"name": "Deep Spruce", "hex": "#132A13", "role": "Typography"}
+        ],
+        [
+            {"name": "Ocean Algae Teal", "hex": "#0284C7", "role": "Primary Branding"},
+            {"name": "Bio Seaweed Green", "hex": "#059669", "role": "Eco Accent"},
+            {"name": "Pearl Foam", "hex": "#F0F9FF", "role": "Base Material"},
+            {"name": "Deep Marine", "hex": "#0C4A6E", "role": "Typography & QR"}
+        ],
+        [
+            {"name": "Sunset Copper", "hex": "#C86D51", "role": "Accent Foil"},
+            {"name": "Deep Rosewood", "hex": "#6B2D39", "role": "Primary Branding"},
+            {"name": "Desert Sand", "hex": "#F7F0EA", "role": "Base Box Material"},
+            {"name": "Midnight Bark", "hex": "#1F1A1C", "role": "Typography"}
+        ],
+        [
+            {"name": "Cyber Emerald", "hex": "#10B981", "role": "Primary Accent"},
+            {"name": "Dark Forest", "hex": "#064E3B", "role": "Primary Branding"},
+            {"name": "Mint Cream", "hex": "#ECFDF5", "role": "Base Cardboard"},
+            {"name": "Charcoal Slate", "hex": "#111827", "role": "Typography"}
+        ],
+        [
+            {"name": "Luxury Bronze", "hex": "#B45309", "role": "Accent Stamp"},
+            {"name": "Warm Muted Cream", "hex": "#FEF3C7", "role": "Base Box Material"},
+            {"name": "Deep Walnut", "hex": "#451A03", "role": "Primary Branding"},
+            {"name": "Obsidian Black", "hex": "#09090B", "role": "Typography & QR"}
+        ],
+        [
+            {"name": "Plum Lavender", "hex": "#7E22CE", "role": "Accent Color"},
+            {"name": "Deep Orchid", "hex": "#581C87", "role": "Primary Branding"},
+            {"name": "Pale Blossom", "hex": "#FAF5FF", "role": "Base Material"},
+            {"name": "Midnight Violet", "hex": "#2E1065", "role": "Typography"}
+        ]
+    ]
+
+    chosen_palette = random.choice(COLOR_PALETTES_POOL)
+
     gemini_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
     prompt = (
         f"You are a world-class luxury sustainable packaging designer. "
         f"Generate a complete Brand Style Guide JSON for brand '{bname}', product '{ptype}', "
-        f"sustainability focus '{sfocus}', visual direction '{vdir}'.\n\n"
+        f"sustainability focus '{sfocus}', visual direction '{vdir}'. "
+        f"Generate a UNIQUE, random color palette with 4 distinct hex colors appropriate for this brand style.\n\n"
         f"Return ONLY valid JSON with keys:\n"
         f"{{\n"
         f'  "brand_name": "{bname}",\n'
@@ -499,10 +555,10 @@ def generate_brand_style(req: BrandStyleRequest):
         f'  }},\n'
         f'  "sustainability_message": "A compliant, verifiable customer statement regarding plastic reduction and carbon impact.",\n'
         f'  "color_palette": [\n'
-        f'     {{"name": "Kraft Ochre", "hex": "#D7C4A5", "role": "Base Material"}},\n'
-        f'     {{"name": "Deep Botanical Emerald", "hex": "#1B4332", "role": "Primary Branding"}},\n'
-        f'     {{"name": "Warm Muted Gold", "hex": "#D4AF37", "role": "Accent Foil Stamp"}},\n'
-        f'     {{"name": "Charcoal Ink", "hex": "#212529", "role": "Typography & QR"}} \n'
+        f'     {{"name": "{chosen_palette[0]["name"]}", "hex": "{chosen_palette[0]["hex"]}", "role": "{chosen_palette[0]["role"]}"}},\n'
+        f'     {{"name": "{chosen_palette[1]["name"]}", "hex": "{chosen_palette[1]["hex"]}", "role": "{chosen_palette[1]["role"]}"}},\n'
+        f'     {{"name": "{chosen_palette[2]["name"]}", "hex": "{chosen_palette[2]["hex"]}", "role": "{chosen_palette[2]["role"]}"}},\n'
+        f'     {{"name": "{chosen_palette[3]["name"]}", "hex": "{chosen_palette[3]["hex"]}", "role": "{chosen_palette[3]["role"]}"}}\n'
         f'  ],\n'
         f'  "visual_direction_details": {{\n'
         f'     "style_heading": "{vdir}",\n'
@@ -545,7 +601,7 @@ def generate_brand_style(req: BrandStyleRequest):
         except Exception as e:
             print(f"Groq Brand Style JSON parse note: {e}")
 
-    # Fallback curated response
+    # Fallback curated response with random palette
     return {
         "brand_name": bname,
         "packaging_copy": {
@@ -555,12 +611,7 @@ def generate_brand_style(req: BrandStyleRequest):
             "product_description_copy": f"Hand-poured artisan {ptype} encased in 100% curbside recyclable molded pulp cushion."
         },
         "sustainability_message": f"This packaging saves an estimated 31% CO₂e and replaces plastic bubble wrap with 100% renewable FSC-certified paper fibers.",
-        "color_palette": [
-            {"name": "Kraft Ochre", "hex": "#D7C4A5", "role": "Base Material"},
-            {"name": "Forest Emerald", "hex": "#1B4332", "role": "Primary Typography"},
-            {"name": "Warm Muted Gold", "hex": "#D4AF37", "role": "Accent Foil/Print"},
-            {"name": "Charcoal Ink", "hex": "#212529", "role": "Typography & Micro-copy"}
-        ],
+        "color_palette": chosen_palette,
         "visual_direction_details": {
             "style_heading": vdir,
             "typography": "Modern Geometric Sans-Serif (Outfit / Inter) with high hierarchy contrast",
