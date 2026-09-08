@@ -502,30 +502,30 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
         <div className="lg:col-span-6 relative w-full h-[400px] flex items-center justify-center overflow-hidden">
 
           {/* Floating PACKWISE Badge Above Carton Box */}
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 pointer-events-none text-center">
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-30 pointer-events-none text-center">
             <style>{`
               @keyframes floatPackwiseBadge {
                 0%, 100% { transform: translateY(0px); }
-                50% { transform: translateY(-7px); }
+                50% { transform: translateY(-8px); }
               }
             `}</style>
             <div style={{
               background: '#FFFDF5',
-              border: '1.5px solid #C4E2C7',
+              border: '2.5px solid #C4E2C7',
               borderRadius: '9999px',
-              padding: '8px 32px',
-              boxShadow: '0 10px 28px -4px rgba(6, 78, 59, 0.12), 0 4px 10px -2px rgba(6, 78, 59, 0.05)',
+              padding: '14px 48px',
+              boxShadow: '0 14px 36px -4px rgba(6, 78, 59, 0.16), 0 4px 12px -2px rgba(6, 78, 59, 0.08)',
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              backdropFilter: 'blur(8px)',
+              backdropFilter: 'blur(10px)',
               animation: 'floatPackwiseBadge 4s ease-in-out infinite'
             }}>
               <span style={{
-                fontSize: '1.5rem',
+                fontSize: '2.2rem',
                 fontWeight: '900',
                 color: '#053B2C',
-                letterSpacing: '3.5px',
+                letterSpacing: '5.5px',
                 fontFamily: 'Outfit, sans-serif',
                 textTransform: 'uppercase',
                 lineHeight: '1'

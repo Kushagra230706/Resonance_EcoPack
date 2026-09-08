@@ -261,20 +261,20 @@ export default function ThreeDBoxPreview({ dieline, optionName }) {
               }}>
                 <div style={{
                   background: '#FFFDF5',
-                  border: '1.5px solid #C4E2C7',
+                  border: '2px solid #C4E2C7',
                   borderRadius: '9999px',
-                  padding: '6px 26px',
-                  boxShadow: '0 8px 24px -4px rgba(6, 78, 59, 0.12)',
+                  padding: '10px 38px',
+                  boxShadow: '0 10px 28px -4px rgba(6, 78, 59, 0.14)',
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   backdropFilter: 'blur(8px)'
                 }}>
                   <span style={{
-                    fontSize: '1.25rem',
+                    fontSize: '1.75rem',
                     fontWeight: '900',
                     color: '#053B2C',
-                    letterSpacing: '3px',
+                    letterSpacing: '4.5px',
                     fontFamily: 'Outfit, sans-serif',
                     textTransform: 'uppercase',
                     lineHeight: '1'
