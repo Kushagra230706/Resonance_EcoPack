@@ -12,6 +12,8 @@ import ClaimsChecker from './components/ClaimsChecker';
 import QRDisposalGuide from './components/QRDisposalGuide';
 import ScoringModelCustomizer from './components/ScoringModelCustomizer';
 import BrandStyleGenerator from './components/BrandStyleGenerator';
+import CaseStudiesDashboard from './components/CaseStudiesDashboard';
+import DevelopmentRoadmap from './components/DevelopmentRoadmap';
 import { Camera, Sliders, RefreshCw, Layers, FileText } from 'lucide-react';
 
 export default function App() {
@@ -625,6 +627,8 @@ export default function App() {
           </div>
         )}
 
+        {activeTab === 'case_studies' && <CaseStudiesDashboard onApplyCaseStudy={handleApplySpecs} />}
+        {activeTab === 'roadmap' && <DevelopmentRoadmap />}
         {activeTab === 'brand_style' && <BrandStyleGenerator />}
         {activeTab === 'claims' && <ClaimsChecker />}
         {activeTab === 'disposal' && <QRDisposalGuide />}

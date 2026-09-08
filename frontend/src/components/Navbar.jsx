@@ -42,12 +42,24 @@ export default function Navbar({ activeTab, setActiveTab, onLogoClick, onOpenCop
         </div>
 
         {/* Center Links */}
-        <div style={{ display: 'flex', gap: '24px', fontSize: '0.9rem', color: '#a7f3d0', fontWeight: '500' }}>
+        <div style={{ display: 'flex', gap: '20px', fontSize: '0.88rem', color: '#a7f3d0', fontWeight: '500', flexWrap: 'wrap' }}>
           <button 
             onClick={() => setActiveTab('optimizer')} 
             style={{ background: 'none', border: 'none', color: activeTab === 'optimizer' ? '#34d399' : '#a7f3d0', fontWeight: activeTab === 'optimizer' ? '700' : '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
           >
             <Cpu size={15} /> Optimizer
+          </button>
+          <button 
+            onClick={() => setActiveTab('case_studies')} 
+            style={{ background: 'none', border: 'none', color: activeTab === 'case_studies' ? '#34d399' : '#a7f3d0', fontWeight: activeTab === 'case_studies' ? '700' : '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+          >
+            <Sparkles size={15} /> Case Studies
+          </button>
+          <button 
+            onClick={() => setActiveTab('roadmap')} 
+            style={{ background: 'none', border: 'none', color: activeTab === 'roadmap' ? '#34d399' : '#a7f3d0', fontWeight: activeTab === 'roadmap' ? '700' : '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+          >
+            <Leaf size={15} /> Roadmap
           </button>
           <button 
             onClick={() => setActiveTab('brand_style')} 
