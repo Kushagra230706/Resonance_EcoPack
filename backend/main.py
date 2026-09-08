@@ -45,8 +45,9 @@ Base.metadata.create_all(bind=engine)
 def seed_database_materials():
     db = SessionLocal()
     try:
-        if db.query(models.MaterialModel).count() == 0:
-            for m in get_all_materials():
+        for m in get_all_materials():
+            existing = db.query(models.MaterialModel).filter(models.MaterialModel.material_id == m["id"]).first()
+            if not existing:
                 db_mat = models.MaterialModel(
                     material_id=m["id"],
                     name=m["name"],
@@ -59,10 +60,21 @@ def seed_database_materials():
                     compostability=m.get("compostability", "none"),
                     water_resistance=m.get("water_resistance", 50),
                     printability_score=m.get("printability_score", 80),
-                    source_confidence="High (ISO 14040 Verified LCA)"
+                    source_confidence=m.get("source_confidence", "High (ISO 14040 Verified LCA)")
                 )
                 db.add(db_mat)
-            db.commit()
+            else:
+                existing.name = m["name"]
+                existing.emission_factor = m["co2e_per_kg"]
+                existing.cost_per_kg = m["cost_per_kg_usd"]
+                existing.density_g_cm3 = m["density_g_cm3"]
+                existing.recycled_content_pct = m.get("recycled_content_pct", 0)
+                existing.recyclability_score = m.get("recyclability_score", 80)
+                existing.compostability = m.get("compostability", "none")
+                existing.water_resistance = m.get("water_resistance", 50)
+                existing.printability_score = m.get("printability_score", 80)
+                existing.source_confidence = m.get("source_confidence", "High (ISO 14040 Verified LCA)")
+        db.commit()
     except Exception as e:
         print(f"Database seeding note: {e}")
     finally:
@@ -153,6 +165,8 @@ def get_db_results():
         db.close()
 
 
+from core.ai_recommender import call_live_ai_recommendation
+
 @app.post("/api/optimize")
 def run_optimization(req: OptimizationRequest):
     try:
@@ -175,6 +189,32 @@ def run_optimization(req: OptimizationRequest):
             sustainability_goal=req.sustainability_goal,
             user_weights=req.user_weights
         )
+
+        if results and "recommended" in results and "annual_impact" in results:
+            rec = results["recommended"]
+            base = results.get("baseline", {})
+            impact = results["annual_impact"]
+            winner_idx = rec.get("option_number", 1)
+            
+            ai_data = call_live_ai_recommendation(
+                winner=rec,
+                baseline=base,
+                annual_impact=impact,
+                winner_index=winner_idx,
+                product_type=req.product_type,
+                shipping_region=req.shipping_region,
+                sustainability_goal=req.sustainability_goal,
+                user_weights=req.user_weights
+            )
+            
+            results["pareto_recommendation_text"] = ai_data.get("pareto_recommendation_text")
+            results["annual_impact_summary"] = ai_data.get("annual_impact_summary")
+            results["verified_impact_claim"] = ai_data.get("verified_impact_claim")
+            results["objective_badges"] = ai_data.get("objective_badges")
+            results["tradeoffs_breakdown"] = ai_data.get("tradeoffs_breakdown", results.get("tradeoffs_breakdown"))
+            results["why_this_won"] = ai_data.get("pareto_recommendation_text")
+            results["ai_generated"] = True
+
         return results
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

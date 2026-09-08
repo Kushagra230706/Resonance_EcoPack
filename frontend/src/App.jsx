@@ -55,6 +55,12 @@ export default function App() {
     setShowHero(false); // Hide hero section when changing sections from navbar
   };
 
+  const handleLogoClick = () => {
+    setActiveTab('optimizer');
+    setShowHero(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleWeightsChange = (newWeights) => {
     setFormData(prev => ({
       ...prev,
@@ -76,14 +82,14 @@ export default function App() {
     const wcirc = (newWeights.circularity || 0) / total;
 
     const updatedAlternatives = currentResults.alternatives.map(alt => {
-      const score_sust = alt.dimension_scores?.sustainability_score ?? Math.max(0, 100 - (alt.co2e_kg * 50));
-      const score_cost = alt.dimension_scores?.cost_score ?? Math.max(0, 100 - (alt.unit_cost_usd * 12));
-      const score_prot = alt.protection_score || 80;
-      const score_brand = alt.branding_score || 80;
-      const score_circ = alt.recyclability_score || 80;
+      const score_sust = Math.min(100, Math.max(0, alt.dimension_scores?.sustainability_score ?? (100 - (alt.co2e_kg * 40))));
+      const score_cost = Math.min(100, Math.max(0, alt.dimension_scores?.cost_score ?? (100 - (alt.unit_cost_usd * 10))));
+      const score_prot = Math.min(100, Math.max(0, alt.protection_score || 80));
+      const score_brand = Math.min(100, Math.max(0, alt.branding_score || 80));
+      const score_circ = Math.min(100, Math.max(0, alt.recyclability_score || 80));
 
       const weightedSum = (score_sust * ws) + (score_prot * wp) + (score_cost * wc) + (score_brand * wb) + (score_circ * wcirc);
-      const overall = Math.min(100, Math.max(0, Math.round(weightedSum * 10) / 10));
+      const overall = Math.min(100.0, Math.max(0.0, Math.round(weightedSum * 10) / 10));
 
       return {
         ...alt,
@@ -110,21 +116,28 @@ export default function App() {
 
   const runOptimization = async (customData = formData) => {
     setLoading(true);
-    try {
-      const res = await fetch('http://localhost:8000/api/optimize', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(customData)
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setResults(data);
-        setLoading(false);
-        return;
+    const endpoints = [
+      'http://127.0.0.1:8000/api/optimize',
+      'http://localhost:8000/api/optimize'
+    ];
+    for (const ep of endpoints) {
+      try {
+        const res = await fetch(ep, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(customData)
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setResults(data);
+          setLoading(false);
+          return;
+        }
+      } catch (err) {
+        // try next endpoint
       }
-    } catch (err) {
-      console.warn("Backend API offline (http://localhost:8000 unreachable). Running client-side multi-objective Pareto optimization engine.");
     }
+    console.warn("Backend API offline. Running client-side multi-objective Pareto optimization engine.");
 
     // High-Precision Client-Side Optimization Engine (Executes seamlessly when backend is not running)
     const vol_cm3 = (customData.length_cm || 12) * (customData.width_cm || 8) * (customData.height_cm || 6);
@@ -135,47 +148,13 @@ export default function App() {
     const isCompostableGoal = customData.sustainability_goal === 'compostable';
     const isReusableGoal = customData.sustainability_goal === 'reusable';
 
-    let alternatives = [
+    const budgetLimit = customData.budget_limit_usd || 5.0;
+    const isLowestPlastic = customData.sustainability_goal === 'lowest_plastic';
+    const isLowestCarbon = customData.sustainability_goal === 'lowest_carbon';
+
+    let rawAlternatives = [
       {
-        id: "opt_molded_pulp_carton",
-        name: "Compact Carton + Molded Pulp Insert",
-        category: "Molded Pulp Insert",
-        archetype: "balanced_winner",
-        pareto_archetype: "Balanced",
-        verdict: "Recommended",
-        is_baseline: false,
-        unit_cost_usd: Math.round((0.65 + (vol_cm3 * 0.0003)) * 100) / 100,
-        co2e_kg: Math.round((0.14 + (vol_cm3 * 0.00008)) * 1000) / 1000,
-        material_mass_kg: Math.round((0.12 + (vol_cm3 * 0.00006)) * 1000) / 1000,
-        outer_dimensions_cm: `${(customData.length_cm + 2.4).toFixed(1)} x ${(customData.width_cm + 2.4).toFixed(1)} x ${(customData.height_cm + 2.4).toFixed(1)}`,
-        protection_score: 94,
-        branding_score: 82,
-        recyclability_score: 96,
-        shipping_efficiency_pct: 95.9,
-        void_space_pct: 4.1,
-        damage_probability_pct: Math.round(1.2 * fragilityMult * 10) / 10,
-        expected_damage_cost_usd: Math.round(prodVal * 0.012 * fragilityMult * 100) / 100,
-        damage_carbon_impact_kg: 0.04,
-        overall_score: (isApparel || isCompostableGoal || isReusableGoal) ? 84.5 : 91.4,
-        outer_material: "Recycled Corrugated Cardboard",
-        inner_material: "Thermoformed Molded Paper Pulp",
-        qualitative_co2e: "Low-Medium",
-        qualitative_cost: "Medium",
-        qualitative_protection: "High",
-        qualitative_branding: "High",
-        is_pareto_optimal: true,
-        co2_breakdown: { material_emissions_kg: 0.09, manufacturing_emissions_kg: 0.03, transport_emissions_kg: 0.04, end_of_life_emissions_kg: 0.02, damage_carbon_kg: 0.04 },
-        cost_breakdown: { material_cost_usd: Math.round((0.30 + vol_cm3 * 0.0001) * 100) / 100, manufacturing_printing_usd: 0.16, labor_assembly_usd: 0.12, shipping_storage_usd: 0.18, expected_damage_cost_usd: Math.round(prodVal * 0.012 * fragilityMult * 100) / 100 },
-        protection_breakdown: { drop_protection_score: 95, compression_strength_score: 94, moisture_barrier_score: 85, fit_void_score: 92, vibration_resistance_score: 91, testing_standards: ["ISTA 3A Transit", "ASTM D5276 Drop Test"] },
-        branding_breakdown: { printable_surface_score: 85, color_compatibility_score: 80, unboxing_experience_score: 88, texture_finish_score: 78, storytelling_qr_score: 80 },
-        dieline: { outer_length_cm: (customData.length_cm + 2.4).toFixed(1), outer_width_cm: (customData.width_cm + 2.4).toFixed(1), outer_height_cm: (customData.height_cm + 2.4).toFixed(1), cushion_thickness_cm: 1.2, flap_margin_cm: 2.0, sheet_width_cm: (customData.length_cm * 2 + 10).toFixed(1), sheet_length_cm: (customData.width_cm * 2 + 10).toFixed(1) },
-        bom: [
-          { item: "Outer Recycled Box", qty: "1 unit", mass_g: 120, cost_usd: 0.35 },
-          { item: "Molded Paper Pulp Insert", qty: "1 unit", mass_g: 60, cost_usd: 0.20 },
-          { item: "Water-Soluble Paper Tape", qty: "1.2m", mass_g: 12, cost_usd: 0.08 }
-        ]
-      },
-      {
+        option_number: 1,
         id: "opt_corrugated_box",
         name: "Standard Corrugated Box + Plastic Bubble Wrap",
         category: "Corrugated Box",
@@ -195,7 +174,7 @@ export default function App() {
         damage_probability_pct: Math.round(4.5 * fragilityMult * 10) / 10,
         expected_damage_cost_usd: Math.round(prodVal * 0.045 * fragilityMult * 100) / 100,
         damage_carbon_impact_kg: 0.15,
-        overall_score: 64.2,
+        base_score: 64.2,
         outer_material: "Virgin Kraft Cardboard",
         inner_material: "Low-Density Polyethylene Bubble Wrap",
         qualitative_co2e: "High",
@@ -211,6 +190,7 @@ export default function App() {
         bom: [{ item: "Virgin Box", qty: "1 unit", mass_g: 180, cost_usd: 0.52 }]
       },
       {
+        option_number: 2,
         id: "opt_paper_mailer",
         name: "Padded Kraft Paper Honeycomb Mailer",
         category: "Paper Mailer",
@@ -230,7 +210,7 @@ export default function App() {
         damage_probability_pct: Math.round(3.2 * fragilityMult * 10) / 10,
         expected_damage_cost_usd: Math.round(prodVal * 0.032 * fragilityMult * 100) / 100,
         damage_carbon_impact_kg: 0.08,
-        overall_score: isApparel ? 95.8 : (isCompostableGoal ? 94.2 : 81.2),
+        base_score: isApparel ? 95.8 : (isCompostableGoal ? 94.2 : 88.2),
         outer_material: "Kraft Paper Mesh",
         inner_material: "Expanded Paper Honeycomb",
         qualitative_co2e: "Low",
@@ -246,6 +226,47 @@ export default function App() {
         bom: [{ item: "Paper Honeycomb Mailer", qty: "1 unit", mass_g: 90, cost_usd: 0.42 }]
       },
       {
+        option_number: 3,
+        id: "opt_molded_pulp_carton",
+        name: "Compact Carton + Molded Pulp Insert",
+        category: "Molded Pulp Insert",
+        archetype: "balanced_winner",
+        pareto_archetype: "Balanced",
+        verdict: "Recommended",
+        is_baseline: false,
+        unit_cost_usd: Math.round((0.65 + (vol_cm3 * 0.0003)) * 100) / 100,
+        co2e_kg: Math.round((0.14 + (vol_cm3 * 0.00008)) * 1000) / 1000,
+        material_mass_kg: Math.round((0.12 + (vol_cm3 * 0.00006)) * 1000) / 1000,
+        outer_dimensions_cm: `${(customData.length_cm + 2.4).toFixed(1)} x ${(customData.width_cm + 2.4).toFixed(1)} x ${(customData.height_cm + 2.4).toFixed(1)}`,
+        protection_score: 94,
+        branding_score: 82,
+        recyclability_score: 96,
+        shipping_efficiency_pct: 95.9,
+        void_space_pct: 4.1,
+        damage_probability_pct: Math.round(1.2 * fragilityMult * 10) / 10,
+        expected_damage_cost_usd: Math.round(prodVal * 0.012 * fragilityMult * 100) / 100,
+        damage_carbon_impact_kg: 0.04,
+        base_score: (isApparel || isLowestPlastic) ? 91.4 : 93.5,
+        outer_material: "Recycled Corrugated Cardboard",
+        inner_material: "Thermoformed Molded Paper Pulp",
+        qualitative_co2e: "Low-Medium",
+        qualitative_cost: "Medium",
+        qualitative_protection: "High",
+        qualitative_branding: "High",
+        is_pareto_optimal: true,
+        co2_breakdown: { material_emissions_kg: 0.09, manufacturing_emissions_kg: 0.03, transport_emissions_kg: 0.04, end_of_life_emissions_kg: 0.02, damage_carbon_kg: 0.04 },
+        cost_breakdown: { material_cost_usd: Math.round((0.30 + vol_cm3 * 0.0001) * 100) / 100, manufacturing_printing_usd: 0.16, labor_assembly_usd: 0.12, shipping_storage_usd: 0.18, expected_damage_cost_usd: Math.round(prodVal * 0.012 * fragilityMult * 100) / 100 },
+        protection_breakdown: { drop_protection_score: 95, compression_strength_score: 94, moisture_barrier_score: 85, fit_void_score: 92, vibration_resistance_score: 91, testing_standards: ["ISTA 3A Transit", "ASTM D5276 Drop Test"] },
+        branding_breakdown: { printable_surface_score: 85, color_compatibility_score: 80, unboxing_experience_score: 88, texture_finish_score: 78, storytelling_qr_score: 80 },
+        dieline: { outer_length_cm: (customData.length_cm + 2.4).toFixed(1), outer_width_cm: (customData.width_cm + 2.4).toFixed(1), outer_height_cm: (customData.height_cm + 2.4).toFixed(1), cushion_thickness_cm: 1.2, flap_margin_cm: 2.0, sheet_width_cm: (customData.length_cm * 2 + 10).toFixed(1), sheet_length_cm: (customData.width_cm * 2 + 10).toFixed(1) },
+        bom: [
+          { item: "Outer Recycled Box", qty: "1 unit", mass_g: 120, cost_usd: 0.35 },
+          { item: "Molded Paper Pulp Insert", qty: "1 unit", mass_g: 60, cost_usd: 0.20 },
+          { item: "Water-Soluble Paper Tape", qty: "1.2m", mass_g: 12, cost_usd: 0.08 }
+        ]
+      },
+      {
+        option_number: 6,
         id: "opt_reusable_shipper",
         name: "Heavy-Duty Reusable PP Shipper Box",
         category: "Reusable Packaging",
@@ -265,7 +286,7 @@ export default function App() {
         damage_probability_pct: Math.round(0.8 * fragilityMult * 10) / 10,
         expected_damage_cost_usd: Math.round(prodVal * 0.008 * fragilityMult * 100) / 100,
         damage_carbon_impact_kg: 0.02,
-        overall_score: isReusableGoal ? 96.5 : 78.4,
+        base_score: isReusableGoal ? 96.5 : (isLowestPlastic ? 30.0 : 68.4),
         outer_material: "Rigid Reusable Polypropylene Box",
         inner_material: "Kraft Paper Honeycomb",
         qualitative_co2e: "Low",
@@ -281,6 +302,7 @@ export default function App() {
         bom: [{ item: "Reusable PP Box", qty: "1 unit (30 uses)", mass_g: 450, cost_usd: 4.15 }]
       },
       {
+        option_number: 8,
         id: "opt_premium_mycelium",
         name: "Premium Rigid Box + Mushroom Mycelium Foam",
         category: "Premium Branded Design",
@@ -300,7 +322,7 @@ export default function App() {
         damage_probability_pct: Math.round(0.5 * fragilityMult * 10) / 10,
         expected_damage_cost_usd: Math.round(prodVal * 0.005 * fragilityMult * 100) / 100,
         damage_carbon_impact_kg: 0.02,
-        overall_score: 83.5,
+        base_score: customData.branding_preference === 'premium' ? 96.0 : 83.5,
         outer_material: "Rigid Recycled Paperboard Box",
         inner_material: "Bio-grown Mycelium Bio-foam",
         qualitative_co2e: "High",
@@ -317,6 +339,18 @@ export default function App() {
       }
     ];
 
+    let alternatives = rawAlternatives.map(alt => {
+      let score = alt.base_score;
+      if (alt.unit_cost_usd > budgetLimit) {
+        score -= 50.0;
+      }
+      return {
+        ...alt,
+        within_budget: alt.unit_cost_usd <= budgetLimit,
+        overall_score: Math.max(0, Math.min(100, Math.round(score * 10) / 10))
+      };
+    });
+
     alternatives.sort((a, b) => b.overall_score - a.overall_score);
 
     const recommended = alternatives[0];
@@ -327,8 +361,8 @@ export default function App() {
     const co2_reduction_pct = Math.round(((baseline.co2e_kg - recommended.co2e_kg) / baseline.co2e_kg) * 1000) / 10;
     const cost_reduction_pct = Math.round(((baseline.unit_cost_usd - recommended.unit_cost_usd) / baseline.unit_cost_usd) * 1000) / 10;
 
-    const winnerIndex = alternatives.findIndex(a => a.id === recommended.id) + 1;
-    const pareto_recommendation_text = `EcoPack recommends Option ${winnerIndex} (${recommended.name}) because it reduces estimated CO₂e by ${co2_reduction_pct}%, lowers total packaging cost by ${cost_reduction_pct}%, maintains high protection (${recommended.protection_score}/100), and improves brand presentation (${recommended.branding_score}/100).`;
+    const winnerIndex = recommended.option_number || 1;
+    const pareto_recommendation_text = `PackWise AI recommends Option ${winnerIndex} (${recommended.name}) because it reduces estimated CO₂e by ${co2_reduction_pct}%, lowers total packaging cost by ${cost_reduction_pct}%, maintains high protection (${recommended.protection_score}/100), and improves brand presentation (${recommended.branding_score}/100).`;
 
     const fallbackResults = {
       recommended: recommended,

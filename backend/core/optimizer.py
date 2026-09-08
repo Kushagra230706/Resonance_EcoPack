@@ -144,7 +144,7 @@ def optimize_packaging(
     product_vol_cm3 = length_cm * width_cm * height_cm
     alternatives = []
     
-    for arch in PACKAGING_ARCHETYPES:
+    for idx, arch in enumerate(PACKAGING_ARCHETYPES, start=1):
         outer = materials.get(arch["outer_mat_id"])
         inner = materials.get(arch["inner_mat_id"])
         
@@ -152,7 +152,8 @@ def optimize_packaging(
         inner_mass_kg = round((product_vol_cm3 * 0.00010 * inner["density_g_cm3"]), 3) + 0.04
         total_mass_kg = round(outer_mass_kg + inner_mass_kg, 3)
         
-        reuse = arch["reuse_cycles"] if sustainability_goal == "reusable" else (3 if arch["archetype"] == "circular_reusable" else 1)
+        # Reuse cycles only apply if user selected reusable goal or explicit multi-trip loop
+        reuse = arch["reuse_cycles"] if (sustainability_goal == "reusable" and arch["archetype"] == "circular_reusable") else 1
         effective_outer_mass = outer_mass_kg / reuse
         effective_inner_mass = inner_mass_kg / reuse
         
@@ -165,7 +166,7 @@ def optimize_packaging(
         recyclability_rate = outer["recyclability_score"] * region_factors.get(outer_category, 0.70) / 100.0
         eol_co2e = round(total_mass_kg * (1.0 - recyclability_rate) * 0.18, 3)
         
-        # 2. Protection Score (0-100): Drop (30%), Compression (25%), Moisture (15%), Fit (15%), Vibration (15%)
+        # 2. Protection Score (0-100)
         drop_score = round(min(99, (outer["protection_rating"] * 0.4) + (inner["protection_rating"] * 0.6)), 1)
         comp_score = round(min(99, outer["protection_rating"] * 0.95), 1)
         
@@ -197,7 +198,7 @@ def optimize_packaging(
         
         total_co2e = round(mat_co2e + mfg_co2e + transport_co2e + eol_co2e + damage_data["damage_carbon_impact_kg"], 3)
         
-        # 4. Financial Total Cost: Material + Manufacturing/Printing + Labor + Tooling + Shipping + Damage Risk
+        # 4. Financial Total Cost
         mat_cost = (effective_outer_mass * outer["cost_per_kg_usd"]) + (effective_inner_mass * inner["cost_per_kg_usd"])
         mfg_print_cost = 0.16
         labor_assembly_cost = 0.12
@@ -207,7 +208,7 @@ def optimize_packaging(
         
         unit_cost = round(mat_cost + mfg_print_cost + labor_assembly_cost + tooling_cost + shipping_storage_cost + expected_damage_cost, 2)
         
-        # 5. Branding Score (0-100): Surface (25%), Color (20%), Unboxing (25%), Texture (15%), Storytelling/QR (15%)
+        # 5. Branding Score
         brand_mult = 1.15 if branding_preference == "premium" else (0.85 if branding_preference == "basic" else 1.0)
         base_b = min(100, round(arch["branding_base_score"] * brand_mult))
         
@@ -228,47 +229,59 @@ def optimize_packaging(
         regional_recyclability = round(outer["recyclability_score"] * region_factors.get(outer_category, 0.70), 1)
         shipping_efficiency_pct = round(100 - void_space_pct, 1)
         
-        score_co2 = max(0.0, 100.0 - (total_co2e * 50.0))
-        score_cost = max(0.0, 100.0 - (unit_cost * 12.0))
-        budget_penalty = 30.0 if unit_cost > budget_limit_usd else 0.0
+        score_co2 = max(0.0, min(100.0, 100.0 - (total_co2e * 40.0)))
+        score_cost = max(0.0, min(100.0, 100.0 - (unit_cost * 10.0)))
+        protection_score = max(0.0, min(100.0, protection_score))
+        branding_score = max(0.0, min(100.0, branding_score))
+        regional_recyclability = max(0.0, min(100.0, regional_recyclability))
+        
+        # Budget Penalty: Heavy penalty if unit_cost exceeds user's specified budget limit
+        budget_penalty = 50.0 if unit_cost > budget_limit_usd else 0.0
 
         # Category & Sustainability Goal Synergy Modifiers
         category_bonus = 0.0
         if product_type == "apparel":
-            if arch["archetype"] in ["paper_eco", "pouch", "minimal"]:
-                category_bonus += 25.0
+            if arch["archetype"] in ["paper_eco", "minimal"]:
+                category_bonus += 20.0
+            elif arch["archetype"] in ["pouch"]:
+                category_bonus += 10.0
             elif arch["archetype"] in ["conventional", "circular_reusable", "premium_eco"]:
-                category_bonus -= 15.0
+                category_bonus -= 20.0
         elif product_type in ["fragile_glass", "electronics"]:
-            if arch["archetype"] in ["balanced_winner", "premium_eco"]:
-                category_bonus += 25.0
-            elif arch["archetype"] in ["minimal", "pouch"]:
-                category_bonus -= 25.0
+            if fragility in ["high", "very_high"]:
+                if arch["archetype"] in ["balanced_winner", "premium_eco"]:
+                    category_bonus += 15.0
+                elif arch["archetype"] == "circular_reusable" and sustainability_goal == "reusable":
+                    category_bonus += 15.0
+                elif arch["archetype"] in ["minimal", "pouch"]:
+                    category_bonus -= 25.0
             
         goal_bonus = 0.0
-        if sustainability_goal == "compostable":
+        if sustainability_goal == "lowest_plastic":
+            if outer.get("category") == "plastic" or inner.get("category") == "plastic" or arch["archetype"] in ["conventional", "circular_reusable"]:
+                goal_bonus -= 35.0
+            else:
+                goal_bonus += 15.0
+        elif sustainability_goal == "compostable":
             if outer.get("compostability") in ["home", "industrial"] or inner.get("compostability") in ["home", "industrial"]:
-                goal_bonus += 30.0
+                goal_bonus += 20.0
             if outer.get("category") == "plastic" or inner.get("category") == "plastic":
                 goal_bonus -= 30.0
         elif sustainability_goal == "lowest_carbon":
             if arch["archetype"] in ["paper_eco", "minimal"]:
-                goal_bonus += 30.0
-            elif arch["archetype"] in ["premium_eco", "conventional"]:
-                goal_bonus -= 15.0
-        elif sustainability_goal == "lowest_plastic":
-            if outer.get("category") != "plastic" and inner.get("category") != "plastic":
-                goal_bonus += 30.0
-            else:
-                goal_bonus -= 35.0
+                goal_bonus += 15.0
+            elif arch["archetype"] in ["premium_eco", "conventional", "circular_reusable"]:
+                goal_bonus -= 20.0
         elif sustainability_goal == "reusable":
             if arch["archetype"] == "circular_reusable":
-                goal_bonus += 40.0
+                goal_bonus += 30.0
             else:
-                goal_bonus -= 15.0
+                goal_bonus -= 10.0
         elif sustainability_goal == "recyclable":
             if outer.get("recyclability_score", 0) >= 90:
-                goal_bonus += 20.0
+                goal_bonus += 15.0
+            elif outer.get("recyclability_score", 0) < 50:
+                goal_bonus -= 25.0
 
         # Safely extract and normalize user weights across 5 dimensions
         weights = user_weights if (user_weights and isinstance(user_weights, dict)) else {
@@ -293,11 +306,11 @@ def optimize_packaging(
         w_circ = w_circ_raw / total_w
 
         dimension_scores = {
-            "sustainability_score": round(score_co2, 1),
-            "protection_score": round(protection_score, 1),
-            "cost_score": round(score_cost, 1),
-            "branding_score": round(branding_score, 1),
-            "circularity_score": round(regional_recyclability, 1)
+            "sustainability_score": round(max(0.0, min(100.0, score_co2)), 1),
+            "protection_score": round(max(0.0, min(100.0, protection_score)), 1),
+            "cost_score": round(max(0.0, min(100.0, score_cost)), 1),
+            "branding_score": round(max(0.0, min(100.0, branding_score)), 1),
+            "circularity_score": round(max(0.0, min(100.0, regional_recyclability)), 1)
         }
 
         weighted_sum = (
@@ -337,6 +350,8 @@ def optimize_packaging(
             "name": arch["name"],
             "category": arch["category"],
             "archetype": arch["archetype"],
+            "option_number": idx,
+            "option_label": f"Option {idx}",
             "is_baseline": arch["is_baseline"],
             "unit_cost_usd": unit_cost,
             "within_budget": unit_cost <= budget_limit_usd,
@@ -398,14 +413,11 @@ def optimize_packaging(
         })
 
     # Compute Pareto Dominance across 8 Objectives
-    # Objectives to MINIMIZE: co2e_kg, unit_cost_usd, damage_probability_pct, material_mass_kg, void_space_pct
-    # Objectives to MAXIMIZE: branding_score, recyclability_score, protection_score
     for a in alternatives:
         is_dominated = False
         for b in alternatives:
             if a["id"] == b["id"]:
                 continue
-            # b dominates a if b is at least as good as a in all 8 objectives and strictly better in at least one
             at_least_as_good = (
                 b["co2e_kg"] <= a["co2e_kg"] and
                 b["unit_cost_usd"] <= a["unit_cost_usd"] and
@@ -436,7 +448,7 @@ def optimize_packaging(
     winner = alternatives[0]
     baseline = next((a for a in alternatives if a["is_baseline"]), alternatives[-1])
 
-    # Classify Pareto Trade-Off Archetypes & Verdicts (Cheapest, Greenest, Premium, Balanced, Reusable)
+    # Classify Pareto Trade-Off Archetypes & Verdicts
     min_cost_alt = min(alternatives, key=lambda x: x["unit_cost_usd"])
     min_co2_alt = min(alternatives, key=lambda x: x["co2e_kg"])
     max_brand_alt = max(alternatives, key=lambda x: x["branding_score"])
@@ -490,12 +502,12 @@ def optimize_packaging(
     co2_reduction_pct = round(((baseline["co2e_kg"] - winner["co2e_kg"]) / max(0.01, baseline["co2e_kg"])) * 100, 1)
     cost_reduction_pct = round(((baseline["unit_cost_usd"] - winner["unit_cost_usd"]) / max(0.01, baseline["unit_cost_usd"])) * 100, 1)
 
-    winner_index = [i + 1 for i, alt in enumerate(alternatives) if alt["id"] == winner["id"]][0]
+    winner_index = winner.get("option_number", 1)
 
     # Exact Pareto Recommendation Statement requested by User/Judges:
     # "EcoPack recommends Option 3 because it reduces estimated CO2e by 28%, lowers total packaging cost by 12%, maintains high protection, and improves brand presentation."
     pareto_recommendation_text = (
-        f"EcoPack recommends Option {winner_index} ({winner['name']}) because it reduces estimated CO₂e by {co2_reduction_pct}%, "
+        f"PackWise AI recommends Option {winner_index} ({winner['name']}) because it reduces estimated CO₂e by {co2_reduction_pct}%, "
         f"lowers total packaging cost by {max(0, cost_reduction_pct)}%, maintains high protection ({winner['protection_score']}/100), "
         f"and improves brand presentation ({winner['branding_score']}/100)."
     )

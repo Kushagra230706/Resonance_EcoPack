@@ -5,10 +5,10 @@ import { QrCode, Recycle, Download, Smartphone, Check, AlertCircle } from 'lucid
 export default function QRDisposalGuide() {
   const [material, setMaterial] = useState('Recycled Corrugated Box + Molded Pulp');
   const [region, setRegion] = useState('GLOBAL');
-  const [brandName, setBrandName] = useState('Resonance EcoPack');
+  const [brandName, setBrandName] = useState('PackWise AI');
   const [showMobilePreview, setShowMobilePreview] = useState(false);
 
-  const disposalUrl = `https://ecopack.app/dispose?brand=${encodeURIComponent(brandName)}&mat=${encodeURIComponent(material)}&region=${region}`;
+  const disposalUrl = `https://packwise.ai/dispose?brand=${encodeURIComponent(brandName)}&mat=${encodeURIComponent(material)}&region=${region}`;
 
   const regionGuide = {
     GLOBAL: "Universal Curbside Standard — Separate paperboard box from inner cushioning.",

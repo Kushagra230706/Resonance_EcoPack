@@ -158,8 +158,8 @@ export default function ComparisonDashboard({ data }) {
   if (!data || !data.alternatives) return null;
 
   const alternatives = data.alternatives;
-  const recommended = data.recommended;
-  const baseline = data.baseline || alternatives.find(a => a.is_baseline) || alternatives[alternatives.length - 1];
+  const recommended = data.recommended || alternatives[0] || {};
+  const baseline = data.baseline || alternatives.find(a => a.is_baseline) || alternatives[alternatives.length - 1] || {};
 
   // Data for Chart 1: Cost vs Carbon
   const scatterCostCarbon = alternatives.map((a, idx) => {
@@ -167,9 +167,10 @@ export default function ComparisonDashboard({ data }) {
     const isBaseline = a.id === baseline.id || a.is_baseline;
     const archetype = a.pareto_archetype || (isWinner ? "Balanced" : (isBaseline ? "Baseline" : "Alternative"));
     const color = getOptionColor(a, idx, recommended, baseline);
+    const optNum = a.option_number || (idx + 1);
 
     return {
-      optionNum: idx + 1,
+      optionNum: optNum,
       name: a.name,
       x: a.unit_cost_usd,
       y: a.co2e_kg || a.carbon_co2e_kg,
@@ -192,9 +193,10 @@ export default function ComparisonDashboard({ data }) {
     const isBaseline = a.id === baseline.id || a.is_baseline;
     const archetype = a.pareto_archetype || (isWinner ? "Balanced" : (isBaseline ? "Baseline" : "Alternative"));
     const color = getOptionColor(a, idx, recommended, baseline);
+    const optNum = a.option_number || (idx + 1);
 
     return {
-      optionNum: idx + 1,
+      optionNum: optNum,
       name: a.name,
       x: a.protection_score,
       y: a.recyclability_score || a.circularity_score,

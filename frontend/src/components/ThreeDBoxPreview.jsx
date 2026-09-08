@@ -1,219 +1,564 @@
-import React, { useState } from 'react';
-import { Box, Layers, Eye, Download, QrCode, Tag, ShieldAlert, Sparkles } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Box, Layers, Eye, Download, QrCode, Sparkles, RefreshCw, RotateCcw, ShieldCheck, Sliders } from 'lucide-react';
 
 export default function ThreeDBoxPreview({ dieline, optionName }) {
   const [viewMode, setViewMode] = useState('3d'); // '3d' or 'dieline'
   const [rotX, setRotX] = useState(-20);
   const [rotY, setRotY] = useState(35);
-  const [showInternalLayers, setShowInternalLayers] = useState(true);
+  const [zoom, setZoom] = useState(1.0);
+  const [isOpenLid, setIsOpenLid] = useState(false);
+  const [isAutoRotate, setIsAutoRotate] = useState(false);
+  const [boxMaterial, setBoxMaterial] = useState('kraft'); // 'kraft', 'recycled', 'white', 'mycelium'
+
+  const animRef = useRef(null);
+
+  useEffect(() => {
+    if (isAutoRotate) {
+      const animate = () => {
+        setRotY(prev => (prev + 0.5) % 360);
+        animRef.current = requestAnimationFrame(animate);
+      };
+      animRef.current = requestAnimationFrame(animate);
+    } else {
+      if (animRef.current) cancelAnimationFrame(animRef.current);
+    }
+    return () => {
+      if (animRef.current) cancelAnimationFrame(animRef.current);
+    };
+  }, [isAutoRotate]);
 
   if (!dieline) return null;
 
-  const { outer_length_cm, outer_width_cm, outer_height_cm, cushion_thickness_cm, flap_margin_cm, sheet_width_cm, sheet_length_cm } = dieline;
+  const { outer_length_cm, outer_width_cm, outer_height_cm, cushion_thickness_cm } = dieline;
+
+  const lengthCm = parseFloat(outer_length_cm) || 15.0;
+  const widthCm = parseFloat(outer_width_cm) || 11.0;
+  const heightCm = parseFloat(outer_height_cm) || 9.0;
+
+  // Larger Box Dimensions for Prominent Centered Display
+  const scale = 14.0;
+  const boxW = Math.min(320, Math.max(220, lengthCm * scale));
+  const boxH = Math.min(220, Math.max(140, heightCm * scale));
+  const boxD = Math.min(260, Math.max(160, widthCm * scale));
+
+  const resetView = () => {
+    setRotX(-20);
+    setRotY(35);
+    setZoom(1.0);
+    setIsAutoRotate(false);
+    setIsOpenLid(false);
+  };
+
+  // 100% Opaque Material Palettes
+  const MATERIAL_THEMES = {
+    kraft: {
+      name: "Natural Kraft Cardboard",
+      bgFace: "#C68B59",
+      border: "#7C4A21",
+      text: "#241208",
+      lidBg: "#D49864",
+      texture: "repeating-linear-gradient(45deg, #BE8351 0px, #BE8351 2px, #C68B59 2px, #C68B59 4px)"
+    },
+    recycled: {
+      name: "80% Recycled Corrugated",
+      bgFace: "#7A8972",
+      border: "#3B4733",
+      text: "#121A0E",
+      lidBg: "#87967F",
+      texture: "repeating-linear-gradient(90deg, #718069 0px, #718069 3px, #7A8972 3px, #7A8972 6px)"
+    },
+    white: {
+      name: "White Coated Eco-Board",
+      bgFace: "#ECEFF1",
+      border: "#90A4AE",
+      text: "#0F172A",
+      lidBg: "#F5F7F8",
+      texture: "none"
+    },
+    mycelium: {
+      name: "Mushroom Mycelium Bio-Foam",
+      bgFace: "#E3DCCB",
+      border: "#998E77",
+      text: "#332A1C",
+      lidBg: "#EBE5D7",
+      texture: "radial-gradient(circle, #D4CBB8 1px, transparent 1px)"
+    }
+  };
+
+  const theme = MATERIAL_THEMES[boxMaterial] || MATERIAL_THEMES.kraft;
 
   return (
-    <div className="glass-panel" style={{ padding: '22px', borderRadius: '16px', border: '1px solid var(--border-soft)', marginBottom: '24px' }}>
+    <div className="glass-panel" style={{ padding: '24px', borderRadius: '16px', border: '1px solid var(--border-soft)', marginBottom: '24px', background: 'var(--bg-card)' }}>
       
-      {/* Header & View Switcher */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Box size={22} color="var(--brand-primary)" />
+      {/* Header Bar */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', flexWrap: 'wrap', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ background: 'var(--brand-light)', padding: '8px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Box size={22} color="var(--brand-primary)" />
+          </div>
           <div>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: 'var(--text-heading)', margin: 0 }}>
-              📦 3D Package Architecture & CAD Dieline Blueprint
+            <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--text-heading)', margin: 0 }}>
+              📦 Interactive 3D Package Preview & CAD Blueprint
             </h3>
-            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '2px 0 0 0' }}>
-              Visualizes product core, molded cushioning, void space, soy ink branding & QR disposal label.
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '2px 0 0 0' }}>
+              Drag to orbit 3D box | Open lid to view inner cushioning | 100% Opaque rendering.
             </p>
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '6px', background: 'var(--bg-secondary)', padding: '3px', borderRadius: '8px', border: '1px solid var(--border-soft)' }}>
+        {/* View Switcher Tabs */}
+        <div style={{ display: 'flex', gap: '6px', background: 'var(--bg-secondary)', padding: '4px', borderRadius: '10px', border: '1px solid var(--border-soft)' }}>
           <button 
             onClick={() => setViewMode('3d')} 
             className={viewMode === '3d' ? 'btn-primary' : 'btn-secondary'} 
-            style={{ padding: '4px 12px', fontSize: '0.75rem' }}
+            style={{ padding: '6px 14px', fontSize: '0.78rem', borderRadius: '8px', fontWeight: '700' }}
           >
-            <Eye size={12} /> 3D Package Layers
+            <Eye size={14} /> 3D Package View
           </button>
           <button 
             onClick={() => setViewMode('dieline')} 
             className={viewMode === 'dieline' ? 'btn-primary' : 'btn-secondary'} 
-            style={{ padding: '4px 12px', fontSize: '0.75rem' }}
+            style={{ padding: '6px 14px', fontSize: '0.78rem', borderRadius: '8px', fontWeight: '700' }}
           >
-            <Layers size={12} /> 2D CAD Dieline
+            <Layers size={14} /> 2D CAD Dieline
           </button>
         </div>
       </div>
 
       {viewMode === '3d' ? (
-        /* 3D Box Interactive Canvas Container */
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 240px', gap: '20px', alignItems: 'center' }}>
+        /* 3D Box Main Stage Layout */
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
-          <div 
-            onMouseMove={(e) => {
-              if (e.buttons === 1) {
-                setRotY(prev => prev + e.movementX * 0.5);
-                setRotX(prev => prev - e.movementY * 0.5);
-              }
-            }}
-            style={{ 
-              height: '280px', 
-              background: 'radial-gradient(ellipse at center, var(--bg-card) 0%, var(--bg-secondary) 100%)', 
-              borderRadius: '14px', 
-              border: '1px solid var(--border-soft)',
-              display: 'flex',
-              alignItems: 'center',
-              justify: 'center',
-              perspective: '800px',
-              cursor: 'grab',
-              userSelect: 'none',
-              position: 'relative',
-              overflow: 'hidden'
-            }}
-          >
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', position: 'absolute', top: '10px', left: '12px' }}>
-              🖐️ Drag mouse to rotate 3D package angle
+          {/* 3D Interactive Canvas Stage - Centered Large Container */}
+          <div style={{ position: 'relative', width: '100%' }}>
+            
+            {/* Top Control Bar Overlay */}
+            <div style={{ 
+              position: 'absolute', 
+              top: '14px', 
+              left: '14px', 
+              right: '14px', 
+              zIndex: 30, 
+              display: 'flex', 
+              justify: 'space-between', 
+              alignItems: 'center', 
+              gap: '8px', 
+              pointerEvents: 'none' 
+            }}>
+              <div style={{ pointerEvents: 'auto', background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(8px)', padding: '6px 14px', borderRadius: '20px', fontSize: '0.78rem', color: 'var(--text-heading)', fontWeight: '700', border: '1px solid var(--border-soft)', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+                🖐️ Drag mouse to orbit | Scroll to zoom
+              </div>
+
+              <div style={{ pointerEvents: 'auto', display: 'flex', gap: '8px' }}>
+                <button
+                  onClick={() => setIsOpenLid(!isOpenLid)}
+                  style={{
+                    background: isOpenLid ? 'var(--brand-primary)' : '#FFFFFF',
+                    color: isOpenLid ? '#FFFFFF' : 'var(--text-heading)',
+                    border: '1px solid var(--border-soft)',
+                    padding: '6px 14px',
+                    borderRadius: '8px',
+                    fontSize: '0.78rem',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  <Box size={14} /> {isOpenLid ? '📦 Close Box Lid' : '📂 Open Box Lid'}
+                </button>
+
+                <button
+                  onClick={() => setIsAutoRotate(!isAutoRotate)}
+                  style={{
+                    background: isAutoRotate ? 'var(--brand-primary)' : '#FFFFFF',
+                    color: isAutoRotate ? '#FFFFFF' : 'var(--text-heading)',
+                    border: '1px solid var(--border-soft)',
+                    padding: '6px 12px',
+                    borderRadius: '8px',
+                    fontSize: '0.78rem',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px'
+                  }}
+                >
+                  <RefreshCw size={13} className={isAutoRotate ? "animate-spin" : ""} /> {isAutoRotate ? 'Spinning' : 'Auto-Spin'}
+                </button>
+
+                <button
+                  onClick={resetView}
+                  title="Reset View Angle"
+                  style={{
+                    background: '#FFFFFF',
+                    color: 'var(--text-muted)',
+                    border: '1px solid var(--border-soft)',
+                    padding: '6px 10px',
+                    borderRadius: '8px',
+                    fontSize: '0.78rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <RotateCcw size={14} />
+                </button>
+              </div>
             </div>
 
-            {/* Toggle internal X-Ray layer view */}
-            <button
-              onClick={() => setShowInternalLayers(!showInternalLayers)}
-              style={{
-                position: 'absolute',
-                top: '10px',
-                right: '12px',
-                fontSize: '0.7rem',
-                fontWeight: '700',
-                background: showInternalLayers ? 'var(--brand-primary)' : 'var(--bg-card)',
-                color: showInternalLayers ? '#FFF' : 'var(--text-heading)',
+            {/* Interactive Stage - Strictly Centered Perspective */}
+            <div 
+              onMouseDown={(e) => {
+                if (e.button !== 0) return;
+                const startX = e.clientX;
+                const startY = e.clientY;
+                const origX = rotX;
+                const origY = rotY;
+
+                const onMouseMove = (moveEvent) => {
+                  const dx = moveEvent.clientX - startX;
+                  const dy = moveEvent.clientY - startY;
+                  setRotY(origY + dx * 0.6);
+                  setRotX(Math.max(-85, Math.min(85, origX - dy * 0.6)));
+                };
+
+                const onMouseUp = () => {
+                  window.removeEventListener('mousemove', onMouseMove);
+                  window.removeEventListener('mouseup', onMouseUp);
+                };
+
+                window.addEventListener('mousemove', onMouseMove);
+                window.addEventListener('mouseup', onMouseUp);
+              }}
+              onWheel={(e) => {
+                e.preventDefault();
+                setZoom(prev => Math.max(0.6, Math.min(1.8, prev - e.deltaY * 0.0015)));
+              }}
+              style={{ 
+                height: '460px', 
+                width: '100%',
+                background: 'radial-gradient(ellipse at center, #FFFFFF 0%, #F1F5F9 100%)', 
+                borderRadius: '16px', 
                 border: '1px solid var(--border-soft)',
-                padding: '3px 8px',
-                borderRadius: '6px',
-                cursor: 'pointer'
+                perspective: '1200px',
+                perspectiveOrigin: '50% 50%',
+                cursor: 'grab',
+                userSelect: 'none',
+                overflow: 'hidden',
+                position: 'relative'
               }}
             >
-              {showInternalLayers ? '🔍 X-Ray Product Mode: ON' : '📦 Closed Box Mode'}
-            </button>
+              {/* Ground Shadow Base Projection (Centered) */}
+              <div style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                width: `${boxW * 1.3}px`,
+                height: `${boxD * 1.3}px`,
+                margin: `-${(boxD * 1.3) / 2}px 0 0 -${(boxW * 1.3) / 2}px`,
+                background: 'radial-gradient(ellipse at center, rgba(15, 23, 42, 0.35) 0%, rgba(15, 23, 42, 0) 70%)',
+                transform: `rotateX(90deg) translateZ(-${boxH / 2 + 45}px)`,
+                borderRadius: '50%',
+                filter: 'blur(12px)',
+                pointerEvents: 'none'
+              }}></div>
 
-            {/* CSS 3D Box Render */}
-            <div style={{
-              width: `${Math.min(150, outer_length_cm * 8)}px`,
-              height: `${Math.min(110, outer_height_cm * 8)}px`,
-              position: 'relative',
-              transformStyle: 'preserve-3d',
-              transform: `rotateX(${rotX}deg) rotateY(${rotY}deg)`,
-              transition: 'transform 0.05s ease-out'
-            }}>
-              
-              {/* Internal Product Core Mesh (Shown in X-Ray mode) */}
-              {showInternalLayers && (
+              {/* 3D Box Mesh Container (Absolute 50% / 50% Center Alignment) */}
+              <div style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                width: `${boxW}px`,
+                height: `${boxH}px`,
+                margin: `-${boxH / 2}px 0 0 -${boxW / 2}px`,
+                transformStyle: 'preserve-3d',
+                transformOrigin: '50% 50% 0px',
+                transform: `scale3d(${zoom}, ${zoom}, ${zoom}) rotateX(${rotX}deg) rotateY(${rotY}deg)`,
+                transition: isAutoRotate ? 'none' : 'transform 0.08s ease-out'
+              }}>
+
+                {/* 1. FRONT FACE (Clean Opaque Design) */}
                 <div style={{
                   position: 'absolute',
-                  width: '60%',
-                  height: '60%',
-                  background: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)',
-                  border: '2px solid #60A5FA',
-                  borderRadius: '6px',
-                  top: '20%',
-                  left: '20%',
-                  transform: 'translateZ(0px)',
+                  width: `${boxW}px`,
+                  height: `${boxH}px`,
+                  backgroundColor: theme.bgFace,
+                  backgroundImage: theme.texture,
+                  border: `3px solid ${theme.border}`,
+                  color: theme.text,
+                  transform: `translateZ(${boxD / 2}px)`,
+                  backfaceVisibility: 'hidden',
+                  opacity: 1,
+                  boxSizing: 'border-box',
+                  padding: '16px',
                   display: 'flex',
+                  flexDirection: 'column',
+                  justify: 'space-between',
+                  boxShadow: 'inset 0 0 16px rgba(0,0,0,0.15)'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ fontSize: '0.72rem', fontWeight: '900', textTransform: 'uppercase', color: '#064E3B', background: '#D1FAE5', padding: '3px 8px', borderRadius: '5px' }}>
+                      🌿 PACKWISE
+                    </div>
+                    <span style={{ fontSize: '0.68rem', background: '#0F172A', color: '#FFFFFF', padding: '3px 8px', borderRadius: '5px', fontWeight: '800' }}>
+                      ISTA 3A
+                    </span>
+                  </div>
+
+                  <div style={{ textAlign: 'center', margin: 'auto 0' }}>
+                    <div style={{ fontSize: '1.4rem', fontWeight: '900', color: theme.text, letterSpacing: '0.06em' }}>
+                      PACKWISE AI
+                    </div>
+                    <div style={{ fontSize: '0.75rem', fontWeight: '700', opacity: 0.85, marginTop: '2px' }}>
+                      SUSTAINABLE DESIGN
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontSize: '0.7rem', fontWeight: '800' }}>
+                    <span>{lengthCm} × {widthCm} × {heightCm} cm</span>
+                    <span style={{ color: '#064E3B' }}>Recyclable ♻️</span>
+                  </div>
+                </div>
+
+                {/* 2. BACK FACE */}
+                <div style={{
+                  position: 'absolute',
+                  width: `${boxW}px`,
+                  height: `${boxH}px`,
+                  backgroundColor: theme.bgFace,
+                  backgroundImage: theme.texture,
+                  border: `3px solid ${theme.border}`,
+                  color: theme.text,
+                  transform: `rotateY(180deg) translateZ(${boxD / 2}px)`,
+                  backfaceVisibility: 'hidden',
+                  opacity: 1,
+                  boxSizing: 'border-box',
+                  padding: '16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justify: 'center',
+                  alignItems: 'center',
+                  boxShadow: 'inset 0 0 16px rgba(0,0,0,0.15)'
+                }}>
+                  <div style={{ fontSize: '0.95rem', fontWeight: '900', textAlign: 'center', color: theme.text }}>
+                    PACKWISE AI PACKAGING
+                  </div>
+                  <div style={{ fontSize: '0.7rem', marginTop: '6px', opacity: 0.85, fontWeight: '700' }}>
+                    100% Recyclable Packaging
+                  </div>
+                </div>
+
+                {/* 3. LEFT FACE */}
+                <div style={{
+                  position: 'absolute',
+                  width: `${boxD}px`,
+                  height: `${boxH}px`,
+                  backgroundColor: theme.bgFace,
+                  backgroundImage: theme.texture,
+                  border: `3px solid ${theme.border}`,
+                  color: theme.text,
+                  left: `${(boxW - boxD) / 2}px`,
+                  transform: `rotateY(-90deg) translateZ(${boxW / 2}px)`,
+                  backfaceVisibility: 'hidden',
+                  opacity: 1,
+                  boxSizing: 'border-box',
+                  padding: '14px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justify: 'space-between',
+                  boxShadow: 'inset 0 0 16px rgba(0,0,0,0.15)'
+                }}>
+                  <div style={{ fontSize: '0.78rem', fontWeight: '900', color: theme.text, letterSpacing: '0.04em' }}>
+                    ⚠️ FRAGILE
+                  </div>
+                  <div style={{ fontSize: '0.68rem', fontWeight: '800', opacity: 0.85 }}>
+                    HANDLE WITH CARE
+                  </div>
+                </div>
+
+                {/* 4. RIGHT FACE (with Smart QR Label) */}
+                <div style={{
+                  position: 'absolute',
+                  width: `${boxD}px`,
+                  height: `${boxH}px`,
+                  backgroundColor: theme.bgFace,
+                  backgroundImage: theme.texture,
+                  border: `3px solid ${theme.border}`,
+                  color: theme.text,
+                  left: `${(boxW - boxD) / 2}px`,
+                  transform: `rotateY(90deg) translateZ(${boxW / 2}px)`,
+                  backfaceVisibility: 'hidden',
+                  opacity: 1,
+                  boxSizing: 'border-box',
+                  padding: '14px',
+                  display: 'flex',
+                  flexDirection: 'column',
                   alignItems: 'center',
                   justify: 'center',
-                  color: '#FFF',
-                  fontSize: '0.65rem',
-                  fontWeight: '800',
-                  boxShadow: '0 0 14px rgba(59, 130, 246, 0.5)',
-                  zIndex: 2
+                  gap: '6px',
+                  boxShadow: 'inset 0 0 16px rgba(0,0,0,0.15)'
                 }}>
-                  PRODUCT CORE
+                  <div style={{ background: '#FFFFFF', padding: '8px', borderRadius: '8px', boxShadow: '0 4px 10px rgba(0,0,0,0.2)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <QrCode size={36} color="#0F172A" />
+                    <span style={{ fontSize: '0.55rem', fontWeight: '900', color: '#0F172A', marginTop: '3px' }}>SCAN DISPOSAL</span>
+                  </div>
                 </div>
-              )}
 
-              {/* Internal Molded Cushioning Shell */}
-              {showInternalLayers && (
+                {/* 5. BOTTOM FACE */}
                 <div style={{
                   position: 'absolute',
-                  width: '82%',
-                  height: '82%',
-                  background: 'rgba(16, 185, 129, 0.25)',
-                  border: '2px stroke #10B981',
-                  borderRadius: '8px',
-                  top: '9%',
-                  left: '9%',
-                  transform: 'translateZ(10px)',
+                  width: `${boxW}px`,
+                  height: `${boxD}px`,
+                  backgroundColor: theme.bgFace,
+                  backgroundImage: theme.texture,
+                  border: `3px solid ${theme.border}`,
+                  top: `${(boxH - boxD) / 2}px`,
+                  transform: `rotateX(-90deg) translateZ(${boxH / 2}px)`,
+                  backfaceVisibility: 'hidden',
+                  opacity: 1,
+                  boxSizing: 'border-box',
+                  boxShadow: 'inset 0 0 18px rgba(0,0,0,0.2)'
+                }}></div>
+
+                {/* 6. TOP LID FACE (Hinged at Back Edge) */}
+                <div style={{
+                  position: 'absolute',
+                  width: `${boxW}px`,
+                  height: `${boxD}px`,
+                  backgroundColor: theme.lidBg,
+                  backgroundImage: theme.texture,
+                  border: `3px solid ${theme.border}`,
+                  color: theme.text,
+                  top: `${(boxH - boxD) / 2}px`,
+                  transformOrigin: 'top center',
+                  transform: `rotateX(90deg) translateZ(${boxH / 2}px) ${isOpenLid ? 'rotateX(-110deg)' : 'rotateX(0deg)'}`,
+                  transition: 'transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  backfaceVisibility: 'hidden',
+                  opacity: 1,
+                  boxSizing: 'border-box',
+                  padding: '16px',
                   display: 'flex',
-                  alignItems: 'flex-start',
-                  justify: 'flex-end',
-                  padding: '4px',
-                  color: '#065F46',
-                  fontSize: '0.6rem',
-                  fontWeight: '800',
-                  zIndex: 1
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justify: 'center',
+                  boxShadow: '0 8px 20px rgba(0,0,0,0.18)'
                 }}>
-                  CUSHION
-                </div>
-              )}
+                  {/* Sealing Tape Line when Closed */}
+                  {!isOpenLid && (
+                    <div style={{ position: 'absolute', width: '100%', height: '18px', background: '#D89B24', border: '1.5px dashed #78350F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6rem', fontWeight: '900', color: '#451A03' }}>
+                      WATER-ACTIVATED RECYCLABLE TAPE
+                    </div>
+                  )}
 
-              {/* Front Face with QR Code Label */}
-              <div style={{ position: 'absolute', inset: 0, background: showInternalLayers ? 'rgba(6, 78, 59, 0.45)' : 'rgba(6, 78, 59, 0.9)', border: '2px solid #CFE3C7', color: '#FFF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', transform: `translateZ(${Math.min(60, outer_width_cm * 4)}px)` }}>
-                <span style={{ fontSize: '0.72rem', fontWeight: '800' }}>FRONT PANEL</span>
-                <span style={{ fontSize: '0.6rem', opacity: 0.8 }}>4.1% Void Space</span>
-              </div>
-
-              {/* Top Face with Soy Ink Branding Logo */}
-              <div style={{ position: 'absolute', width: '100%', height: `${Math.min(120, outer_width_cm * 8)}px`, background: showInternalLayers ? 'rgba(22, 101, 52, 0.5)' : 'rgba(22, 101, 52, 0.95)', border: '2px solid #CFE3C7', color: '#FFF', top: 0, transformOrigin: 'top', transform: `rotateX(-90deg)` }}>
-                <div style={{ padding: '6px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '0.7rem', fontWeight: '800', color: '#D1FAE5', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-                    <Sparkles size={10} /> RESONANCE SOY-INK BRANDING
+                  <div style={{ fontSize: '0.88rem', fontWeight: '900', color: '#064E3B', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <Sparkles size={16} /> PACKWISE ECO-DESIGN
                   </div>
-                  <div style={{ fontSize: '0.6rem', color: '#A7F3D0' }}>Lid: {outer_length_cm} × {outer_width_cm} cm</div>
                 </div>
+
+                {/* INNER NESTED CUSHION INSERT (Visible when Lid is Open) */}
+                {isOpenLid && (
+                  <div style={{
+                    position: 'absolute',
+                    width: `${boxW - 24}px`,
+                    height: `${boxD - 24}px`,
+                    left: '12px',
+                    top: `${(boxH - boxD) / 2 + 12}px`,
+                    background: 'linear-gradient(135deg, #10B981 0%, #047857 100%)',
+                    border: '2.5px solid #A7F3D0',
+                    borderRadius: '10px',
+                    transform: `translateZ(${boxH / 2 - 25}px)`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justify: 'center',
+                    color: '#FFFFFF',
+                    fontSize: '0.8rem',
+                    fontWeight: '900',
+                    boxShadow: '0 6px 18px rgba(16, 185, 129, 0.45)',
+                    boxSizing: 'border-box',
+                    padding: '12px',
+                    textAlign: 'center'
+                  }}>
+                    <div>
+                      🌱 Molded Pulp Insert ({cushion_thickness_cm} cm)
+                      <div style={{ fontSize: '0.65rem', fontWeight: '700', color: '#D1FAE5', marginTop: '4px' }}>
+                        Product Form-Fit Core Nested Inside
+                      </div>
+                    </div>
+                  </div>
+                )}
+
               </div>
 
-              {/* Right Face with QR Code Disposal Label Placement */}
-              <div style={{ position: 'absolute', width: `${Math.min(120, outer_width_cm * 8)}px`, height: '100%', background: showInternalLayers ? 'rgba(6, 78, 59, 0.55)' : 'rgba(6, 78, 59, 0.95)', border: '2px solid #CFE3C7', color: '#FFF', right: 0, transformOrigin: 'right', transform: `rotateY(90deg)`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px' }}>
-                <QrCode size={20} color="#D1FAE5" />
-                <span style={{ fontSize: '0.58rem', fontWeight: '800', color: '#D1FAE5' }}>SMART DISPOSAL QR</span>
-              </div>
+            </div>
 
+            {/* Material Texture Selector Bar */}
+            <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', background: 'var(--bg-secondary)', padding: '10px 16px', borderRadius: '12px', border: '1px solid var(--border-soft)' }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Sliders size={15} /> Material Finish Texture:
+              </span>
+              
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {Object.entries(MATERIAL_THEMES).map(([key, item]) => (
+                  <button
+                    key={key}
+                    onClick={() => setBoxMaterial(key)}
+                    style={{
+                      background: boxMaterial === key ? 'var(--brand-primary)' : '#FFFFFF',
+                      color: boxMaterial === key ? '#FFFFFF' : 'var(--text-heading)',
+                      border: boxMaterial === key ? '1px solid var(--brand-primary)' : '1px solid var(--border-soft)',
+                      padding: '6px 14px',
+                      borderRadius: '8px',
+                      fontSize: '0.78rem',
+                      fontWeight: '800',
+                      cursor: 'pointer',
+                      boxShadow: boxMaterial === key ? '0 2px 8px rgba(6, 78, 59, 0.2)' : 'none',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    {item.name}
+                  </button>
+                ))}
+              </div>
             </div>
 
           </div>
 
-          {/* 5 Architecture Layer Callout Specs */}
-          <div style={{ background: 'var(--bg-card-highlight)', border: '1px solid var(--border-soft)', padding: '14px', borderRadius: '12px', fontSize: '0.78rem' }}>
-            <div style={{ fontWeight: '800', color: 'var(--brand-primary)', marginBottom: '8px', fontSize: '0.85rem' }}>
-              📐 3D Package Architecture
-            </div>
+          {/* 3D Package Architecture Callout Specs Bar */}
+          <div style={{ background: 'var(--bg-card-highlight)', border: '1px solid var(--border-soft)', padding: '20px', borderRadius: '14px', fontSize: '0.85rem' }}>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', color: 'var(--text-body)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#3B82F6', flexShrink: 0 }}></span>
-                <span><strong>1. Product Inside:</strong> Fits inner core ({outer_length_cm - 2.4} × {outer_width_cm - 2.4} cm)</span>
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', flexShrink: 0 }}></span>
-                <span><strong>2. Cushioning Layer:</strong> {cushion_thickness_cm} cm Molded Pulp</span>
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#F59E0B', flexShrink: 0 }}></span>
-                <span><strong>3. Void Space:</strong> Minimized 4.1% Volume Gap</span>
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#EC4899', flexShrink: 0 }}></span>
-                <span><strong>4. Soy Ink Print:</strong> Top Lid Surface ({outer_length_cm} × {outer_width_cm} cm)</span>
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#06B6D4', flexShrink: 0 }}></span>
-                <span><strong>5. QR Label Position:</strong> Right Side Panel</span>
-              </div>
+            <div style={{ fontWeight: '800', color: 'var(--brand-primary)', marginBottom: '14px', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <ShieldCheck size={20} color="var(--brand-primary)" /> 3D Package Architecture & Specs
             </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', color: 'var(--text-body)' }}>
+              
+              <div style={{ background: '#FFFFFF', padding: '12px 14px', borderRadius: '10px', border: '1px solid var(--border-soft)' }}>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase' }}>OUTER BOX DIMENSIONS</div>
+                <strong style={{ fontSize: '0.95rem', color: 'var(--text-heading)' }}>{lengthCm} × {widthCm} × {heightCm} cm</strong>
+              </div>
+
+              <div style={{ background: '#FFFFFF', padding: '12px 14px', borderRadius: '10px', border: '1px solid var(--border-soft)' }}>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase' }}>CUSHIONING LAYER</div>
+                <strong style={{ fontSize: '0.9rem', color: 'var(--brand-primary)' }}>{cushion_thickness_cm} cm Molded Paper Pulp</strong>
+                <div style={{ fontSize: '0.7rem', color: 'var(--green-secondary)', marginTop: '2px' }}>100% Recycled & Home Compostable</div>
+              </div>
+
+              <div style={{ background: '#FFFFFF', padding: '12px 14px', borderRadius: '10px', border: '1px solid var(--border-soft)' }}>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase' }}>OPTIMIZED VOID SPACE</div>
+                <strong style={{ fontSize: '0.9rem', color: 'var(--text-heading)' }}>4.1% Volume Gap (Minimized)</strong>
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '2px' }}>Saves freight volume & shipping CO₂e</div>
+              </div>
+
+              <div style={{ background: '#FFFFFF', padding: '12px 14px', borderRadius: '10px', border: '1px solid var(--border-soft)' }}>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase' }}>ECO BRANDING & PRINTING</div>
+                <strong style={{ fontSize: '0.9rem', color: 'var(--text-heading)' }}>Soy-Based Vegetable Inks</strong>
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '2px' }}>Deinkable & recyclable surface print</div>
+              </div>
+
+            </div>
+
           </div>
 
         </div>
