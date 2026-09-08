@@ -50,6 +50,12 @@ export default function Navbar({ activeTab, setActiveTab, onLogoClick, onOpenCop
             <Cpu size={15} /> Optimizer
           </button>
           <button 
+            onClick={() => setActiveTab('brand_style')} 
+            style={{ background: 'none', border: 'none', color: activeTab === 'brand_style' ? '#34d399' : '#a7f3d0', fontWeight: activeTab === 'brand_style' ? '700' : '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+          >
+            <Sparkles size={15} /> Brand Style
+          </button>
+          <button 
             onClick={() => setActiveTab('claims')} 
             style={{ background: 'none', border: 'none', color: activeTab === 'claims' ? '#34d399' : '#a7f3d0', fontWeight: activeTab === 'claims' ? '700' : '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
           >

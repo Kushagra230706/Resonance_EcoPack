@@ -11,6 +11,7 @@ import ExportModal from './components/ExportModal';
 import ClaimsChecker from './components/ClaimsChecker';
 import QRDisposalGuide from './components/QRDisposalGuide';
 import ScoringModelCustomizer from './components/ScoringModelCustomizer';
+import BrandStyleGenerator from './components/BrandStyleGenerator';
 import { Camera, Sliders, RefreshCw, Layers, FileText } from 'lucide-react';
 
 export default function App() {
@@ -404,9 +405,13 @@ export default function App() {
       width_cm: specs.width_cm || formData.width_cm,
       height_cm: specs.height_cm || formData.height_cm,
       weight_g: specs.weight_g || formData.weight_g,
-      product_value_usd: specs.product_value_usd || formData.product_value_usd
+      product_value_usd: specs.product_value_usd || formData.product_value_usd,
+      budget_limit_usd: specs.budget_limit_usd || formData.budget_limit_usd,
+      sustainability_goal: specs.sustainability_goal || formData.sustainability_goal
     };
     setFormData(updated);
+    setActiveTab('optimizer');
+    setShowHero(false);
     runOptimization(updated);
   };
 
@@ -620,6 +625,7 @@ export default function App() {
           </div>
         )}
 
+        {activeTab === 'brand_style' && <BrandStyleGenerator />}
         {activeTab === 'claims' && <ClaimsChecker />}
         {activeTab === 'disposal' && <QRDisposalGuide />}
 

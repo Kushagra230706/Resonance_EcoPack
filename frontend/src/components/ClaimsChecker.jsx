@@ -67,9 +67,11 @@ export default function ClaimsChecker() {
           {/* Quick Preset Buttons */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
             <span>Quick Test Examples:</span>
-            <button type="button" onClick={() => setClaimText('100% biodegradable')} className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.72rem' }}>"100% biodegradable"</button>
-            <button type="button" onClick={() => setClaimText('Zero Waste')} className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.72rem' }}>"Zero Waste"</button>
-            <button type="button" onClick={() => setClaimText('100% eco-friendly')} className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.72rem' }}>"100% eco-friendly"</button>
+            <button type="button" onClick={() => setClaimText('Carbon neutral')} className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.72rem' }}>"Carbon neutral"</button>
+            <button type="button" onClick={() => setClaimText('Eco-friendly')} className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.72rem' }}>"Eco-friendly"</button>
+            <button type="button" onClick={() => setClaimText('Biodegradable')} className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.72rem' }}>"Biodegradable"</button>
+            <button type="button" onClick={() => setClaimText('Zero waste')} className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.72rem' }}>"Zero waste"</button>
+            <button type="button" onClick={() => setClaimText('Plastic-free')} className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.72rem' }}>"Plastic-free"</button>
             <button type="button" onClick={() => setClaimText('100% recyclable')} className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.72rem' }}>"100% recyclable"</button>
           </div>
         </form>

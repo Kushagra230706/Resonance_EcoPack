@@ -60,8 +60,8 @@ def call_live_ai_recommendation(
                 f"- Annual Volume: {annual_vol:,} shipments/year\n\n"
                 f"Return ONLY a valid JSON object with exact keys:\n"
                 f"{{\n"
-                f'  "pareto_recommendation_text": "A concise 2-sentence executive trade-off recommendation starting with EcoPack recommends Option {winner_index} ({winner_name})... explaining why it won.",\n'
-                f'  "annual_impact_summary": "1-sentence executive dashboard summary statement highlighting total annual volume ({annual_vol:,} shipments/year), carbon saved ({co2_saved_kg/1000:.1f} tons CO2e), and annual cost savings (${cost_saved_usd:,.0f}).",\n'
+                f'  "pareto_recommendation_text": "Option {winner_index} ({winner_name}) was selected because it is {cost_reduction}% cheaper than the conventional option, has {co2_reduction}% lower carbon than the plastic option, and meets the required protection threshold ({protection_score}/100).",\n'
+                f'  "annual_impact_summary": "For {annual_vol:,} shipments/year, this design saves approximately {co2_saved_kg/1000:.1f} tons CO2e and ${cost_saved_usd:,.0f} annually.",\n'
                 f'  "verified_impact_claim": "Estimated {co2_reduction}% lower CO2e under selected lifecycle assumptions (Avoids vague \\"100% eco-friendly\\" greenwashing).",\n'
                 f'  "objective_badges": [\n'
                 f'     {{"label": "Min CO₂e", "icon": "🌱"}},\n'
@@ -140,9 +140,8 @@ def call_live_ai_recommendation(
     co2_tons = round(co2_saved_kg / 1000.0, 1)
     return {
         "pareto_recommendation_text": (
-            f"EcoPack recommends Option {winner_index} ({winner_name}) because it reduces estimated CO₂e by {co2_reduction}%, "
-            f"lowers total packaging cost by {cost_reduction}%, maintains high protection ({protection_score}/100), "
-            f"and improves brand presentation ({branding_score}/100)."
+            f"Option {winner_index} ({winner_name}) was selected because it is {cost_reduction}% cheaper than the conventional option, "
+            f"has {co2_reduction}% lower carbon than the plastic option, and meets the required protection threshold ({protection_score}/100)."
         ),
         "annual_impact_summary": (
             f"For {annual_vol:,} shipments/year, this design saves approximately {co2_tons} tons CO₂e and ${cost_saved_usd:,.0f} annually."
