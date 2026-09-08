@@ -192,29 +192,36 @@ def call_groq_llm(prompt_text: str, system_prompt: str = "You are PackWise AI, a
     if not groq_key or groq_key == "your_groq_api_key_here":
         return None
 
-    try:
-        url = "https://api.groq.com/openai/v1/chat/completions"
-        headers = {
-            "Authorization": f"Bearer {groq_key}",
-            "Content-Type": "application/json"
-        }
-        payload = {
-            "model": "llama-3.3-70b-versatile",
-            "messages": [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": prompt_text}
-            ],
-            "temperature": 0.2,
-            "max_tokens": 512
-        }
+    models_to_try = ["groq/compound-mini", "qwen/qwen3.6-27b", "openai/gpt-oss-20b", "groq/compound"]
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {groq_key}",
+        "Content-Type": "application/json",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+    }
 
-        req = urllib.request.Request(url, data=json.dumps(payload).encode('utf-8'), headers=headers, method="POST")
-        with urllib.request.urlopen(req, timeout=10) as response:
-            res_data = json.loads(response.read().decode('utf-8'))
-            return res_data["choices"][0]["message"]["content"]
-    except Exception as e:
-        print(f"Groq API call error: {e}")
-        return None
+    for model_name in models_to_try:
+        try:
+            payload = {
+                "model": model_name,
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": prompt_text}
+                ],
+                "temperature": 0.2,
+                "max_tokens": 512
+            }
+
+            req = urllib.request.Request(url, data=json.dumps(payload).encode('utf-8'), headers=headers, method="POST")
+            with urllib.request.urlopen(req, timeout=10) as response:
+                res_data = json.loads(response.read().decode('utf-8'))
+                content = res_data["choices"][0]["message"]["content"]
+                if content:
+                    return content
+        except Exception as e:
+            print(f"Groq API model '{model_name}' attempt note: {e}")
+
+    return None
 
 
 @app.post("/api/recognize-product")
