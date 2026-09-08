@@ -1,5 +1,6 @@
 import React from 'react';
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend } from 'recharts';
+import SankeyCarbonFlow from './SankeyCarbonFlow';
 
 const OPTION_COLORS = [
   '#10B981', // Emerald Green (Default for Winner)
@@ -22,7 +23,7 @@ const getOptionColor = (a, idx, recommended, baseline) => {
   return OPTION_COLORS[(idx + 2) % OPTION_COLORS.length];
 };
 
-// Custom Scatter Dot Renderer - renders clean circular dot with optional halo when hovered/winner
+// Custom Scatter Dot Renderer: X: Cost, Y: CO2, Color: Protection Rating, Size: Branding Score
 const renderCustomDot = (hoveredOptionNum) => (props) => {
   const { cx, cy, payload } = props;
   if (!cx || !cy) return null;
@@ -30,9 +31,14 @@ const renderCustomDot = (hoveredOptionNum) => (props) => {
   const isWinner = payload.isWinner;
   const isBaseline = payload.isBaseline;
   const isHovered = hoveredOptionNum === payload.optionNum;
-  const color = payload.color;
   
-  const baseR = isWinner ? 8 : (isBaseline ? 7 : 6);
+  // Color mapped from Protection Score / Archetype
+  const color = payload.color || '#10B981';
+  
+  // Size mapped from Branding Score (higher branding score = larger dot size)
+  const brandScore = payload.branding_score || 75;
+  const sizeRadius = 4 + Math.round((brandScore / 100) * 6); // 4px to 10px radius
+  const baseR = isWinner ? Math.max(9, sizeRadius) : sizeRadius;
   const r = isHovered ? baseR + 4 : baseR;
 
   return (
@@ -47,7 +53,7 @@ const renderCustomDot = (hoveredOptionNum) => (props) => {
           opacity={isHovered ? 0.5 : 0.25} 
         />
       )}
-      {/* Clean Circle Dot without inline text badge */}
+      {/* Circle Dot (Size = Branding Score, Color = Protection Score) */}
       <circle
         cx={cx}
         cy={cy}
@@ -301,6 +307,9 @@ export default function ComparisonDashboard({ data }) {
         </div>
 
       </div>
+
+      {/* Sankey Carbon Flow Diagram (Material, Manufacturing, Transport, EOL, Damage Risk) */}
+      <SankeyCarbonFlow data={data} />
 
       {/* Pareto Trade-Off Frontier Table (User & Judge Requested Format) */}
       <div className="glass-panel" style={{ padding: '20px', border: '1px solid var(--border-soft)', borderRadius: '16px' }}>
