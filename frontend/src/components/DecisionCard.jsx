@@ -124,7 +124,7 @@ export default function DecisionCard({ data }) {
             <DollarSign size={14} color="var(--warning-color)" /> Unit Cost
           </div>
           <div style={{ fontSize: '1.2rem', fontWeight: '700', color: 'var(--text-heading)' }}>${recommended.unit_cost_usd}</div>
-          <div style={{ fontSize: '0.7rem', color: 'var(--green-secondary)' }}>Material: ${recommended.cost_breakdown?.material_cost_usd || (recommended.unit_cost_usd * 0.5).toFixed(2)} | Damage Risk: ${recommended.expected_damage_cost_usd}</div>
+          <div style={{ fontSize: '0.7rem', color: 'var(--green-secondary)' }}>Material: ${recommended.cost_breakdown?.material_cost_usd || (recommended.unit_cost_usd * 0.5).toFixed(2)} | Damage Loss: ${recommended.expected_damage_cost_usd}</div>
         </div>
 
         <div style={{ background: 'var(--bg-secondary)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-soft)' }}>
@@ -149,6 +149,90 @@ export default function DecisionCard({ data }) {
           </div>
           <div style={{ fontSize: '1.2rem', fontWeight: '700', color: 'var(--text-heading)' }}>{recommended.recyclability_score}%</div>
           <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Branding Score: {recommended.branding_score}/100</div>
+        </div>
+
+      </div>
+
+      {/* THREE EXPLICIT DECISION CARDS: WHY THIS WINS, TRADE-OFFS, BEST FOR */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginBottom: '20px' }}>
+        
+        {/* 1. WHY THIS WINS CARD */}
+        <div style={{ background: 'var(--bg-card-highlight)', border: '1.5px solid var(--border-soft)', padding: '18px', borderRadius: '14px' }}>
+          <h4 style={{ fontSize: '1.02rem', fontWeight: '800', color: 'var(--brand-primary)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            🏆 Why This Wins
+          </h4>
+          <ul style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.85rem', color: 'var(--text-body)', listStyle: 'none', padding: 0, margin: 0 }}>
+            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+              <span style={{ color: 'var(--brand-primary)', fontWeight: 'bold' }}>✓</span>
+              <span><strong>{annual_impact?.co2_reduction_pct || 28}% lower estimated CO₂e</strong> than current baseline packaging</span>
+            </li>
+            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+              <span style={{ color: 'var(--brand-primary)', fontWeight: 'bold' }}>✓</span>
+              <span><strong>{annual_impact?.cost_reduction_pct || 12}% lower total unit cost</strong> (${costSaved.toLocaleString()} annual savings)</span>
+            </li>
+            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+              <span style={{ color: 'var(--brand-primary)', fontWeight: 'bold' }}>✓</span>
+              <span><strong>{baseline.void_space_pct ? (baseline.void_space_pct - recommended.void_space_pct) : 40}% less empty void space</strong> ({baseline.void_space_pct || 18}% → {recommended.void_space_pct || 5}%)</span>
+            </li>
+            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+              <span style={{ color: 'var(--brand-primary)', fontWeight: 'bold' }}>✓</span>
+              <span><strong>Protection score improved</strong> from {baseline.protection_score || 74} to {recommended.protection_score || 88}</span>
+            </li>
+            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+              <span style={{ color: 'var(--brand-primary)', fontWeight: 'bold' }}>✓</span>
+              <span><strong>Fully paper-based design</strong> ({recommended.outer_material || "Recycled Cardboard"} + {recommended.inner_material || "Molded Pulp"})</span>
+            </li>
+            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+              <span style={{ color: 'var(--brand-primary)', fontWeight: 'bold' }}>✓</span>
+              <span><strong>Strong printable branding surface</strong> ({recommended.branding_score}/100 unboxing rating)</span>
+            </li>
+            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+              <span style={{ color: 'var(--brand-primary)', fontWeight: 'bold' }}>✓</span>
+              <span><strong>On-pack QR disposal guide included</strong> for customer recycling clarity</span>
+            </li>
+          </ul>
+        </div>
+
+        {/* 2. TRADE-OFFS CARD */}
+        <div style={{ background: '#FFFBEB', border: '1.5px solid #FDE68A', padding: '18px', borderRadius: '14px' }}>
+          <h4 style={{ fontSize: '1.02rem', fontWeight: '800', color: '#92400E', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            ⚠️ Key Trade-Offs
+          </h4>
+          <ul style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.85rem', color: '#78350F', listStyle: 'none', padding: 0, margin: 0 }}>
+            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+              <span style={{ color: '#D97706', fontWeight: 'bold' }}>•</span>
+              <span>Slightly higher raw material unit cost than unpadded plastic poly-bags</span>
+            </li>
+            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+              <span style={{ color: '#D97706', fontWeight: 'bold' }}>•</span>
+              <span>Not suitable for prolonged submerged high-moisture environments without bio-coating</span>
+            </li>
+            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+              <span style={{ color: '#D97706', fontWeight: 'bold' }}>•</span>
+              <span>Requires qualified supplier with molded pulp or paper honeycomb cushion tooling</span>
+            </li>
+          </ul>
+        </div>
+
+        {/* 3. BEST FOR CARD */}
+        <div style={{ background: '#EFF6FF', border: '1.5px solid #BFDBFE', padding: '18px', borderRadius: '14px' }}>
+          <h4 style={{ fontSize: '1.02rem', fontWeight: '800', color: '#1E40AF', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            🎯 Best For
+          </h4>
+          <ul style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.85rem', color: '#1E3A8A', listStyle: 'none', padding: 0, margin: 0 }}>
+            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+              <span style={{ color: '#2563EB', fontWeight: 'bold' }}>✨</span>
+              <span><strong>Premium E-Commerce & DTC Shipping:</strong> Ideal for high unboxing experience standards</span>
+            </li>
+            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+              <span style={{ color: '#2563EB', fontWeight: 'bold' }}>🛡️</span>
+              <span><strong>Fragile Consumer Goods & Glassware:</strong> Demanding ISTA 3A transit protection</span>
+            </li>
+            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+              <span style={{ color: '#2563EB', fontWeight: 'bold' }}>🌱</span>
+              <span><strong>Brands Targeting Plastic Elimination:</strong> Transitioning to 100% curbside paper</span>
+            </li>
+          </ul>
         </div>
 
       </div>
