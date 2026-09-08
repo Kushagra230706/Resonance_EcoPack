@@ -44,9 +44,6 @@ export default function DecisionCard({ data }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
             <span className="badge-green"><Award size={14} /> Pareto Recommended Winner</span>
             <span className="badge-amber">Multi-Objective Score: {Math.min(100, Math.max(0, recommended.overall_score || 91.4))}/100</span>
-            <span style={{ background: '#ECFDF5', color: '#047857', border: '1px solid #A7F3D0', padding: '2px 8px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-              <Sparkles size={12} /> Live AI Powered (Gemini 3.6 Flash)
-            </span>
           </div>
           <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--text-heading)' }}>{recommended.name}</h2>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px' }}>
