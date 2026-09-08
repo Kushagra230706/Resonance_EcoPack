@@ -56,12 +56,6 @@ export default function Navbar({ activeTab, setActiveTab, onLogoClick, onOpenCop
             <Sparkles size={15} /> Case Studies
           </button>
           <button 
-            onClick={() => setActiveTab('roadmap')} 
-            style={{ background: 'none', border: 'none', color: activeTab === 'roadmap' ? '#34d399' : '#a7f3d0', fontWeight: activeTab === 'roadmap' ? '700' : '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
-          >
-            <Leaf size={15} /> Roadmap
-          </button>
-          <button 
             onClick={() => setActiveTab('brand_style')} 
             style={{ background: 'none', border: 'none', color: activeTab === 'brand_style' ? '#34d399' : '#a7f3d0', fontWeight: activeTab === 'brand_style' ? '700' : '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
           >
