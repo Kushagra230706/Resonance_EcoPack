@@ -13,7 +13,6 @@ import QRDisposalGuide from './components/QRDisposalGuide';
 import ScoringModelCustomizer from './components/ScoringModelCustomizer';
 import BrandStyleGenerator from './components/BrandStyleGenerator';
 import CaseStudiesDashboard from './components/CaseStudiesDashboard';
-import CommercializationDashboard from './components/CommercializationDashboard';
 import { Camera, Sliders, RefreshCw, Layers, FileText } from 'lucide-react';
 
 export default function App() {
@@ -679,7 +678,6 @@ export default function App() {
         {activeTab === 'brand_style' && <BrandStyleGenerator />}
         {activeTab === 'claims' && <ClaimsChecker />}
         {activeTab === 'disposal' && <QRDisposalGuide />}
-        {activeTab === 'commercialization' && <CommercializationDashboard />}
 
       </main>
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Leaf, Cpu, Sparkles, ShieldCheck, QrCode, Building2, ArrowRight } from 'lucide-react';
+import { Leaf, Cpu, Sparkles, ShieldCheck, QrCode, ArrowRight } from 'lucide-react';
 
 export default function Navbar({ activeTab, setActiveTab, onLogoClick, onOpenCopilot }) {
   return (
@@ -72,12 +72,6 @@ export default function Navbar({ activeTab, setActiveTab, onLogoClick, onOpenCop
             style={{ background: 'none', border: 'none', color: activeTab === 'disposal' ? '#34d399' : '#a7f3d0', fontWeight: activeTab === 'disposal' ? '700' : '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
           >
             <QrCode size={15} /> QR Disposal
-          </button>
-          <button 
-            onClick={() => setActiveTab('commercialization')} 
-            style={{ background: 'none', border: 'none', color: activeTab === 'commercialization' ? '#34d399' : '#a7f3d0', fontWeight: activeTab === 'commercialization' ? '700' : '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
-          >
-            <Building2 size={15} /> GTM Strategy
           </button>
         </div>
 
