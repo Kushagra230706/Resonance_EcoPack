@@ -90,13 +90,14 @@ export default function App() {
       const score_brand = Math.min(100, Math.max(0, alt.branding_score || 80));
       const score_circ = Math.min(100, Math.max(0, alt.recyclability_score || 80));
 
-      const weightedSum = (score_sust * ws) + (score_prot * wp) + (score_cost * wc) + (score_brand * wb) + (score_circ * wcirc);
-      const overall = Math.min(100.0, Math.max(0.0, Math.round(weightedSum * 10) / 10));
+      const composite = (score_sust * ws) + (score_prot * wp) + (score_cost * wc) + (score_brand * wb) + (score_circ * wcirc);
+      const overall = Math.round(composite * 10) / 10;
 
       return {
         ...alt,
         overall_score: overall,
-        active_weights: {
+        dimension_scores: {
+          ...(alt.dimension_scores || {}),
           sustainability: Math.round(ws * 100) / 100,
           protection: Math.round(wp * 100) / 100,
           cost: Math.round(wc * 100) / 100,
@@ -108,11 +109,39 @@ export default function App() {
 
     const sorted = [...updatedAlternatives].sort((a, b) => b.overall_score - a.overall_score);
     const newRecommended = sorted[0];
+    const baseline = sorted.find(a => a.is_baseline) || sorted[sorted.length - 1];
+
+    const annualVol = currentResults.annual_impact?.annual_volume || formData.annual_volume || 10000;
+    const co2_saved_kg = Math.max(0, Math.round((baseline.co2e_kg - newRecommended.co2e_kg) * annualVol * 10) / 10);
+    const cost_saved_usd = Math.max(0, Math.round((baseline.unit_cost_usd - newRecommended.unit_cost_usd) * annualVol * 100) / 100);
+    const co2_reduction_pct = Math.round(((baseline.co2e_kg - newRecommended.co2e_kg) / (baseline.co2e_kg || 1)) * 1000) / 10;
+    const cost_reduction_pct = Math.round(((baseline.unit_cost_usd - newRecommended.unit_cost_usd) / (baseline.unit_cost_usd || 1)) * 1000) / 10;
+
+    const winnerIndex = newRecommended.option_number || 1;
+    const pareto_recommendation_text = `PackWise AI recommends Option ${winnerIndex} (${newRecommended.name}) because it reduces estimated CO₂e by ${co2_reduction_pct}%, lowers total packaging cost by ${cost_reduction_pct}%, maintains high protection (${newRecommended.protection_score}/100), and improves brand presentation (${newRecommended.branding_score}/100).`;
 
     return {
       ...currentResults,
       recommended: newRecommended,
-      alternatives: updatedAlternatives
+      baseline: baseline,
+      alternatives: updatedAlternatives,
+      pareto_recommendation_text: pareto_recommendation_text,
+      why_this_won: pareto_recommendation_text,
+      annual_impact: {
+        ...(currentResults.annual_impact || {}),
+        co2_saved_kg: co2_saved_kg,
+        cost_saved_usd: cost_saved_usd,
+        co2_reduction_pct: co2_reduction_pct,
+        cost_reduction_pct: cost_reduction_pct,
+        annual_volume: annualVol
+      },
+      tradeoffs_breakdown: {
+        cost_vs_damage: { title: "1. Cheap Packaging vs Product Damage Risk", finding: `The baseline option carries a ${baseline.damage_probability_pct}% damage risk ($${baseline.expected_damage_cost_usd}/unit loss). Winner reduces damage risk to ${newRecommended.damage_probability_pct}%, saving $${Math.max(0, (baseline.expected_damage_cost_usd - newRecommended.expected_damage_cost_usd)).toFixed(2)}/unit.` },
+        eco_cost_availability: { title: "2. Eco-Friendly Material vs Cost & Regional Availability", finding: `Winner '${newRecommended.name}' balances low carbon (${newRecommended.co2e_kg} kg) at $${newRecommended.unit_cost_usd}/unit.` },
+        branding_vs_recyclability: { title: "3. Premium Branding vs Curbside Recyclability", finding: `Winner balances an ${newRecommended.branding_score}/100 branding score with ${newRecommended.recyclability_score}% regional curbside recyclability.` },
+        lightweight_vs_shipping_stress: { title: "4. Lightweight Packaging vs Transit Shipping Stress", finding: `Winner achieves ${newRecommended.shipping_efficiency_pct}% volume efficiency while maintaining ${newRecommended.protection_score}/100 protection.` },
+        regional_composting_reality: { title: "5. Biodegradable Claim vs Regional Infrastructure Reality", finding: `Paper-based pulp achieves 96% real curbside recovery compared to bioplastics facing landfill disposal.` }
+      }
     };
   };
 
@@ -393,9 +422,28 @@ export default function App() {
     setLoading(false);
   };
 
+  const specKey = JSON.stringify({
+    l: formData.length_cm,
+    w: formData.width_cm,
+    h: formData.height_cm,
+    wt: formData.weight_g,
+    f: formData.fragility,
+    m: formData.moisture_sensitivity,
+    t: formData.temperature_sensitivity,
+    p: formData.product_type,
+    v: formData.annual_volume,
+    val: formData.product_value_usd,
+    reg: formData.shipping_region,
+    dist: formData.shipping_distance_km,
+    mode: formData.shipping_mode,
+    brand: formData.branding_preference,
+    budget: formData.budget_limit_usd,
+    goal: formData.sustainability_goal
+  });
+
   useEffect(() => {
     runOptimization(formData);
-  }, [formData]);
+  }, [specKey]);
 
   const handleApplySpecs = (specs) => {
     const updated = {

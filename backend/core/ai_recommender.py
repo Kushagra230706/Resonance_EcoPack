@@ -103,7 +103,8 @@ def call_live_ai_recommendation(
     if groq_key and groq_key != "your_groq_api_key_here":
         try:
             import urllib.request
-            models_to_try = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "mixtral-8x7b-32768", "gemma2-9b-it"]
+            import urllib.error
+            models_to_try = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"]
             url = "https://api.groq.com/openai/v1/chat/completions"
             headers = {
                 "Authorization": f"Bearer {groq_key}",
@@ -121,7 +122,7 @@ def call_live_ai_recommendation(
                         "max_tokens": 800
                     }
                     req = urllib.request.Request(url, data=json.dumps(payload).encode('utf-8'), headers=headers, method="POST")
-                    with urllib.request.urlopen(req, timeout=8) as response:
+                    with urllib.request.urlopen(req, timeout=2.5) as response:
                         res_data = json.loads(response.read().decode('utf-8'))
                         content = res_data["choices"][0]["message"]["content"]
                         if content:
@@ -131,6 +132,11 @@ def call_live_ai_recommendation(
                                 parsed = json.loads(content[start_idx:end_idx+1])
                                 if isinstance(parsed, dict) and "pareto_recommendation_text" in parsed:
                                     return parsed
+                except urllib.error.HTTPError as he:
+                    if he.code in (401, 403):
+                        print(f"Groq API key unauthorized ({he.code}). Skipping remaining Groq models.")
+                        break
+                    print(f"Groq model '{m}' recommendation note: {he}")
                 except Exception as e:
                     print(f"Groq model '{m}' recommendation note: {e}")
         except Exception as e:
