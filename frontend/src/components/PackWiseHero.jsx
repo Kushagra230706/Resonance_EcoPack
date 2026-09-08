@@ -103,17 +103,17 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
         ctx.fillText('PARCEL INTEGRITY: 99.8%', 110, 785);
 
         ctx.strokeStyle = '#064E3B';
-        ctx.lineWidth = 5;
-        ctx.strokeRect(620, 600, 290, 190);
+        ctx.lineWidth = 8;
+        ctx.strokeRect(580, 560, 360, 240);
         ctx.fillStyle = '#064E3B';
-        ctx.font = 'bold 26px sans-serif';
-        ctx.fillText('PACKWISE', 645, 660);
+        ctx.font = '900 42px sans-serif';
+        ctx.fillText('PACKWISE', 605, 630);
         ctx.fillStyle = '#166534';
-        ctx.font = 'bold 16px monospace';
-        ctx.fillText('100% CIRCULAR CORRUGATED', 645, 705);
+        ctx.font = 'bold 18px monospace';
+        ctx.fillText('SUSTAINABLE PACKAGING AI', 605, 680);
         ctx.fillStyle = '#D89B24';
-        ctx.font = 'bold 15px sans-serif';
-        ctx.fillText('★ FSC CERTIFIED ★', 645, 745);
+        ctx.font = 'bold 16px sans-serif';
+        ctx.fillText('★ FSC CERTIFIED CIRCULAR ★', 605, 730);
 
         const tex = new THREE.CanvasTexture(canvas);
         tex.anisotropy = 8;
@@ -422,17 +422,6 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
         
         {/* LEFT COLUMN: Copy, CTAs, Highlights & Ticker */}
         <div className="lg:col-span-6 flex flex-col items-start text-left space-y-4">
-          
-          {/* Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-light border border-brand-border shadow-sm">
-            <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-secondary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-primary"></span>
-            </span>
-            <span className="text-xs font-mono font-bold tracking-wide text-brand-primary">
-              🌿 AI-Powered Packaging Intelligence
-            </span>
-          </div>
 
           {/* Main Headline */}
           <h1 className="text-3xl sm:text-4xl xl:text-[42px] font-extrabold text-brand-heading font-display tracking-tight leading-[1.12]">
@@ -512,20 +501,16 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
         {/* RIGHT COLUMN: Compact 3D Canvas Viewport + Overlay Cards */}
         <div className="lg:col-span-6 relative w-full h-[400px] flex items-center justify-center overflow-hidden">
 
-          {/* Product Badge */}
-          <div className="absolute top-1 z-30 flex items-center gap-2 px-3 py-1 rounded-full bg-warm-cream/95 border border-brand-border shadow-sm backdrop-blur text-[10px] font-mono text-brand-heading font-bold uppercase">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-secondary animate-pulse"></span>
-            <span>PackWise Eco-Cell™ 3D • Active Simulation</span>
+          {/* Big PackWise Display */}
+          <div className="absolute top-2 z-30 pointer-events-none text-center">
+            <h2 style={{ fontSize: '1.4rem', fontWeight: '900', color: '#053B2C', letterSpacing: '3px', fontFamily: 'Outfit, sans-serif', textTransform: 'uppercase', background: 'rgba(255, 253, 244, 0.85)', padding: '2px 14px', borderRadius: '9999px', border: '1px solid #CFE3C7', boxShadow: '0 4px 12px rgba(6, 78, 59, 0.08)' }}>
+              PACKWISE
+            </h2>
           </div>
 
           {/* Three.js Canvas Container (Bounded Height) */}
           <div className="relative w-full h-full rounded-2xl overflow-hidden cursor-grab active:cursor-grabbing" ref={containerRef} style={{ width: '100%', height: '400px' }}>
             {/* Canvas injected here */}
-          </div>
-
-          {/* Subtle Hint */}
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-white/90 border border-brand-border text-[10px] font-mono text-body-muted pointer-events-none flex items-center gap-1.5 shadow-sm backdrop-blur z-20">
-            <span>📦 Drag to rotate</span>
           </div>
 
           {/* FLOATING WHITE METRIC CARDS (Overlay Positions) */}
@@ -695,15 +680,15 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
         <div className="max-w-7xl mx-auto px-2 flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono text-body-muted gap-2 pt-1 border-t border-brand-border/40">
           <div className="flex items-center gap-2">
             <span className="inline-block w-2 h-2 rounded-full bg-brand-primary animate-ping"></span>
-            <span className="text-brand-heading font-bold">Zero-Emission Closed-Loop Semi Freight Network</span>
+            <span className="text-brand-heading font-bold">ISO 14040 Life Cycle Assessment (LCA) Engine</span>
             <span className="text-brand-border">•</span>
-            <span>Long-Haul Connected Fleet Active</span>
+            <span>Curbside Recyclability & Damage Carbon Model Active</span>
           </div>
           <div className="flex items-center gap-4 text-[11px] font-semibold">
             <span className="text-brand-primary flex items-center gap-1">
-              🌿 0g Net CO₂/ton-km
+              🌱 Multi-Objective Pareto Optimization Engine
             </span>
-            <span className="text-body-muted">Dynamic Aerodynamic Routing Active</span>
+            <span className="text-body-muted">Real-Time Carbon & Cost Intelligence</span>
           </div>
         </div>
 
