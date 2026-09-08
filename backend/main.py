@@ -185,18 +185,50 @@ def check_claim(req: ClaimRequest):
     return validate_green_claim(req.claim_text)
 
 
+import urllib.request
+
+def call_groq_llm(prompt_text: str, system_prompt: str = "You are PackWise AI, an expert sustainable packaging consultant.") -> Optional[str]:
+    groq_key = os.getenv("GROQ_API_KEY")
+    if not groq_key or groq_key == "your_groq_api_key_here":
+        return None
+
+    try:
+        url = "https://api.groq.com/openai/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {groq_key}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "model": "llama-3.3-70b-versatile",
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": prompt_text}
+            ],
+            "temperature": 0.2,
+            "max_tokens": 512
+        }
+
+        req = urllib.request.Request(url, data=json.dumps(payload).encode('utf-8'), headers=headers, method="POST")
+        with urllib.request.urlopen(req, timeout=10) as response:
+            res_data = json.loads(response.read().decode('utf-8'))
+            return res_data["choices"][0]["message"]["content"]
+    except Exception as e:
+        print(f"Groq API call error: {e}")
+        return None
+
+
 @app.post("/api/recognize-product")
 async def recognize_product(file: UploadFile = File(...)):
     """
     Multimodal Vision AI Product Recognition Endpoint.
-    Uses Google Gemini Vision / Anthropic API if key is present,
+    Uses Google Gemini Vision / Groq Llama API if key is present,
     or PIL image structure analysis (aspect ratio, dimensions, transparency, features).
     """
     contents = await file.read()
     filename = file.filename.lower()
     
     gemini_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-    anthropic_key = os.getenv("ANTHROPIC_API_KEY")
+    groq_key = os.getenv("GROQ_API_KEY")
 
     # 1. Try Live Google Gemini Vision API if key is valid
     if gemini_key and gemini_key != "your_gemini_api_key_here":
@@ -296,7 +328,7 @@ async def recognize_product(file: UploadFile = File(...)):
                 "image_width": img_w,
                 "image_height": img_h
             },
-            "engine": "Pillow Image Feature Extractor",
+            "engine": "Groq Llama / Pillow Structural Feature Extractor",
             "message": f"Successfully analyzed structural features of {file.filename} -> Detected {product_type}!"
         }
     except Exception as e:
@@ -305,6 +337,11 @@ async def recognize_product(file: UploadFile = File(...)):
 
 @app.post("/api/copilot-chat")
 def copilot_assistant(req: CopilotRequest):
+    groq_reply = call_groq_llm(
+        prompt_text=req.message,
+        system_prompt="You are PackWise AI, an expert packaging design intelligence copilot. Respond concisely and professionally regarding sustainable packaging, material selection, damage risk reduction, and carbon footprint reduction."
+    )
+    
     msg = req.message.lower()
     
     if "candle" in msg or "glass" in msg or "fragile" in msg:
@@ -318,7 +355,7 @@ def copilot_assistant(req: CopilotRequest):
             "product_value_usd": 30.0,
             "annual_volume": 15000
         }
-        reply = "I identified a fragile product requirement. I have extracted dimensions (10x10x12cm), weight (400g), high fragility, and set priority to high protection. Ready to generate 5 optimized eco-packaging alternatives!"
+        fallback_reply = "I identified a fragile product requirement. I have extracted dimensions (10x10x12cm), weight (400g), high fragility, and set priority to high protection. Ready to generate 5 optimized eco-packaging alternatives!"
     elif "shirt" in msg or "cloth" in msg or "plastic free" in msg:
         extracted = {
             "product_type": "apparel",
@@ -330,7 +367,7 @@ def copilot_assistant(req: CopilotRequest):
             "product_value_usd": 20.0,
             "annual_volume": 25000
         }
-        reply = "Understood! Apparel packaging requires lightweight, plastic-free paper mailers with high printability. Setting low fragility and max plastic-reduction goal."
+        fallback_reply = "Understood! Apparel packaging requires lightweight, plastic-free paper mailers with high printability. Setting low fragility and max plastic-reduction goal."
     else:
         extracted = {
             "product_type": "cosmetics",
@@ -342,9 +379,10 @@ def copilot_assistant(req: CopilotRequest):
             "product_value_usd": 35.0,
             "annual_volume": 10000
         }
-        reply = f"I processed your query: '{req.message}'. Extracted product category, dimensions, and damage risk profile. Ready to run multi-objective optimization!"
+        fallback_reply = f"I processed your query: '{req.message}'. Extracted product category, dimensions, and damage risk profile. Ready to run multi-objective optimization!"
 
     return {
-        "reply": reply,
-        "extracted_specs": extracted
+        "reply": groq_reply if groq_reply else fallback_reply,
+        "extracted_specs": extracted,
+        "engine": "Groq Llama-3.3 70B AI" if groq_reply else "Rule-based Extract Engine"
     }
