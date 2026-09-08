@@ -250,39 +250,6 @@ export default function ThreeDBoxPreview({ dieline, optionName }) {
                 position: 'relative'
               }}
             >
-              {/* Floating PACKWISE Capsule Badge Above Box */}
-              <div style={{
-                position: 'absolute',
-                top: '16px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                zIndex: 30,
-                pointerEvents: 'none'
-              }}>
-                <div style={{
-                  background: '#FFFDF5',
-                  border: '2px solid #C4E2C7',
-                  borderRadius: '9999px',
-                  padding: '10px 38px',
-                  boxShadow: '0 10px 28px -4px rgba(6, 78, 59, 0.14)',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backdropFilter: 'blur(8px)'
-                }}>
-                  <span style={{
-                    fontSize: '1.75rem',
-                    fontWeight: '900',
-                    color: '#053B2C',
-                    letterSpacing: '4.5px',
-                    fontFamily: 'Outfit, sans-serif',
-                    textTransform: 'uppercase',
-                    lineHeight: '1'
-                  }}>
-                    PACKWISE
-                  </span>
-                </div>
-              </div>
               {/* Ground Shadow Base Projection (Centered) */}
               <div style={{
                 position: 'absolute',
