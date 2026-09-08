@@ -501,11 +501,38 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
         {/* RIGHT COLUMN: Compact 3D Canvas Viewport + Overlay Cards */}
         <div className="lg:col-span-6 relative w-full h-[400px] flex items-center justify-center overflow-hidden">
 
-          {/* Big PackWise Display */}
-          <div className="absolute top-2 z-30 pointer-events-none text-center">
-            <h2 style={{ fontSize: '1.4rem', fontWeight: '900', color: '#053B2C', letterSpacing: '3px', fontFamily: 'Outfit, sans-serif', textTransform: 'uppercase', background: 'rgba(255, 253, 244, 0.85)', padding: '2px 14px', borderRadius: '9999px', border: '1px solid #CFE3C7', boxShadow: '0 4px 12px rgba(6, 78, 59, 0.08)' }}>
-              PACKWISE
-            </h2>
+          {/* Floating PACKWISE Badge Above Carton Box */}
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 pointer-events-none text-center">
+            <style>{`
+              @keyframes floatPackwiseBadge {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-7px); }
+              }
+            `}</style>
+            <div style={{
+              background: '#FFFDF5',
+              border: '1.5px solid #C4E2C7',
+              borderRadius: '9999px',
+              padding: '8px 32px',
+              boxShadow: '0 10px 28px -4px rgba(6, 78, 59, 0.12), 0 4px 10px -2px rgba(6, 78, 59, 0.05)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backdropFilter: 'blur(8px)',
+              animation: 'floatPackwiseBadge 4s ease-in-out infinite'
+            }}>
+              <span style={{
+                fontSize: '1.5rem',
+                fontWeight: '900',
+                color: '#053B2C',
+                letterSpacing: '3.5px',
+                fontFamily: 'Outfit, sans-serif',
+                textTransform: 'uppercase',
+                lineHeight: '1'
+              }}>
+                PACKWISE
+              </span>
+            </div>
           </div>
 
           {/* Three.js Canvas Container (Bounded Height) */}
