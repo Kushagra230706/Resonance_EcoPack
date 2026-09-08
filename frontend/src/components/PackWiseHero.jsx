@@ -502,7 +502,7 @@ export default function PackWiseHero({ onStartOptimize, onOpenCopilot }) {
         <div className="lg:col-span-6 relative w-full h-[400px] flex items-center justify-center overflow-hidden">
 
           {/* Floating PACKWISE Badge Above Carton Box */}
-          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-30 pointer-events-none text-center">
+          <div className="absolute top-[65px] left-1/2 -translate-x-1/2 z-30 pointer-events-none text-center">
             <style>{`
               @keyframes floatPackwiseBadge {
                 0%, 100% { transform: translateY(0px); }
