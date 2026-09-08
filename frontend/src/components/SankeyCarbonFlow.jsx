@@ -1,27 +1,27 @@
 import React from 'react';
 import { GitCommit, ArrowRight, Zap, Info } from 'lucide-react';
 
+const round3 = (v) => Math.round((v || 0) * 1000) / 1000;
+
 export default function SankeyCarbonFlow({ data }) {
   if (!data || !data.recommended) return null;
 
-  const rec = data.recommended;
+  const rec = data.recommended || {};
+  const co2e = rec.co2e_kg || rec.carbon_co2e_kg || 0.18;
+
   const cb = rec.co2_breakdown || {
-    material_emissions_kg: round(rec.co2e_kg * 0.45),
-    manufacturing_emissions_kg: round(rec.co2e_kg * 0.15),
-    transport_emissions_kg: round(rec.co2e_kg * 0.22),
-    end_of_life_emissions_kg: round(rec.co2e_kg * 0.10),
-    damage_carbon_kg: round(rec.co2e_kg * 0.08)
+    material_emissions_kg: round3(co2e * 0.45),
+    manufacturing_emissions_kg: round3(co2e * 0.15),
+    transport_emissions_kg: round3(co2e * 0.22),
+    end_of_life_emissions_kg: round3(co2e * 0.10),
+    damage_carbon_kg: round3(co2e * 0.08)
   };
 
-  function round(v) {
-    return Math.round(v * 1000) / 1000;
-  }
-
-  const mat = cb.material_emissions_kg || 0.08;
-  const mfg = cb.manufacturing_emissions_kg || 0.03;
-  const trsp = cb.transport_emissions_kg || 0.04;
-  const eol = cb.end_of_life_emissions_kg || 0.02;
-  const dmg = cb.damage_carbon_kg || 0.01;
+  const mat = cb.material_emissions_kg || round3(co2e * 0.45);
+  const mfg = cb.manufacturing_emissions_kg || round3(co2e * 0.15);
+  const trsp = cb.transport_emissions_kg || round3(co2e * 0.22);
+  const eol = cb.end_of_life_emissions_kg || round3(co2e * 0.10);
+  const dmg = cb.damage_carbon_kg || round3(co2e * 0.08);
 
   const total = Math.max(0.01, mat + mfg + trsp + eol + dmg);
 
@@ -51,7 +51,7 @@ export default function SankeyCarbonFlow({ data }) {
               🌿 Carbon Contribution Sankey Flow Model
             </h3>
             <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '2px 0 0 0' }}>
-              Traces exact cradle-to-grave $\text{CO}_2\text{e}$ emissions breakdown for <strong>{rec.name}</strong>.
+              Traces exact cradle-to-grave CO₂e emissions breakdown for <strong>{rec.name || 'Recommended Winner'}</strong>.
             </p>
           </div>
         </div>
